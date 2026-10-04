@@ -33,10 +33,19 @@ export default function Preloader() {
     let filmDone = reduce;
     let finished = false;
     let shown = 0;
+    // Follow the film; switch to timed pacing only if it can't play or hasn't started in time.
+    let timedFrom: number | null = video && !reduce ? null : started;
+    const useTimer = () => {
+      if (timedFrom === null) timedFrom = performance.now();
+    };
+    const stallGuard = window.setTimeout(() => {
+      if (!video || video.paused) useTimer();
+    }, 1500);
 
     const filmProgress = () => {
-      if (video && video.duration && !video.paused) return video.currentTime / video.duration;
-      return Math.min(1, (performance.now() - started) / FALLBACK_MS);
+      if (timedFrom !== null) return Math.min(1, (performance.now() - timedFrom) / FALLBACK_MS);
+      if (video && video.duration) return video.currentTime / video.duration;
+      return 0;
     };
 
     const finish = () => {
@@ -78,15 +87,15 @@ export default function Preloader() {
     const fallback = window.setTimeout(finish, MAX_WAIT_MS);
 
     if (video && !reduce) {
-      video.play().catch(() => {
-        // Autoplay refused: the timer-based pacing above takes over.
-      });
+      video.addEventListener("error", useTimer, { once: true });
+      video.play().catch(useTimer);
     }
 
     return () => {
       gsap.ticker.remove(tick);
       window.removeEventListener(MAP_READY_EVENT, onMapReady);
       window.clearTimeout(fallback);
+      window.clearTimeout(stallGuard);
       document.documentElement.classList.remove("is-loading");
     };
   }, []);
