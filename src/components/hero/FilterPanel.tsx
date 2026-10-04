@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import styles from "./FilterPanel.module.css";
 
 const BEDROOMS = [1, 2, 3, 4, 5, 6];
@@ -9,6 +10,7 @@ export default function FilterPanel({ className = "" }: { className?: string }) 
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [bedrooms, setBedrooms] = useState<number[]>([]);
+  const router = useRouter();
 
   const toggle = (n: number) =>
     setBedrooms((current) => (current.includes(n) ? current.filter((b) => b !== n) : [...current, n]));
@@ -20,7 +22,14 @@ export default function FilterPanel({ className = "" }: { className?: string }) 
   };
 
   return (
-    <form className={`${styles.panel} ${className}`} onSubmit={(e) => e.preventDefault()}>
+    <form
+      className={`${styles.panel} ${className}`}
+      onSubmit={(e) => {
+        e.preventDefault();
+        const r = bedrooms.length ? `&rooms=${Math.min(Math.min(...bedrooms), 3)}` : "";
+        router.push(`/search/?project=varketili${r}`);
+      }}
+    >
       <p className={styles.heading}>
         <SearchIcon /> Choose apartment
       </p>

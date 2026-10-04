@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Reveal from "@/components/ui/Reveal";
 import { projects, statusLabel, withBase, type Project } from "@/data/projects";
 
@@ -81,13 +82,13 @@ function WideProject({ project }: { project: Project }) {
         <Reveal delay={150} className="flex flex-wrap items-center gap-x-10 gap-y-3 text-[14px] md:text-[15px]">
           <Meta label="Location" value={project.district} />
           <Meta label="Sizes" value={`From ${project.sizes[0]} m²  To ${project.sizes[1]} m²`} />
-          <a
-            href="#"
+          <Link
+            href={`/projects/${project.id}/`}
             aria-label={`Explore ${project.name}`}
             className="grid h-11 w-11 place-items-center rounded bg-seu-accent transition-transform hover:scale-110"
           >
             <BuildingSearchIcon />
-          </a>
+          </Link>
         </Reveal>
       </div>
     </article>

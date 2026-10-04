@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import gsap from "gsap";
+import { useRouter } from "next/navigation";
 import { withBase } from "@/data/projects";
 
 type View = { id: string; label: string; image: string; icon: React.ReactNode };
@@ -80,6 +81,7 @@ export default function ChooseView() {
   const [discounted, setDiscounted] = useState(false);
   const [hideReserved, setHideReserved] = useState(true);
   const stageRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   const pickView = (next: View) => {
     if (next.id === view.id) return;
@@ -112,7 +114,11 @@ export default function ChooseView() {
     <section id="choose-view" className="grid min-h-[100svh] md:grid-cols-[minmax(0,46%)_1fr]">
       <form
         className="flex flex-col justify-center gap-14 px-6 py-32 md:px-12 lg:pr-16"
-        onSubmit={(e) => e.preventDefault()}
+        onSubmit={(e) => {
+          e.preventDefault();
+          const first = rooms.map((r) => BEDROOMS.indexOf(r)).sort()[0];
+          router.push(first === undefined ? "/search/" : `/search/?project=varketili&rooms=${Math.min(first, 3)}`);
+        }}
         data-stagger
       >
         <fieldset>

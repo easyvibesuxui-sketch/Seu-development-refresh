@@ -83,7 +83,7 @@ const Clouds = forwardRef<CloudsHandle>(function Clouds(_, ref) {
     descend(duration) {
       const root = rootRef.current;
       if (!root) return null;
-      const tl = gsap.timeline({ onComplete: () => root.remove() });
+      const tl = gsap.timeline({ onComplete: () => { root.style.display = "none"; } });
       const vmax = Math.max(window.innerWidth, window.innerHeight) / 100;
       root.querySelectorAll<HTMLElement>(`.${styles.sheet}`).forEach((el, i) => {
         const sheet = SHEETS[i];

@@ -9,7 +9,7 @@ const fields = [
   { name: "email", label: "Email", type: "email", required: false },
 ];
 
-export default function ContactSection() {
+export default function ContactSection({ split = false }: { split?: boolean }) {
   const [sent, setSent] = useState(false);
 
   return (
@@ -52,7 +52,7 @@ export default function ContactSection() {
         )}
       </div>
 
-      <div>
+      <div className={split ? "md:pt-40" : ""}>
         <h2 className="title-display text-[clamp(30px,2.6vw,42px)]" data-split>
           Contact.
         </h2>

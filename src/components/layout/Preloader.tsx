@@ -6,6 +6,8 @@ import { withBase } from "@/data/projects";
 import { MAP_READY_EVENT, mapIsReady, startIntro } from "@/lib/intro";
 
 const MAX_WAIT_MS = 9000;
+// Module state survives client-side navigation, so returning to the home page skips the loader.
+let played = false;
 /** Fallback pacing when the video can't play (autoplay blocked, low-power mode). */
 const FALLBACK_MS = 2600;
 
@@ -23,6 +25,12 @@ export default function Preloader() {
     const root = rootRef.current;
     const video = videoRef.current;
     if (!root) return;
+    if (played) {
+      root.style.display = "none";
+      startIntro();
+      return;
+    }
+    played = true;
     // The WebGL map can stall frames while tiles load; keep timelines on wall-clock time.
     gsap.ticker.lagSmoothing(0);
     document.documentElement.classList.add("is-loading");
@@ -35,11 +43,11 @@ export default function Preloader() {
     let shown = 0;
     // Follow the film; switch to timed pacing only if it can't play or hasn't started in time.
     let timedFrom: number | null = video && !reduce ? null : started;
-    const useTimer = () => {
+    const switchToTimer = () => {
       if (timedFrom === null) timedFrom = performance.now();
     };
     const stallGuard = window.setTimeout(() => {
-      if (!video || video.paused) useTimer();
+      if (!video || video.paused) switchToTimer();
     }, 1500);
 
     const filmProgress = () => {
@@ -65,7 +73,7 @@ export default function Preloader() {
         .to(root, { clipPath: "inset(0 0 100% 0)", duration: reduce ? 0.2 : 1.1, ease: "expo.inOut" }, "+=0.1")
         .add(() => {
           document.documentElement.classList.remove("is-loading");
-          root.remove();
+          root.style.display = "none";
         });
     };
 
@@ -87,8 +95,8 @@ export default function Preloader() {
     const fallback = window.setTimeout(finish, MAX_WAIT_MS);
 
     if (video && !reduce) {
-      video.addEventListener("error", useTimer, { once: true });
-      video.play().catch(useTimer);
+      video.addEventListener("error", switchToTimer, { once: true });
+      video.play().catch(switchToTimer);
     }
 
     return () => {

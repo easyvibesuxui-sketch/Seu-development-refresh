@@ -46,6 +46,8 @@
 
 html {
   background: var(--seu-bg);
+  /* Off-screen reveal start positions must never widen the page. */
+  overflow-x: clip;
 }
 
 body {
@@ -323,5 +325,184 @@ html.is-loading body {
   from {
     opacity: 0;
     transform: translateY(16px);
+  }
+}
+
+/* ---------- Page transition curtain ---------- */
+.page-curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(ellipse at 50% 45%, #18241f, #0b120f);
+  clip-path: inset(0 0 0 0);
+}
+
+/* Block pins drop onto the render one after another. */
+.block-pin {
+  animation: pin-drop 0.8s cubic-bezier(0.3, 1.5, 0.5, 1) both;
+}
+
+@keyframes pin-drop {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -40px);
+  }
+}
+
+.sun-path {
+  animation: fade-in 0.8s ease both;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.compass svg {
+  animation: compass-in 1.6s cubic-bezier(0.3, 1.4, 0.5, 1) both;
+}
+
+@keyframes compass-in {
+  from {
+    transform: rotate(-200deg);
+    opacity: 0;
+  }
+}
+
+/* ---------- Apartment presentation (A4) ---------- */
+body:has(.presentation) > header,
+body:has(.presentation) > footer,
+body:has(.presentation) .cursor {
+  display: none !important;
+}
+
+.presentation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  padding: 32px 16px 64px;
+  background: #3a3f3d;
+}
+
+.pres-toolbar {
+  position: sticky;
+  top: 16px;
+  z-index: 5;
+}
+
+.pres-page {
+  position: relative;
+  width: 210mm;
+  min-height: 297mm;
+  max-width: 100%;
+  overflow: hidden;
+  background: #fff;
+  color: #15201d;
+  box-shadow: 0 20px 60px #0006;
+}
+
+.pres-serif {
+  font-family: "Bodoni Moda", "Bodoni MT", "Didot", Georgia, serif;
+  font-weight: 700;
+}
+
+.pres-cover {
+  display: grid;
+  place-items: center;
+  background-size: cover;
+  background-position: center;
+}
+
+.pres-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 86%;
+  padding: 56px 24px;
+  border-radius: 10px;
+  background: #e6e8e3cc;
+  text-align: center;
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  .presentation {
+    padding: 0;
+    gap: 0;
+    background: none;
+  }
+
+  .pres-toolbar {
+    display: none;
+  }
+
+  .pres-page {
+    box-shadow: none;
+    break-after: page;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+@keyframes kenburns {
+  from {
+    transform: scale(1.04) translate(0, 0);
+  }
+  to {
+    transform: scale(1.16) translate(-2%, -2%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [class*="kenburns"] {
+    animation: none !important;
+  }
+}
+
+/* Contact: diagonal cream wedge from bottom-left to top-right corner. */
+.contact-wedge {
+  clip-path: polygon(100% 100%, 100% 100%, 100% 100%);
+  animation: wedge-in 1.4s cubic-bezier(0.7, 0, 0.2, 1) 0.5s forwards;
+}
+
+@keyframes wedge-in {
+  to {
+    clip-path: polygon(0% 100%, 90% 12%, 100% 12%, 100% 100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-wedge {
+    animation: none;
+    clip-path: polygon(0% 100%, 90% 12%, 100% 12%, 100% 100%);
+  }
+}
+
+.empty-search {
+  animation: wobble 2.6s ease-in-out infinite;
+  transform-origin: 40% 40%;
+}
+
+@keyframes wobble {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  20% {
+    transform: rotate(-12deg);
+  }
+  40% {
+    transform: rotate(9deg);
+  }
+  60% {
+    transform: rotate(-5deg);
   }
 }

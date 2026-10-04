@@ -1,14 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import LogoMark from "@/components/brand/LogoMark";
 
 const links = [
-  { label: "Projects", href: "#projects" },
-  { label: "Visual search", href: "#" },
-  { label: "SEU Card", href: "#" },
-  { label: "News", href: "#" },
-  { label: "About", href: "#about" },
+  { label: "Projects", href: "/projects/" },
+  { label: "Visual search", href: "/projects/varketili/" },
+  { label: "SEU Card", href: "/card/" },
+  { label: "News", href: "/news/" },
+  { label: "About", href: "/about/" },
 ];
 
 /** Compact glass navigation bar with accent actions beside it (per the m² reference). */
@@ -16,6 +18,7 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [lang, setLang] = useState<"EN" | "GE">("EN");
+  const pathname = usePathname();
 
   useEffect(() => {
     let lastY = window.scrollY;
@@ -42,22 +45,23 @@ export default function Header() {
           }`}
           aria-label="Main"
         >
-          <a href="#" className="group mr-3 flex items-center gap-2" aria-label="SEU Development home">
+          <Link href="/" className="group mr-3 flex items-center gap-2" aria-label="SEU Development home">
             <LogoMark className="h-8 w-auto overflow-visible" />
             <span className="hidden flex-col leading-none sm:flex">
               <span className="label text-[12px] tracking-[0.3em]">SEU</span>
               <span className="text-[9px] text-seu-muted">Development</span>
             </span>
-          </a>
+          </Link>
           <ul className="hidden items-center lg:flex">
             {links.map((l) => (
               <li key={l.label}>
-                <a
+                <Link
                   href={l.href}
-                  className="label relative block px-3.5 py-2 text-[12px] tracking-[0.12em] uppercase transition-colors after:absolute after:inset-x-3.5 after:bottom-1 after:h-px after:origin-right after:scale-x-0 after:bg-current after:transition-transform after:duration-500 hover:text-seu-accent-hi hover:after:origin-left hover:after:scale-x-100"
+                  aria-current={pathname.replace(/\/$/, "") === l.href.replace(/\/$/, "") ? "page" : undefined}
+                  className="label relative block aria-[current=page]:text-seu-accent-hi aria-[current=page]:after:scale-x-100 px-3.5 py-2 text-[12px] tracking-[0.12em] uppercase transition-colors after:absolute after:inset-x-3.5 after:bottom-1 after:h-px after:origin-right after:scale-x-0 after:bg-current after:transition-transform after:duration-500 hover:text-seu-accent-hi hover:after:origin-left hover:after:scale-x-100"
                 >
                   {l.label}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
@@ -73,8 +77,8 @@ export default function Header() {
             </svg>
           </button>
         </nav>
-        <a
-          href="#choose-view"
+        <Link
+          href="/search/"
           aria-label="Search apartments"
           className="grid h-12 w-12 place-items-center rounded-xl bg-seu-accent transition-colors hover:bg-seu-accent-hi"
         >
@@ -82,13 +86,13 @@ export default function Header() {
             <circle cx="8" cy="8" r="6" stroke="#fff" strokeWidth="1.6" />
             <path d="M12.5 12.5L17 17" stroke="#fff" strokeWidth="1.6" />
           </svg>
-        </a>
-        <a
-          href="#contact"
+        </Link>
+        <Link
+          href="/contact/"
           className="label hidden h-12 items-center rounded-xl bg-seu-accent px-6 text-[12px] tracking-[0.14em] uppercase transition-colors hover:bg-seu-accent-hi sm:flex"
         >
           Contact us
-        </a>
+        </Link>
       </div>
     </header>
   );
