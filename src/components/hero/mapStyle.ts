@@ -1,17 +1,19 @@
 import type { StyleSpecification } from "maplibre-gl";
-import type { Project } from "@/data/projects";
+import type { MappedProject } from "@/data/projects";
 
+// Sampled from the hero of the design: warm grey city, olive parks, slate river,
+// fading into the dark green page background at the horizon.
 const palette = {
-  bg: "#16201d",
-  land: "#18231f",
-  park: "#1b2b23",
-  water: "#0d2a35",
-  waterLine: "#14394a",
-  roadMinor: "#2b3833",
-  roadMajor: "#3b4a44",
-  roadHighway: "#3f4f48",
-  buildingLow: "#2f3b36",
-  buildingHigh: "#6b7973",
+  bg: "#15201d",
+  land: "#45463f",
+  park: "#4d5340",
+  water: "#2c4652",
+  waterLine: "#35525f",
+  roadMinor: "#5b5a53",
+  roadMajor: "#6c6b63",
+  roadHighway: "#7b7a71",
+  buildingLow: "#7d7c75",
+  buildingHigh: "#b9b7ae",
   seu: "#0ea56b",
 };
 
@@ -21,13 +23,14 @@ export function createMapStyle(): StyleSpecification {
     sources: {
       openmaptiles: { type: "vector", url: "https://tiles.openfreemap.org/planet" },
     },
+    light: { anchor: "viewport", color: "#ffffff", intensity: 0.35, position: [1.4, 210, 40] },
     sky: {
       "sky-color": palette.bg,
       "horizon-color": palette.bg,
       "fog-color": palette.bg,
-      "sky-horizon-blend": 0.6,
-      "horizon-fog-blend": 0.4,
-      "fog-ground-blend": 0.35,
+      "sky-horizon-blend": 0.8,
+      "horizon-fog-blend": 0.6,
+      "fog-ground-blend": 0.2,
     },
     layers: [
       { id: "background", type: "background", paint: { "background-color": palette.land } },
@@ -37,7 +40,14 @@ export function createMapStyle(): StyleSpecification {
         source: "openmaptiles",
         "source-layer": "landcover",
         filter: ["in", ["get", "class"], ["literal", ["grass", "wood"]]],
-        paint: { "fill-color": palette.park, "fill-opacity": 0.8 },
+        paint: { "fill-color": palette.park, "fill-opacity": 0.9 },
+      },
+      {
+        id: "landuse-park",
+        type: "fill",
+        source: "openmaptiles",
+        "source-layer": "park",
+        paint: { "fill-color": palette.park, "fill-opacity": 0.7 },
       },
       {
         id: "water",
@@ -51,7 +61,7 @@ export function createMapStyle(): StyleSpecification {
         type: "line",
         source: "openmaptiles",
         "source-layer": "waterway",
-        paint: { "line-color": palette.waterLine, "line-width": 1.2 },
+        paint: { "line-color": palette.waterLine, "line-width": 1.4 },
       },
       {
         id: "roads-minor",
@@ -72,7 +82,7 @@ export function createMapStyle(): StyleSpecification {
         filter: ["in", ["get", "class"], ["literal", ["primary", "secondary"]]],
         paint: {
           "line-color": palette.roadMajor,
-          "line-width": ["interpolate", ["exponential", 1.6], ["zoom"], 11, 0.6, 17, 12],
+          "line-width": ["interpolate", ["exponential", 1.6], ["zoom"], 10, 0.6, 17, 12],
         },
       },
       {
@@ -83,7 +93,7 @@ export function createMapStyle(): StyleSpecification {
         filter: ["in", ["get", "class"], ["literal", ["motorway", "trunk"]]],
         paint: {
           "line-color": palette.roadHighway,
-          "line-width": ["interpolate", ["exponential", 1.6], ["zoom"], 10, 0.8, 17, 16],
+          "line-width": ["interpolate", ["exponential", 1.6], ["zoom"], 9, 0.8, 17, 16],
         },
       },
       {
@@ -105,7 +115,8 @@ export function createMapStyle(): StyleSpecification {
           // Most Tbilisi buildings lack height tags, so give them a believable minimum.
           "fill-extrusion-height": ["max", ["coalesce", ["get", "render_height"], 0], 9],
           "fill-extrusion-base": ["coalesce", ["get", "render_min_height"], 0],
-          "fill-extrusion-opacity": 0.92,
+          "fill-extrusion-opacity": 0.95,
+          "fill-extrusion-vertical-gradient": true,
         },
       },
     ],
@@ -115,7 +126,7 @@ export function createMapStyle(): StyleSpecification {
 const METERS_PER_DEG_LAT = 111_320;
 
 /** Stylised tower cluster for each SEU project, extruded on top of the city. */
-export function projectTowers(projects: Project[]): GeoJSON.FeatureCollection {
+export function projectTowers(projects: MappedProject[]): GeoJSON.FeatureCollection {
   const offsets: [number, number][] = [
     [-45, 30],
     [0, 35],
