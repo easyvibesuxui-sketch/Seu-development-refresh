@@ -1,4 +1,7 @@
 import Header from "@/components/layout/Header";
+import Preloader from "@/components/layout/Preloader";
+import ScrollFX from "@/components/motion/ScrollFX";
+import Cursor from "@/components/motion/Cursor";
 import Footer from "@/components/layout/Footer";
 import HeroMap from "@/components/hero/HeroMap";
 import AboutCompany from "@/components/home/AboutCompany";
@@ -10,6 +13,7 @@ import ContactSection from "@/components/home/ContactSection";
 export default function Home() {
   return (
     <>
+      <Preloader />
       <Header />
       <main>
         <HeroMap />
@@ -20,6 +24,8 @@ export default function Home() {
         <ContactSection />
       </main>
       <Footer />
+      <ScrollFX />
+      <Cursor />
     </>
   );
 }

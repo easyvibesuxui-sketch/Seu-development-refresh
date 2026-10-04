@@ -15,9 +15,9 @@ export default function ContactSection() {
   return (
     <section id="contact" className="grid gap-16 px-6 py-36 md:grid-cols-2">
       <div>
-        <Reveal as="h2" className="text-[clamp(26px,2.2vw,34px)]">
+        <h2 className="title-display text-[clamp(30px,2.6vw,42px)]" data-split>
           Requests Call.
-        </Reveal>
+        </h2>
         {sent ? (
           <p className="mt-10 text-lg text-seu-green-bright">Thank you! A sales manager will contact you shortly.</p>
         ) : (
@@ -53,9 +53,9 @@ export default function ContactSection() {
       </div>
 
       <div>
-        <Reveal as="h2" className="text-[clamp(26px,2.2vw,34px)]">
+        <h2 className="title-display text-[clamp(30px,2.6vw,42px)]" data-split>
           Contact.
-        </Reveal>
+        </h2>
         <Reveal delay={120} className="mt-10 rounded-lg bg-[#13241e] p-5">
           <div className="flex flex-wrap gap-x-10 gap-y-2 text-[14px]">
             <a href="mailto:info@seudevelopment.ge" className="hover:text-seu-green-bright">

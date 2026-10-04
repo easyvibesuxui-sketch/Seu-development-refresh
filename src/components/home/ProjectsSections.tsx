@@ -9,9 +9,9 @@ export default function ProjectsSections() {
   return (
     <div id="projects">
       <section className="pb-24">
-        <Reveal as="h2" className="section-title px-6">
+        <h2 className="section-title px-6" data-split>
           Ongoing.
-        </Reveal>
+        </h2>
         <div className="mt-12 space-y-4">
           {ongoing.map((p) => (
             <WideProject key={p.id} project={p} />
@@ -20,39 +20,38 @@ export default function ProjectsSections() {
       </section>
 
       <section className="px-6 pb-32">
-        <Reveal as="h2" className="section-title uppercase">
+        <h2 className="section-title uppercase" data-split>
           Upcoming.
-        </Reveal>
+        </h2>
         <div className="mt-16 grid gap-y-16 md:grid-cols-2">
           {upcoming.map((p, i) => (
-            <Reveal
-              key={p.id}
-              variant={i % 2 ? "right" : "left"}
-              className={i % 2 ? "md:mt-[22vw]" : ""}
-            >
-              <FadedImage project={p} className="aspect-[2.6/1]" />
-              <div className="mt-2 text-center">
-                <StatusLine project={p} centered />
-                <h3 className="mt-1 text-[clamp(24px,2.2vw,34px)] uppercase">{p.name}</h3>
-              </div>
-            </Reveal>
+            // Columns drift at opposite speeds for an asymmetric parallax.
+            <div key={p.id} className={i % 2 ? "md:mt-[18vw]" : ""} data-parallax={i % 2 ? "-0.12" : "0.08"}>
+              <Reveal variant={i % 2 ? "right" : "left"} className="group">
+                <FadedImage project={p} className="aspect-[2.6/1]" />
+                <div className="mt-2 text-center">
+                  <StatusLine project={p} centered />
+                  <h3 className="title-display mt-1 text-[clamp(26px,2.4vw,38px)] uppercase">{p.name}</h3>
+                </div>
+              </Reveal>
+            </div>
           ))}
         </div>
       </section>
 
       <section className="px-6 pb-32">
-        <Reveal as="h2" className="section-title uppercase">
+        <h2 className="section-title uppercase" data-split>
           Finished.
-        </Reveal>
-        <div className="mt-14 grid gap-6 md:grid-cols-3">
-          {finished.map((p, i) => (
-            <Reveal key={p.id} delay={i * 120} className="group">
-              <FadedImage project={p} className="aspect-[4/5]" />
-              <div className="relative -mt-20 px-4">
+        </h2>
+        <div className="mt-14 grid gap-6 md:grid-cols-2" data-stagger>
+          {finished.map((p) => (
+            <article key={p.id} className="group">
+              <FadedImage project={p} className="aspect-[4/3]" />
+              <div className="relative -mt-24 px-5">
                 <StatusLine project={p} />
-                <h3 className="mt-1 text-[clamp(26px,2.4vw,40px)] uppercase">{p.name}</h3>
+                <h3 className="title-display mt-1 text-[clamp(28px,2.6vw,44px)] uppercase">{p.name}</h3>
               </div>
-            </Reveal>
+            </article>
           ))}
         </div>
       </section>
@@ -63,18 +62,20 @@ export default function ProjectsSections() {
 function WideProject({ project }: { project: Project }) {
   return (
     <article className="group relative">
-      <Reveal variant="mask" className="relative h-[72vh] min-h-[460px] overflow-hidden">
-        <img
-          src={withBase(project.image)}
-          alt={`${project.name} render`}
-          className="h-full w-full object-cover transition-transform duration-[2s] group-hover:scale-105"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#15201d] via-transparent via-40% to-[#15201d]" />
+      <Reveal variant="mask" className="relative h-[78vh] min-h-[460px] overflow-hidden">
+        <div className="absolute inset-0" data-zoom>
+          <img
+            src={withBase(project.image)}
+            alt={`${project.name} render`}
+            className="h-full w-full object-cover transition-transform duration-[2s] group-hover:scale-105"
+          />
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-b from-[#15201d]/70 via-transparent via-35% to-[#15201d]/90" />
       </Reveal>
       <div className="absolute inset-x-6 bottom-6 flex flex-wrap items-end justify-between gap-6">
         <Reveal>
           <StatusLine project={project} />
-          <h3 className="mt-1 text-[clamp(36px,4.2vw,64px)] uppercase leading-none">{project.name}</h3>
+          <h3 className="title-display mt-1 text-[clamp(40px,5vw,76px)] uppercase leading-none">{project.name}</h3>
         </Reveal>
         <Reveal delay={150} className="flex flex-wrap items-center gap-x-10 gap-y-3 text-[14px] md:text-[15px]">
           <Meta label="Location" value={project.district} />
@@ -95,13 +96,15 @@ function WideProject({ project }: { project: Project }) {
 function FadedImage({ project, className }: { project: Project; className: string }) {
   return (
     <div className={`relative overflow-hidden ${className}`}>
-      <img
-        src={withBase(project.image)}
-        alt={`${project.name} render`}
-        style={{ objectPosition: project.imagePosition }}
-        className="h-full w-full object-cover transition-transform duration-[1.6s] group-hover:scale-105 hover:scale-105"
-      />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#15201d] via-transparent via-30% to-[#15201d]" />
+      <div className="absolute inset-0" data-zoom>
+        <img
+          src={withBase(project.image)}
+          alt={`${project.name} render`}
+          style={{ objectPosition: project.imagePosition }}
+          className="h-full w-full object-cover transition-transform duration-[1.6s] group-hover:scale-105"
+        />
+      </div>
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#15201d]/50 via-transparent via-30% to-[#15201d]/90" />
     </div>
   );
 }

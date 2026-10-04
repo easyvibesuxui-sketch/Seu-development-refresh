@@ -1,4 +1,3 @@
-import Reveal from "@/components/ui/Reveal";
 import { withBase } from "@/data/projects";
 
 // The partner list comes from the CMS on the live site; the design uses Bank of Georgia as placeholder.
@@ -8,9 +7,9 @@ export default function Partners() {
   const row = [...partners, ...partners];
   return (
     <section className="overflow-hidden pb-32">
-      <Reveal as="h2" className="section-title px-6 uppercase">
+      <h2 className="section-title px-6 uppercase" data-split>
         Partners.
-      </Reveal>
+      </h2>
       <div className="marquee mt-14 flex w-max gap-8">
         {row.map((p, i) => (
           <div

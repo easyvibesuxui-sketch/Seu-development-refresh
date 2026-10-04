@@ -4,8 +4,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { LngLatBoundsLike, Map as MapLibreMap, Marker } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { distanceKm, highlights, mappedProjects, statusLabel, withBase, type MappedProject } from "@/data/projects";
+import { INTRO_EVENT, introStarted, markMapReady } from "@/lib/intro";
 import { createMapStyle, projectTowers, seuColor } from "./mapStyle";
+import { createTraffic } from "./traffic";
 import FilterPanel from "./FilterPanel";
+import Clouds, { type CloudsHandle } from "./Clouds";
 import { createHighlightPin, createProjectPin } from "./pins";
 import styles from "./HeroMap.module.css";
 
@@ -15,10 +18,10 @@ const TBILISI_BOUNDS: LngLatBoundsLike = [
   [44.58, 41.6],
   [45.05, 41.84],
 ];
-const PROJECT_ZOOM = 14.2;
+const PROJECT_ZOOM = 14.6;
 const PROJECT_PITCH = 60;
-const ORBIT_DEG_PER_SEC = 2.2;
-const RESUME_ORBIT_AFTER_MS = 4000;
+const PROJECT_BEARING = -18;
+const INTRO_SECONDS = 3.6;
 
 /** Keeps the active project in the upper part of the hero, clear of the captions. */
 function projectPadding(map: MapLibreMap) {
@@ -27,14 +30,15 @@ function projectPadding(map: MapLibreMap) {
 }
 
 export default function HeroMap() {
-  const rootRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const cloudsRef = useRef<CloudsHandle>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
   const modeRef = useRef<Mode>("project");
-  const lastInteractionRef = useRef(0);
   const [mode, setMode] = useState<Mode>("project");
   const [active, setActive] = useState<MappedProject>(mappedProjects[0]);
   const [ready, setReady] = useState(false);
+  const [landed, setLanded] = useState(false);
 
   const goToProject = useCallback((project: MappedProject) => {
     const map = mapRef.current;
@@ -42,15 +46,14 @@ export default function HeroMap() {
     modeRef.current = "project";
     setMode("project");
     setActive(project);
-    lastInteractionRef.current = performance.now();
     map.dragPan.disable();
     map.flyTo({
       center: project.coords,
       zoom: PROJECT_ZOOM,
       pitch: PROJECT_PITCH,
-      bearing: map.getBearing() + 30,
+      bearing: PROJECT_BEARING,
       padding: projectPadding(map),
-      duration: 3200,
+      duration: 3000,
       curve: 1.6,
       essential: true,
     });
@@ -72,7 +75,7 @@ export default function HeroMap() {
       ],
     );
     const camera = map.cameraForBounds(bounds, {
-      padding: { top: 340, bottom: 240, left: 200, right: 200 },
+      padding: { top: 340, bottom: 240, left: 220, right: 220 },
       pitch: 48,
       bearing: -12,
     });
@@ -83,7 +86,6 @@ export default function HeroMap() {
 
   useEffect(() => {
     let cancelled = false;
-    let frame = 0;
     const markers: Marker[] = [];
     const cleanups: (() => void)[] = [];
 
@@ -93,13 +95,15 @@ export default function HeroMap() {
       maplibre.setWorkerUrl(withBase("/maplibre/maplibre-gl-worker.mjs"));
 
       const first = mappedProjects[0];
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      // The intro starts high above the city, hidden by clouds, and descends onto the project.
       const map = new maplibre.Map({
         container: containerRef.current,
         style: createMapStyle(),
         center: first.coords,
-        zoom: PROJECT_ZOOM,
-        pitch: PROJECT_PITCH,
-        bearing: -18,
+        zoom: 11.6,
+        pitch: 15,
+        bearing: -70,
         maxPitch: 72,
         maxBounds: TBILISI_BOUNDS,
         attributionControl: { compact: true },
@@ -112,24 +116,20 @@ export default function HeroMap() {
         keyboard: false,
       });
       mapRef.current = map;
-      map.setPadding(projectPadding(map));
 
-      // Drag to orbit around the current centre, so the active project never leaves the view.
+      // Drag rotates the camera around the active project, so its pin never leaves the view.
       const canvas = map.getCanvasContainer();
       let drag: { x: number; y: number; bearing: number; pitch: number } | null = null;
       const onDown = (e: PointerEvent) => {
         if (modeRef.current === "overview" && e.pointerType === "mouse") return;
         drag = { x: e.clientX, y: e.clientY, bearing: map.getBearing(), pitch: map.getPitch() };
-        lastInteractionRef.current = performance.now();
       };
       const onMove = (e: PointerEvent) => {
         if (!drag) return;
-        lastInteractionRef.current = performance.now();
         const pitch =
-          e.pointerType === "touch"
-            ? drag.pitch
-            : Math.min(70, Math.max(40, drag.pitch + (e.clientY - drag.y) * 0.12));
-        map.jumpTo({ bearing: drag.bearing - (e.clientX - drag.x) * 0.25, pitch });
+          e.pointerType === "touch" ? drag.pitch : Math.min(70, Math.max(40, drag.pitch - (e.clientY - drag.y) * 0.12));
+        // Dragging right turns the city to the right, like grabbing a globe.
+        map.jumpTo({ bearing: drag.bearing + (e.clientX - drag.x) * 0.25, pitch });
       };
       const onUp = () => {
         drag = null;
@@ -144,9 +144,24 @@ export default function HeroMap() {
         window.removeEventListener("pointerup", onUp);
         canvas.removeEventListener("pointercancel", onUp);
       });
-      map.on("dragstart", () => {
-        lastInteractionRef.current = performance.now();
-      });
+
+      let hasLanded = false;
+      const land = () => {
+        if (cancelled || hasLanded) return;
+        hasLanded = true;
+        cloudsRef.current?.part(reduceMotion ? 0.6 : INTRO_SECONDS * 0.8);
+        map.flyTo({
+          center: first.coords,
+          zoom: PROJECT_ZOOM,
+          pitch: PROJECT_PITCH,
+          bearing: PROJECT_BEARING,
+          padding: projectPadding(map),
+          duration: reduceMotion ? 0 : INTRO_SECONDS * 1000,
+          curve: 1.2,
+          essential: true,
+        });
+        map.once("moveend", () => setLanded(true));
+      };
 
       map.on("load", () => {
         map.addSource("seu-towers", { type: "geojson", data: projectTowers(mappedProjects) });
@@ -167,9 +182,9 @@ export default function HeroMap() {
           source: "seu-points",
           paint: {
             "circle-color": seuColor,
-            "circle-radius": ["interpolate", ["linear"], ["zoom"], 11, 22, 16, 130],
+            "circle-radius": ["interpolate", ["linear"], ["zoom"], 11, 14, 16, 80],
             "circle-blur": 1,
-            "circle-opacity": 0.5,
+            "circle-opacity": 0.22,
             "circle-pitch-alignment": "map",
           },
         });
@@ -178,43 +193,53 @@ export default function HeroMap() {
           type: "fill-extrusion",
           source: "seu-towers",
           paint: {
-            "fill-extrusion-color": seuColor,
+            "fill-extrusion-color": "#3fbf86",
             "fill-extrusion-height": ["get", "height"],
-            "fill-extrusion-opacity": 0.95,
+            "fill-extrusion-opacity": 0.92,
+            "fill-extrusion-vertical-gradient": true,
           },
         });
 
-        for (const project of mappedProjects) {
-          const el = createProjectPin(project, () => goToProject(project));
-          markers.push(new maplibre.Marker({ element: el, anchor: "bottom", opacityWhenCovered: 1 }).setLngLat(project.coords).addTo(map));
-        }
+        const traffic = createTraffic(map);
+        if (!reduceMotion) traffic.start();
+        cleanups.push(() => traffic.destroy());
+        // Pause the car animation while the hero is scrolled out of view.
+        const io = new IntersectionObserver(([entry]) => {
+          if (reduceMotion) return;
+          if (entry.isIntersecting) traffic.start();
+          else traffic.stop();
+        });
+        if (rootRef.current) io.observe(rootRef.current);
+        cleanups.push(() => io.disconnect());
+
+        const addMarker = (el: HTMLElement, coords: [number, number]) =>
+          markers.push(
+            new maplibre.Marker({ element: el, anchor: "bottom", opacityWhenCovered: 1, subpixelPositioning: true })
+              .setLngLat(coords)
+              .addTo(map),
+          );
+        for (const project of mappedProjects) addMarker(createProjectPin(project, () => goToProject(project)), project.coords);
         for (const highlight of highlights) {
           const owner = mappedProjects.find((p) => p.id === highlight.project);
-          if (!owner) continue;
-          const el = createHighlightPin(highlight, distanceKm(owner.coords, highlight.coords));
-          markers.push(new maplibre.Marker({ element: el, anchor: "bottom", opacityWhenCovered: 1 }).setLngLat(highlight.coords).addTo(map));
+          if (owner) addMarker(createHighlightPin(highlight, distanceKm(owner.coords, highlight.coords)), highlight.coords);
         }
 
         setReady(true);
+        map.once("idle", () => {
+          markMapReady();
+          if (introStarted()) land();
+        });
       });
 
-      // Slow orbit around the active project while the visitor is not interacting.
-      let previous = performance.now();
-      const tick = (now: number) => {
-        const dt = Math.min((now - previous) / 1000, 0.1);
-        previous = now;
-        const idle = now - lastInteractionRef.current > RESUME_ORBIT_AFTER_MS;
-        if (modeRef.current === "project" && idle && !drag && !map.isMoving()) {
-          map.setBearing(map.getBearing() + ORBIT_DEG_PER_SEC * dt);
-        }
-        frame = requestAnimationFrame(tick);
+      const onIntro = () => {
+        if (map.loaded()) land();
       };
-      frame = requestAnimationFrame(tick);
+      window.addEventListener(INTRO_EVENT, onIntro);
+      cleanups.push(() => window.removeEventListener(INTRO_EVENT, onIntro));
     })();
 
     return () => {
       cancelled = true;
-      cancelAnimationFrame(frame);
       cleanups.forEach((fn) => fn());
       markers.forEach((m) => m.remove());
       mapRef.current?.remove();
@@ -225,15 +250,23 @@ export default function HeroMap() {
   // Landmarks only accompany their own project, never the city overview.
   useEffect(() => {
     rootRef.current?.querySelectorAll<HTMLElement>(`.${styles.highlightPin}`).forEach((el) => {
-      el.dataset.visible = String(mode === "project" && el.dataset.project === active.id);
+      el.dataset.visible = String(landed && mode === "project" && el.dataset.project === active.id);
     });
-  }, [mode, active, ready]);
+  }, [mode, active, ready, landed]);
 
   return (
-    <section ref={rootRef} className={styles.root} data-mode={mode} data-active={active.id}>
+    <section
+      ref={rootRef}
+      className={styles.root}
+      data-mode={mode}
+      data-landed={landed}
+      data-active={active.id}
+      data-cursor="drag"
+    >
       <div className={styles.dome}>
         <div ref={containerRef} className={`${styles.map} ${ready ? styles.mapReady : ""}`} />
       </div>
+      <Clouds ref={cloudsRef} />
 
       <div className={styles.caption}>
         {mode === "project" ? (
@@ -268,14 +301,19 @@ export default function HeroMap() {
               />
             ))}
           </div>
-          <button
-            type="button"
-            className={styles.allButton}
+          <a
+            href="#all-projects"
+            className={styles.allLink}
             aria-pressed={mode === "overview"}
-            onClick={mode === "overview" ? () => goToProject(active) : showAllProjects}
+            onClick={(e) => {
+              e.preventDefault();
+              if (mode === "overview") goToProject(active);
+              else showAllProjects();
+            }}
           >
-            <GridIcon /> {mode === "overview" ? `Back to ${active.name}` : "All projects"}
-          </button>
+            <span>{mode === "overview" ? `Back to ${active.name}` : "All projects"}</span>
+            <ArrowIcon />
+          </a>
         </div>
       </div>
 
@@ -296,13 +334,10 @@ function FlagIcon() {
   );
 }
 
-function GridIcon() {
+function ArrowIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
-      <rect x="0.5" y="0.5" width="5" height="5" stroke="currentColor" />
-      <rect x="8.5" y="0.5" width="5" height="5" stroke="currentColor" />
-      <rect x="0.5" y="8.5" width="5" height="5" stroke="currentColor" />
-      <rect x="8.5" y="8.5" width="5" height="5" stroke="currentColor" />
+    <svg width="18" height="10" viewBox="0 0 18 10" fill="none" aria-hidden>
+      <path d="M0 5h16M12 1l4 4-4 4" stroke="currentColor" strokeWidth="1.2" />
     </svg>
   );
 }

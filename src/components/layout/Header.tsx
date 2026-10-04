@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
-const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+import LogoMark from "@/components/brand/LogoMark";
 
 const left = [
   { label: "Search Apartment", pill: true },
@@ -54,10 +53,14 @@ export default function Header() {
             <NavLink key={l.label} {...l} />
           ))}
         </nav>
-        <a href="#" className="col-start-2 flex flex-col items-center" aria-label="SEU Development">
-          <img src={`${basePath}/brand/logo-wire.svg`} alt="" className="h-9 w-auto" />
-          <span className="mt-1 text-[13px] leading-none tracking-[0.2em]">SEU</span>
-          <span className="text-[10px] text-seu-muted">Development</span>
+        <a href="#" className="group col-start-2 flex flex-col items-center" aria-label="SEU Development">
+          <LogoMark className="h-11 w-auto overflow-visible" />
+          <span className="-mt-1 text-[13px] leading-none tracking-[0.3em] transition-transform duration-700 [transition-timing-function:cubic-bezier(0.3,1.5,0.45,1)] group-hover:translate-y-[3px]">
+            SEU
+          </span>
+          <span className="mt-0.5 text-[10px] text-seu-muted transition-transform duration-700 [transition-timing-function:cubic-bezier(0.3,1.5,0.45,1)] group-hover:translate-y-[3px]">
+            Development
+          </span>
         </a>
         <nav className="hidden items-center justify-end gap-12 lg:flex">
           {right.map((l) => (

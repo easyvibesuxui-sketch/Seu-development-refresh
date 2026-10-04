@@ -1,4 +1,4 @@
-import { withBase } from "@/data/projects";
+import LogoMark from "@/components/brand/LogoMark";
 
 const nav = ["PROJECTS", "SEU CARD", "PRIVACY POLICY", "NEWS", "ABOUT"];
 const socials = [
@@ -27,12 +27,14 @@ export default function Footer() {
             </a>
           ))}
         </div>
-        <p className="text-center text-[clamp(24px,2.4vw,38px)] leading-tight tracking-[0.18em] text-seu-muted">
+        <p className="title-display text-center text-[clamp(26px,2.8vw,44px)] leading-tight tracking-[0.18em] text-seu-muted" data-split>
           SEU
           <br />
           development
         </p>
-        <img src={withBase("/brand/logo-wire-green.svg")} alt="" className="mr-[4vw] w-24 justify-self-end" />
+        <span className="group mr-[4vw] justify-self-end">
+          <LogoMark className="w-24 overflow-visible" />
+        </span>
       </div>
     </footer>
   );

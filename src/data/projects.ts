@@ -9,6 +9,8 @@ export type Project = {
   sizes: [number, number];
   /** [lng, lat]; projects without a site yet are not shown on the map. */
   coords?: [number, number];
+  /** Under construction, so not in OpenStreetMap yet: drawn as stylised towers. */
+  drawTowers?: boolean;
   floors: number;
   image: string;
   imagePosition?: string;
@@ -32,8 +34,10 @@ export const projects: Project[] = [
     date: "01.02.2028",
     district: "Varketili",
     sizes: [45, 116],
+    // Approximate: Viktor Kupradze St 22 is not mapped in OpenStreetMap yet.
     coords: [44.8762, 41.7121],
     floors: 12,
+    drawTowers: true,
     image: "/images/choose-varketili.jpg",
     videoId: "6dCWXfB7nvc",
   },
@@ -58,30 +62,18 @@ export const projects: Project[] = [
     image: "/images/upcoming-2.jpg",
   },
   {
-    id: "jikia",
-    name: "SEU Jikia",
-    status: "finished",
-    date: "01.02.2025",
-    district: "Varketili",
-    sizes: [64, 250],
-    coords: [44.8548, 41.6903],
-    floors: 14,
-    overviewSpread: { x: 0, label: "below" },
-    image: "/images/finished-vaja.jpg",
-    imagePosition: "50% 70%",
-  },
-  {
-    id: "politkovskaya",
-    name: "SEU Politkovskaya",
+    id: "green-yard",
+    name: "SEU Green Yard",
     status: "finished",
     date: "2019",
     district: "Saburtalo",
     sizes: [52, 180],
-    coords: [44.7024, 41.7216],
-    floors: 16,
-    overviewSpread: { x: -42, label: "above" },
+    // OSM housenumber 32 on Anna Politkovskaya St; the 19-storey towers stand here.
+    coords: [44.70705, 41.72052],
+    floors: 19,
     image: "/images/finished-vaja.jpg",
     imagePosition: "20% 40%",
+    overviewSpread: { x: 46, label: "above" },
   },
   {
     id: "vasilisko",
@@ -90,11 +82,12 @@ export const projects: Project[] = [
     date: "2021",
     district: "Saburtalo",
     sizes: [48, 140],
-    coords: [44.7049, 41.7199],
+    // OSM housenumber 1 on Holy Martyr Vasilisko St (complex at 1-3).
+    coords: [44.70141, 41.72046],
     floors: 12,
-    overviewSpread: { x: 42, label: "below" },
     image: "/images/finished-vaja.jpg",
     imagePosition: "80% 50%",
+    overviewSpread: { x: -46, label: "below" },
   },
 ];
 

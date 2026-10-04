@@ -1,21 +1,43 @@
-import type { StyleSpecification } from "maplibre-gl";
+import type { ExpressionSpecification, StyleSpecification } from "maplibre-gl";
 import type { MappedProject } from "@/data/projects";
 
-// Light buildings on a ground that matches the page background, deep navy water.
-const palette = {
+/*
+ * Palette follows the ERA reference: warm stone and cream buildings with the odd glass or
+ * brick accent, lush greens, a deep navy river with a lit embankment, all sitting on a
+ * ground that is the page background so the city reads as one surface with the site.
+ */
+export const palette = {
   bg: "#15201d",
-  // Ground shares the page colour so the city melts into the background, as in the reference.
   land: "#15201d",
-  park: "#1b2e24",
-  water: "#0f3446",
-  waterLine: "#164257",
-  roadMinor: "#24302b",
-  roadMajor: "#2f3d37",
-  roadHighway: "#3a4943",
-  buildingLow: "#8c8a83",
-  buildingHigh: "#d2cfc6",
+  park: "#2c5233",
+  wood: "#264a2d",
+  water: "#0b2d47",
+  shore: "#8fb4c9",
+  roadMinor: "#232d29",
+  roadMajor: "#2e3a35",
+  roadHighway: "#3a4741",
+  streetGlow: "#f5c98a",
   seu: "#0ea56b",
 };
+
+const buildingTones = ["#efe7da", "#e2d6c3", "#d6cab6", "#f4efe6", "#cbbfac", "#e9dccb", "#ddd3c6"];
+
+/** Deterministic per-building tone: OSM ids when present, height otherwise. */
+const toneIndex: ExpressionSpecification = [
+  "%",
+  ["+", ["to-number", ["id"], 0], ["round", ["*", ["coalesce", ["get", "render_height"], 0], 7]]],
+  buildingTones.length,
+];
+
+const buildingColor: ExpressionSpecification = [
+  "case",
+  // Tall buildings get the glass / brick accents seen in the design render.
+  [">", ["coalesce", ["get", "render_height"], 0], 45],
+  ["match", ["%", toneIndex, 3], 0, "#8fa9b8", 1, "#b4785b", "#d9cdb9"],
+  ["match", toneIndex, 0, buildingTones[0], 1, buildingTones[1], 2, buildingTones[2], 3, buildingTones[3], 4, buildingTones[4], 5, buildingTones[5], buildingTones[6]],
+];
+
+const majorRoads: ExpressionSpecification = ["in", ["get", "class"], ["literal", ["primary", "secondary", "trunk", "motorway"]]];
 
 export function createMapStyle(): StyleSpecification {
   return {
@@ -23,31 +45,39 @@ export function createMapStyle(): StyleSpecification {
     sources: {
       openmaptiles: { type: "vector", url: "https://tiles.openfreemap.org/planet" },
     },
-    light: { anchor: "viewport", color: "#ffffff", intensity: 0.35, position: [1.4, 210, 40] },
+    light: { anchor: "viewport", color: "#fff6ea", intensity: 0.42, position: [1.3, 200, 35] },
     sky: {
       "sky-color": palette.bg,
       "horizon-color": palette.bg,
       "fog-color": palette.bg,
       "sky-horizon-blend": 1,
       "horizon-fog-blend": 0.8,
-      "fog-ground-blend": 0.35,
+      "fog-ground-blend": 0.4,
     },
     layers: [
       { id: "background", type: "background", paint: { "background-color": palette.land } },
+      {
+        id: "wood",
+        type: "fill",
+        source: "openmaptiles",
+        "source-layer": "landcover",
+        filter: ["in", ["get", "class"], ["literal", ["wood", "forest"]]],
+        paint: { "fill-color": palette.wood, "fill-opacity": 0.9 },
+      },
       {
         id: "park",
         type: "fill",
         source: "openmaptiles",
         "source-layer": "landcover",
-        filter: ["in", ["get", "class"], ["literal", ["grass", "wood"]]],
-        paint: { "fill-color": palette.park, "fill-opacity": 0.9 },
+        filter: ["in", ["get", "class"], ["literal", ["grass", "farmland"]]],
+        paint: { "fill-color": palette.park, "fill-opacity": 0.55 },
       },
       {
         id: "landuse-park",
         type: "fill",
         source: "openmaptiles",
         "source-layer": "park",
-        paint: { "fill-color": palette.park, "fill-opacity": 0.7 },
+        paint: { "fill-color": palette.park, "fill-opacity": 0.85 },
       },
       {
         id: "water",
@@ -57,11 +87,23 @@ export function createMapStyle(): StyleSpecification {
         paint: { "fill-color": palette.water },
       },
       {
+        id: "water-shore",
+        type: "line",
+        source: "openmaptiles",
+        "source-layer": "water",
+        paint: {
+          "line-color": palette.shore,
+          "line-opacity": 0.35,
+          "line-width": ["interpolate", ["linear"], ["zoom"], 11, 0.6, 16, 2.4],
+          "line-blur": 1.2,
+        },
+      },
+      {
         id: "waterway",
         type: "line",
         source: "openmaptiles",
         "source-layer": "waterway",
-        paint: { "line-color": palette.waterLine, "line-width": 1.4 },
+        paint: { "line-color": palette.water, "line-width": ["interpolate", ["linear"], ["zoom"], 11, 1.5, 16, 8] },
       },
       {
         id: "roads-minor",
@@ -71,7 +113,7 @@ export function createMapStyle(): StyleSpecification {
         filter: ["in", ["get", "class"], ["literal", ["minor", "service", "tertiary"]]],
         paint: {
           "line-color": palette.roadMinor,
-          "line-width": ["interpolate", ["exponential", 1.6], ["zoom"], 12, 0.4, 17, 6],
+          "line-width": ["interpolate", ["exponential", 1.6], ["zoom"], 12, 0.5, 17, 7],
         },
       },
       {
@@ -82,7 +124,7 @@ export function createMapStyle(): StyleSpecification {
         filter: ["in", ["get", "class"], ["literal", ["primary", "secondary"]]],
         paint: {
           "line-color": palette.roadMajor,
-          "line-width": ["interpolate", ["exponential", 1.6], ["zoom"], 10, 0.6, 17, 12],
+          "line-width": ["interpolate", ["exponential", 1.6], ["zoom"], 10, 0.8, 17, 14],
         },
       },
       {
@@ -93,7 +135,21 @@ export function createMapStyle(): StyleSpecification {
         filter: ["in", ["get", "class"], ["literal", ["motorway", "trunk"]]],
         paint: {
           "line-color": palette.roadHighway,
-          "line-width": ["interpolate", ["exponential", 1.6], ["zoom"], 9, 0.8, 17, 16],
+          "line-width": ["interpolate", ["exponential", 1.6], ["zoom"], 9, 1, 17, 18],
+        },
+      },
+      {
+        // Warm wash of street lighting along the arteries.
+        id: "roads-glow",
+        type: "line",
+        source: "openmaptiles",
+        "source-layer": "transportation",
+        filter: majorRoads,
+        paint: {
+          "line-color": palette.streetGlow,
+          "line-opacity": 0.12,
+          "line-width": ["interpolate", ["exponential", 1.6], ["zoom"], 10, 2, 17, 34],
+          "line-blur": ["interpolate", ["linear"], ["zoom"], 10, 2, 17, 18],
         },
       },
       {
@@ -101,17 +157,9 @@ export function createMapStyle(): StyleSpecification {
         type: "fill-extrusion",
         source: "openmaptiles",
         "source-layer": "building",
-        minzoom: 13,
+        minzoom: 12.5,
         paint: {
-          "fill-extrusion-color": [
-            "interpolate",
-            ["linear"],
-            ["coalesce", ["get", "render_height"], 6],
-            0,
-            palette.buildingLow,
-            60,
-            palette.buildingHigh,
-          ],
+          "fill-extrusion-color": buildingColor,
           // Most Tbilisi buildings lack height tags, so give them a believable minimum.
           "fill-extrusion-height": ["max", ["coalesce", ["get", "render_height"], 0], 9],
           "fill-extrusion-base": ["coalesce", ["get", "render_min_height"], 0],
@@ -125,7 +173,7 @@ export function createMapStyle(): StyleSpecification {
 
 const METERS_PER_DEG_LAT = 111_320;
 
-/** Stylised tower cluster for each SEU project, extruded on top of the city. */
+/** Stylised tower cluster for projects still under construction (not in OSM yet). */
 export function projectTowers(projects: MappedProject[]): GeoJSON.FeatureCollection {
   const offsets: [number, number][] = [
     [-45, 30],
@@ -137,6 +185,7 @@ export function projectTowers(projects: MappedProject[]): GeoJSON.FeatureCollect
   const size = 22;
   const features: GeoJSON.Feature[] = [];
   for (const p of projects) {
+    if (!p.drawTowers) continue;
     const [lng, lat] = p.coords;
     const mPerDegLng = METERS_PER_DEG_LAT * Math.cos((lat * Math.PI) / 180);
     offsets.forEach(([dx, dy], i) => {

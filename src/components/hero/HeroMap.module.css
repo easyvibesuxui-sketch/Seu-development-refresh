@@ -53,6 +53,10 @@
   cursor: grabbing;
 }
 
+.map :global(.maplibregl-marker:hover) {
+  z-index: 20;
+}
+
 .map :global(.maplibregl-ctrl-attrib) {
   background: transparent;
   color: #ffffff59;
@@ -82,7 +86,8 @@
   left: 0;
   display: block;
   width: 70px;
-  height: 90px;
+  /* Pin head floats above the rooftops on a thin stem, like the reference. */
+  height: calc(90px + var(--stem, 46px));
   padding: 0;
   border: 0;
   background: none;
@@ -91,7 +96,7 @@
 
 .body {
   position: absolute;
-  inset: 0;
+  inset: 0 0 var(--stem, 46px) 0;
   transform-origin: 50% 100%;
   transition: transform 0.45s cubic-bezier(0.3, 1.4, 0.5, 1);
   filter: drop-shadow(0 10px 14px #00000080);
@@ -124,6 +129,17 @@
   transform: translateY(-8px) scale(1.06);
 }
 
+/* Stem from the pin tip down to the exact location. */
+.pin::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 2px;
+  width: 1px;
+  height: var(--stem, 46px);
+  background: linear-gradient(to top, #ffffffcc, #ffffff00);
+}
+
 /* Soft contact shadow and pulse on the ground under the tip. */
 .ground {
   position: absolute;
@@ -149,8 +165,9 @@
 }
 
 .highlightPin {
+  --stem: 22px;
   width: 48px;
-  height: 62px;
+  height: calc(62px + var(--stem));
   cursor: default;
 }
 
@@ -177,7 +194,7 @@
 /* Labels sit above the pin and appear on hover (always in the overview). */
 .label {
   position: absolute;
-  bottom: calc(100% + 12px);
+  bottom: calc(100% + 10px);
   left: 50%;
   display: flex;
   align-items: center;
@@ -230,6 +247,10 @@
   transform: translate(-50%, -8px);
 }
 
+.root[data-mode="overview"] .projectPin {
+  --stem: 18px;
+}
+
 .root[data-mode="overview"] .projectPin .body {
   transform: scale(0.8);
 }
@@ -277,6 +298,18 @@
   animation: rise 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
+.root[data-landed="false"] .caption,
+.root[data-landed="false"] .filter,
+.root[data-landed="false"] .scrollHint {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.caption,
+.scrollHint {
+  transition: opacity 0.9s ease 0.2s;
+}
+
 .captionInner > *:nth-child(2) {
   animation-delay: 0.08s;
 }
@@ -301,8 +334,9 @@
 .title {
   margin-top: 6px;
   font-family: var(--font-display);
-  font-size: clamp(38px, 4.4vw, 64px);
-  font-weight: 400;
+  font-size: clamp(40px, 5vw, 76px);
+  font-weight: 300;
+  letter-spacing: 0.01em;
   line-height: 1.05;
   text-transform: uppercase;
 }
@@ -366,27 +400,63 @@
   background: var(--seu-cream);
 }
 
-.allButton {
-  display: flex;
+.allLink {
+  position: relative;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 7px 12px;
-  border-radius: 6px;
-  border: 1px solid #ffffff4d;
-  background: #ffffff0f;
-  font-size: 12px;
-  letter-spacing: 0.08em;
+  gap: 10px;
+  padding: 6px 0;
+  font-size: 13px;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  cursor: pointer;
-  transition:
-    background 0.25s,
-    border-color 0.25s;
+  color: var(--seu-fg);
 }
 
-.allButton:hover,
-.allButton[aria-pressed="true"] {
-  background: var(--seu-green);
-  border-color: var(--seu-green);
+.allLink::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 28px;
+  bottom: 0;
+  height: 1px;
+  background: currentColor;
+  transform-origin: right;
+  transition: transform 0.6s cubic-bezier(0.7, 0, 0.2, 1);
+}
+
+.allLink svg {
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.allLink:hover {
+  color: var(--seu-green-bright);
+}
+
+.allLink:hover::after {
+  animation: underline 0.9s cubic-bezier(0.7, 0, 0.2, 1);
+}
+
+.allLink:hover svg {
+  transform: translateX(6px);
+}
+
+@keyframes underline {
+  0% {
+    transform: scaleX(1);
+    transform-origin: right;
+  }
+  45% {
+    transform: scaleX(0);
+    transform-origin: right;
+  }
+  55% {
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  100% {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
 }
 
 .filter {

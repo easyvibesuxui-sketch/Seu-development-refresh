@@ -1,0 +1,20 @@
+.root {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.veil {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 55%, #c9d3cdcc, #6f7d76e6 60%, #15201d);
+}
+
+.sheet {
+  position: absolute;
+  background-size: cover;
+  will-change: transform, opacity;
+  filter: blur(2px);
+}

@@ -1,58 +1,119 @@
 "use client";
 
-import { useState } from "react";
-import Reveal from "@/components/ui/Reveal";
+import { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import LogoMark from "@/components/brand/LogoMark";
 import { withBase } from "@/data/projects";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const VIDEO_ID = "6dCWXfB7nvc";
 
+// Rings enter from different corners and settle on the centre, largest first.
+const RINGS = [
+  { size: "min(92vmin, 980px)", from: { xPercent: -60, yPercent: 35 }, dash: "4 9", dot: true },
+  { size: "min(72vmin, 760px)", from: { xPercent: 55, yPercent: -40 }, dash: "3 8", dot: false },
+  { size: "min(54vmin, 560px)", from: { xPercent: -30, yPercent: -55 }, dash: "2 7", dot: true },
+];
+
 export default function AboutCompany() {
+  const rootRef = useRef<HTMLElement>(null);
   const [playing, setPlaying] = useState(false);
 
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        defaults: { ease: "power2.out" },
+        scrollTrigger: { trigger: root, start: "top top", end: "+=160%", pin: true, scrub: 0.8 },
+      });
+
+      gsap.utils.toArray<HTMLElement>(".ac-ring").forEach((ring, i) => {
+        tl.fromTo(
+          ring,
+          { ...RINGS[i].from, scale: 0.35, opacity: 0 },
+          { xPercent: 0, yPercent: 0, scale: 1, opacity: 1, duration: 1 },
+          i * 0.55,
+        );
+      });
+
+      tl.fromTo(
+        ".ac-video",
+        { clipPath: "inset(48% 48% 48% 48% round 40px)", scale: 1.15, opacity: 0 },
+        { clipPath: "inset(0% 0% 0% 0% round 12px)", scale: 1, opacity: 1, duration: 1, ease: "power3.inOut" },
+        1.5,
+      )
+        .from(".ac-play", { scale: 0, opacity: 0, duration: 0.4, ease: "back.out(2)" }, 2.25)
+        .fromTo(".ac-left", { x: -80, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8 }, 1.9)
+        .fromTo(".ac-right", { x: 80, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8 }, 2.05)
+        // Asymmetric drift: the two text columns travel at different speeds and directions.
+        .to(".ac-left", { yPercent: -60, duration: 1.2, ease: "none" }, 2.7)
+        .to(".ac-right", { yPercent: 45, duration: 1.2, ease: "none" }, 2.7)
+        .to(".ac-stage", { yPercent: -6, duration: 1.2, ease: "none" }, 2.7)
+        .to(".ac-ring", { rotate: (i: number) => (i % 2 ? -25 : 25), duration: 3.9, ease: "none" }, 0);
+    }, root);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section id="about" className="relative overflow-hidden px-6 pb-40 pt-32">
-      <div className="flex items-start justify-between">
-        <Reveal as="h2" className="section-title">
+    <section id="about" ref={rootRef} className="relative isolate h-[100svh] min-h-[640px] overflow-hidden bg-seu-bg">
+      <div className="relative z-10 flex items-start justify-between px-6 pt-28">
+        <h2 className="section-title" data-split>
           About company.
-        </Reveal>
-        <Reveal variant="right" delay={150}>
-          <img src={withBase("/brand/logo-wire-green.svg")} alt="" className="slow-spin-y mr-[6vw] w-24 md:w-32" />
-        </Reveal>
+        </h2>
+        <span className="group mr-[6vw] hidden md:block">
+          <LogoMark className="w-24 overflow-visible md:w-28" />
+        </span>
       </div>
 
-      <div className="relative mx-auto mt-16 grid max-w-[1400px] items-center gap-10 md:grid-cols-[1fr_minmax(0,560px)_1fr]">
-        <Reveal variant="left" className="text-[15px] md:self-start md:pt-16">
-          Real estate market since 2014.
-        </Reveal>
+      <div className="ac-stage pointer-events-none absolute inset-0 grid place-items-center">
+        {RINGS.map((r, i) => (
+          <svg
+            key={i}
+            className="ac-ring absolute"
+            style={{ width: r.size, height: r.size }}
+            viewBox="0 0 200 200"
+            fill="none"
+            aria-hidden
+          >
+            <circle cx="100" cy="100" r="99" stroke="#f3efe9" strokeOpacity=".45" strokeWidth=".35" strokeDasharray={r.dash} />
+            {r.dot && <circle cx="100" cy="1" r="1.6" fill="#2ecc71" />}
+          </svg>
+        ))}
 
-        <div className="relative">
-          <Orbits />
-          <Reveal variant="mask" className="relative aspect-[16/9] overflow-hidden rounded-xl">
-            <img
-              src={withBase("/images/choose-varketili.jpg")}
-              alt="SEU Varketili aerial render"
-              className="h-full w-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-[#15201d] via-transparent to-[#15201d] opacity-80" />
-            <button
-              type="button"
-              onClick={() => setPlaying(true)}
-              aria-label="Play SEU Varketili video"
-              className="group absolute left-1/2 top-1/2 grid h-16 w-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-seu-green shadow-[0_0_40px_#0ea56b80] transition-transform duration-500 hover:scale-110"
-            >
-              <span className="absolute inset-0 animate-ping rounded-full bg-seu-green/40" />
-              <svg width="22" height="24" viewBox="0 0 22 24" fill="none" aria-hidden>
-                <path d="M3 2l17 10L3 22V2z" stroke="#fff" strokeWidth="2" strokeLinejoin="round" />
-              </svg>
-            </button>
-          </Reveal>
+        <div className="ac-video pointer-events-auto relative aspect-[16/9] w-[min(560px,72vw)] overflow-hidden rounded-xl">
+          <img
+            src={withBase("/images/choose-varketili.jpg")}
+            alt="SEU Varketili aerial render"
+            className="h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#15201d]/60 via-transparent to-transparent" />
+          <button
+            type="button"
+            onClick={() => setPlaying(true)}
+            aria-label="Play SEU Varketili video"
+            data-cursor="play"
+            className="ac-play absolute left-1/2 top-1/2 grid h-16 w-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-seu-green/90 shadow-[0_0_30px_#0ea56b55] transition-transform duration-500 hover:scale-110"
+          >
+            <span className="absolute inset-0 animate-ping rounded-full bg-seu-green/30" />
+            <svg width="22" height="24" viewBox="0 0 22 24" fill="none" aria-hidden>
+              <path d="M3 2l17 10L3 22V2z" stroke="#fff" strokeWidth="2" strokeLinejoin="round" />
+            </svg>
+          </button>
         </div>
-
-        <Reveal variant="right" delay={200} className="text-[15px] leading-relaxed md:self-start md:text-right">
-          The company&apos;s team, consisting of experienced professionals, cares about continuous development,
-          adheres to high construction standards and uses innovative technologies.
-        </Reveal>
       </div>
+
+      <p className="ac-left absolute left-6 top-[22%] z-10 max-w-[220px] text-[15px] md:top-[42%]">
+        Real estate market since 2014.
+      </p>
+      <p className="ac-right absolute bottom-[12%] right-6 z-10 max-w-[340px] text-right text-[15px] leading-relaxed md:bottom-auto md:top-[38%]">
+        The company&apos;s team, consisting of experienced professionals, cares about continuous development,
+        adheres to high construction standards and uses innovative technologies.
+      </p>
 
       {playing && (
         <div
@@ -81,28 +142,5 @@ export default function AboutCompany() {
         </div>
       )}
     </section>
-  );
-}
-
-/** Dashed concentric rings behind the video, slowly counter-rotating. */
-function Orbits() {
-  return (
-    <svg
-      className="pointer-events-none absolute left-1/2 top-1/2 -z-0 w-[150%] max-w-none -translate-x-1/2 -translate-y-1/2 opacity-60"
-      viewBox="0 0 800 800"
-      fill="none"
-      aria-hidden
-    >
-      <g className="orbit-cw" style={{ transformOrigin: "400px 400px" }}>
-        <circle cx="400" cy="400" r="390" stroke="#f3efe9" strokeDasharray="4 8" strokeWidth="1" />
-        <circle cx="400" cy="10" r="5" fill="#2ecc71" />
-      </g>
-      <g className="orbit-ccw" style={{ transformOrigin: "400px 400px" }}>
-        <circle cx="400" cy="400" r="320" stroke="#f3efe9" strokeDasharray="4 8" strokeWidth="1" />
-      </g>
-      <g className="orbit-cw" style={{ transformOrigin: "400px 400px", animationDuration: "140s" }}>
-        <circle cx="400" cy="400" r="250" stroke="#f3efe9" strokeDasharray="4 8" strokeWidth="1" />
-      </g>
-    </svg>
   );
 }
