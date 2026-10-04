@@ -4,10 +4,10 @@ import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import gsap from "gsap";
 import styles from "./Clouds.module.css";
 
-export type CloudsHandle = { part: (duration: number) => gsap.core.Timeline | null };
+export type CloudsHandle = { descend: (duration: number) => gsap.core.Timeline | null };
 
-/** Fractal value noise rendered once into a soft, tileable-looking cloud texture. */
-function cloudTexture(size = 384, seed = 1) {
+/** Fractal value noise rendered once into a soft cloud puff with faded edges. */
+function cloudTexture(size: number, seed: number) {
   const canvas = document.createElement("canvas");
   canvas.width = canvas.height = size;
   const ctx = canvas.getContext("2d");
@@ -16,7 +16,7 @@ function cloudTexture(size = 384, seed = 1) {
   let s = seed * 9301 + 49297;
   const rand = () => ((s = (s * 9301 + 49297) % 233280) / 233280);
   const lattice = Array.from({ length: grid * grid }, rand);
-  const at = (x: number, y: number) => lattice[((y % grid) + grid) % grid * grid + (((x % grid) + grid) % grid)];
+  const at = (x: number, y: number) => lattice[(((y % grid) + grid) % grid) * grid + (((x % grid) + grid) % grid)];
   const smooth = (t: number) => t * t * (3 - 2 * t);
   const noise = (x: number, y: number) => {
     const xi = Math.floor(x);
@@ -38,15 +38,13 @@ function cloudTexture(size = 384, seed = 1) {
         amp *= 0.5;
         freq *= 2;
       }
-      // Fade to the edges so each sheet reads as a cloud bank, not a square.
-      const dx = x / size - 0.5;
-      const dy = y / size - 0.5;
-      const falloff = Math.max(0, 1 - Math.hypot(dx, dy) * 2.1);
-      const alpha = Math.max(0, Math.min(1, (v - 0.38) * 2.6)) * falloff;
+      const d = Math.hypot(x / size - 0.5, y / size - 0.5) * 2;
+      const falloff = Math.max(0, 1 - d * d);
+      const alpha = Math.max(0, Math.min(1, (v - 0.32) * 2.4)) * falloff;
       const i = (y * size + x) * 4;
-      img.data[i] = 226;
-      img.data[i + 1] = 233;
-      img.data[i + 2] = 229;
+      img.data[i] = 232;
+      img.data[i + 1] = 236;
+      img.data[i + 2] = 231;
       img.data[i + 3] = alpha * 255;
     }
   }
@@ -54,52 +52,77 @@ function cloudTexture(size = 384, seed = 1) {
   return canvas.toDataURL("image/png");
 }
 
-const SHEETS = [
-  { x: -18, y: -10, size: 95, dir: [-1, -0.6], seed: 3 },
-  { x: 38, y: -18, size: 100, dir: [1, -0.7], seed: 7 },
-  { x: -25, y: 34, size: 105, dir: [-1, 0.6], seed: 11 },
-  { x: 40, y: 30, size: 100, dir: [1, 0.7], seed: 17 },
-  { x: 8, y: 6, size: 90, dir: [0, 1], seed: 23 },
+/*
+ * Two depths of cloud:
+ *  - "ring" banks circle the view, leaving a hole through which the city is seen from above;
+ *  - "near" wisps sit right in front of the camera and rush past as it descends.
+ * Positions are in vmax from the viewport centre.
+ */
+type Sheet = { kind: "ring" | "near"; x: number; y: number; size: number; seed: number; opacity: number };
+
+const SHEETS: Sheet[] = [
+  ...Array.from({ length: 9 }, (_, i): Sheet => {
+    const a = (i / 9) * Math.PI * 2 + 0.3;
+    return { kind: "ring", x: Math.cos(a) * 50, y: Math.sin(a) * 36, size: 52 + (i % 3) * 8, seed: 3 + i * 7, opacity: 0.95 };
+  }),
+  { kind: "near", x: -16, y: 8, size: 30, seed: 71, opacity: 0.4 },
+  { kind: "near", x: 18, y: -10, size: 26, seed: 83, opacity: 0.35 },
+  { kind: "near", x: 6, y: 16, size: 24, seed: 97, opacity: 0.3 },
 ];
 
 const Clouds = forwardRef<CloudsHandle>(function Clouds(_, ref) {
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const sheets = rootRef.current?.querySelectorAll<HTMLElement>(`.${styles.sheet}`);
-    sheets?.forEach((el, i) => {
-      el.style.backgroundImage = `url(${cloudTexture(384, SHEETS[i].seed)})`;
+    rootRef.current?.querySelectorAll<HTMLElement>(`.${styles.sheet}`).forEach((el, i) => {
+      el.style.backgroundImage = `url(${cloudTexture(320, SHEETS[i].seed)})`;
     });
   }, []);
 
   useImperativeHandle(ref, () => ({
-    part(duration) {
+    descend(duration) {
       const root = rootRef.current;
       if (!root) return null;
       const tl = gsap.timeline({ onComplete: () => root.remove() });
+      const vmax = Math.max(window.innerWidth, window.innerHeight) / 100;
       root.querySelectorAll<HTMLElement>(`.${styles.sheet}`).forEach((el, i) => {
-        const [dx, dy] = SHEETS[i].dir;
-        tl.to(
-          el,
-          { xPercent: dx * 70, yPercent: dy * 60, scale: 2.2, opacity: 0, duration, ease: "power2.inOut" },
-          i * 0.06,
-        );
+        const sheet = SHEETS[i];
+        if (sheet.kind === "near") {
+          // Wisps in front of the lens: accelerate towards the camera and burst past it.
+          tl.to(el, { scale: 7, opacity: 0, duration: duration * 0.7, ease: "power2.in" }, (i % 3) * 0.08);
+        } else {
+          // Banks spread outwards as the hole grows, then thin out once below them.
+          const k = 2.4;
+          tl.to(
+            el,
+            { x: sheet.x * k * vmax, y: sheet.y * k * vmax, scale: 3.2, duration, ease: "power2.inOut" },
+            (i % 3) * 0.05,
+          ).to(el, { opacity: 0, duration: duration * 0.45, ease: "power1.in" }, duration * 0.5);
+        }
       });
-      tl.to(root.querySelector(`.${styles.veil}`), { opacity: 0, duration: duration * 0.7, ease: "power1.out" }, 0);
+      tl.to(root.querySelector(`.${styles.vignette}`), { opacity: 0, duration: duration * 0.8 }, 0);
       return tl;
     },
   }));
 
   return (
     <div ref={rootRef} className={styles.root} aria-hidden>
-      <div className={styles.veil} />
       {SHEETS.map((s, i) => (
         <div
           key={i}
           className={styles.sheet}
-          style={{ left: `${s.x}%`, top: `${s.y}%`, width: `${s.size}vmax`, height: `${s.size}vmax` }}
+          data-kind={s.kind}
+          style={{
+            width: `${s.size}vmax`,
+            height: `${s.size}vmax`,
+            marginLeft: `${-s.size / 2}vmax`,
+            marginTop: `${-s.size / 2}vmax`,
+            transform: `translate(${s.x}vmax, ${s.y}vmax)`,
+            opacity: s.opacity,
+          }}
         />
       ))}
+      <div className={styles.vignette} />
     </div>
   );
 });

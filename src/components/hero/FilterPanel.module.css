@@ -96,7 +96,7 @@
 .search {
   padding: 5px 10px;
   border-radius: 4px;
-  background: var(--seu-green);
+  background: var(--seu-accent);
   letter-spacing: 0.08em;
   cursor: pointer;
   transition: filter 0.2s;

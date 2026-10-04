@@ -16,7 +16,7 @@ function NavLink({ label, pill }: { label: string; pill?: boolean }) {
       href="#"
       className={
         pill
-          ? "rounded-md border border-white/25 bg-white/10 px-3 py-1.5 text-[13px] tracking-[0.06em] backdrop-blur transition-colors hover:bg-seu-green"
+          ? "rounded-md border border-white/25 bg-white/10 px-3 py-1.5 text-[13px] tracking-[0.06em] backdrop-blur transition-colors hover:bg-seu-accent"
           : "text-[13px] tracking-[0.06em] transition-opacity hover:opacity-70"
       }
     >

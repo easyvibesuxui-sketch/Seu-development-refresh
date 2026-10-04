@@ -17,6 +17,10 @@
   --seu-muted: #a5aca8;
   --seu-green: #0ea56b;
   --seu-green-bright: #2ecc71;
+  /* Brown leather accent: buttons, pins, links, loader. Green stays for the logo. */
+  --seu-accent: #8b5a3c;
+  --seu-accent-hi: #b8835a;
+  --seu-accent-lo: #5a3823;
   --seu-lime: #c3d62f;
   --seu-blue: #1b4f72;
   --seu-reserved: #1690a8;
@@ -33,6 +37,9 @@
   --color-seu-muted: var(--seu-muted);
   --color-seu-green: var(--seu-green);
   --color-seu-green-bright: var(--seu-green-bright);
+  --color-seu-accent: var(--seu-accent);
+  --color-seu-accent-hi: var(--seu-accent-hi);
+  --color-seu-accent-lo: var(--seu-accent-lo);
   --font-sans: "Montserrat Variable", "BPG Rioni Contrast", system-ui, sans-serif;
   --font-display: "Jost Variable", "BPG Rioni Contrast", "Helvetica Neue", sans-serif;
 }
@@ -226,7 +233,7 @@ html.is-loading body {
   font-weight: 200;
   font-size: clamp(96px, 16vw, 240px);
   line-height: 0.85;
-  color: #2ecc71;
+  color: var(--seu-accent-hi);
   font-variant-numeric: tabular-nums;
 }
 

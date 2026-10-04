@@ -101,9 +101,9 @@ export default function HeroMap() {
         container: containerRef.current,
         style: createMapStyle(),
         center: first.coords,
-        zoom: 11.6,
-        pitch: 15,
-        bearing: -70,
+        zoom: 12.2,
+        pitch: 0,
+        bearing: -50,
         maxPitch: 72,
         maxBounds: TBILISI_BOUNDS,
         attributionControl: { compact: true },
@@ -146,10 +146,13 @@ export default function HeroMap() {
       });
 
       let hasLanded = false;
+      let styleReady = false;
+      let startTraffic = () => {};
       const land = () => {
         if (cancelled || hasLanded) return;
+        if (!styleReady) return; // the "load" handler lands once the style is in
         hasLanded = true;
-        cloudsRef.current?.part(reduceMotion ? 0.6 : INTRO_SECONDS * 0.8);
+        cloudsRef.current?.descend(reduceMotion ? 0.6 : INTRO_SECONDS);
         map.flyTo({
           center: first.coords,
           zoom: PROJECT_ZOOM,
@@ -160,7 +163,10 @@ export default function HeroMap() {
           curve: 1.2,
           essential: true,
         });
-        map.once("moveend", () => setLanded(true));
+        map.once("moveend", () => {
+          setLanded(true);
+          startTraffic();
+        });
       };
 
       map.on("load", () => {
@@ -193,20 +199,25 @@ export default function HeroMap() {
           type: "fill-extrusion",
           source: "seu-towers",
           paint: {
-            "fill-extrusion-color": "#3fbf86",
+            "fill-extrusion-color": "#b8835a",
             "fill-extrusion-height": ["get", "height"],
             "fill-extrusion-opacity": 0.92,
             "fill-extrusion-vertical-gradient": true,
           },
         });
 
+        // Cars start only after landing: their per-frame updates keep the map from ever
+        // reporting "idle", which the intro handshake relies on.
         const traffic = createTraffic(map);
-        if (!reduceMotion) traffic.start();
         cleanups.push(() => traffic.destroy());
-        // Pause the car animation while the hero is scrolled out of view.
+        let heroVisible = true;
+        startTraffic = () => {
+          if (!reduceMotion && heroVisible) traffic.start();
+        };
         const io = new IntersectionObserver(([entry]) => {
-          if (reduceMotion) return;
-          if (entry.isIntersecting) traffic.start();
+          heroVisible = entry.isIntersecting;
+          if (!hasLanded || reduceMotion) return;
+          if (heroVisible) traffic.start();
           else traffic.stop();
         });
         if (rootRef.current) io.observe(rootRef.current);
@@ -225,15 +236,21 @@ export default function HeroMap() {
         }
 
         setReady(true);
-        map.once("idle", () => {
+        styleReady = true;
+        if (introStarted()) land();
+        // Tell the preloader once the first tiles are drawn (or after a grace period on slow networks).
+        let announced = false;
+        const announce = () => {
+          if (announced || cancelled) return;
+          announced = true;
           markMapReady();
-          if (introStarted()) land();
-        });
+        };
+        map.once("idle", announce);
+        const grace = window.setTimeout(announce, 5000);
+        cleanups.push(() => window.clearTimeout(grace));
       });
 
-      const onIntro = () => {
-        if (map.loaded()) land();
-      };
+      const onIntro = () => land();
       window.addEventListener(INTRO_EVENT, onIntro);
       cleanups.push(() => window.removeEventListener(INTRO_EVENT, onIntro));
     })();

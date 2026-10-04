@@ -39,7 +39,7 @@ export function createProjectPin(project: MappedProject, onClick: () => void) {
   el.innerHTML = `
     <span class="${styles.ground}"><span class="${styles.pulse}"></span></span>
     <span class="${styles.body}">
-      ${drop(`drop-${project.id}`, ongoing ? "#3ee08d" : "#f3efe9", ongoing ? "#0a6f47" : "#9c968a")}
+      ${drop(`drop-${project.id}`, ongoing ? "#c99268" : "#f3efe9", ongoing ? "#5a3823" : "#9c968a")}
       <img class="${styles.logo}" src="${withBase("/brand/logo-wire.svg")}" alt="" />
     </span>
     <span class="${styles.label}">

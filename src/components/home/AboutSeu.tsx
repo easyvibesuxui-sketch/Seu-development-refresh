@@ -59,7 +59,7 @@ export default function AboutSeu() {
             <div>
               <a
                 href="#contact"
-                className="mt-6 inline-block rounded bg-seu-green px-10 py-3 text-[14px] tracking-[0.08em] text-white transition hover:brightness-110"
+                className="mt-6 inline-block rounded bg-seu-accent px-10 py-3 text-[14px] tracking-[0.08em] text-white transition hover:brightness-110"
               >
                 CONTACT
               </a>

@@ -14,7 +14,7 @@ export default function Partners() {
         {row.map((p, i) => (
           <div
             key={`${p.id}-${i}`}
-            className="grid h-24 w-60 shrink-0 place-items-center rounded-lg border border-white/40 px-6 grayscale transition hover:border-seu-green hover:grayscale-0"
+            className="grid h-24 w-60 shrink-0 place-items-center rounded-lg border border-white/40 px-6 grayscale transition hover:border-seu-accent hover:grayscale-0"
           >
             <img src={withBase(p.logo)} alt={p.name} className="max-h-10 w-auto mix-blend-screen" />
           </div>

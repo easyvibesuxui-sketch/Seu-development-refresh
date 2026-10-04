@@ -83,7 +83,7 @@ function WideProject({ project }: { project: Project }) {
           <a
             href="#"
             aria-label={`Explore ${project.name}`}
-            className="grid h-11 w-11 place-items-center rounded bg-seu-green transition-transform hover:scale-110"
+            className="grid h-11 w-11 place-items-center rounded bg-seu-accent transition-transform hover:scale-110"
           >
             <BuildingSearchIcon />
           </a>

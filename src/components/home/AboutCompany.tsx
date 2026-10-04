@@ -81,7 +81,7 @@ export default function AboutCompany() {
             aria-hidden
           >
             <circle cx="100" cy="100" r="99" stroke="#f3efe9" strokeOpacity=".45" strokeWidth=".35" strokeDasharray={r.dash} />
-            {r.dot && <circle cx="100" cy="1" r="1.6" fill="#2ecc71" />}
+            {r.dot && <circle cx="100" cy="1" r="1.6" fill="#b8835a" />}
           </svg>
         ))}
 
@@ -97,9 +97,9 @@ export default function AboutCompany() {
             onClick={() => setPlaying(true)}
             aria-label="Play SEU Varketili video"
             data-cursor="play"
-            className="ac-play absolute left-1/2 top-1/2 grid h-16 w-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-seu-green/90 shadow-[0_0_30px_#0ea56b55] transition-transform duration-500 hover:scale-110"
+            className="ac-play absolute left-1/2 top-1/2 grid h-16 w-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-seu-accent/90 shadow-[0_0_30px_#8b5a3c66] transition-transform duration-500 hover:scale-110"
           >
-            <span className="absolute inset-0 animate-ping rounded-full bg-seu-green/30" />
+            <span className="absolute inset-0 animate-ping rounded-full bg-seu-accent/30" />
             <svg width="22" height="24" viewBox="0 0 22 24" fill="none" aria-hidden>
               <path d="M3 2l17 10L3 22V2z" stroke="#fff" strokeWidth="2" strokeLinejoin="round" />
             </svg>

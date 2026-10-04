@@ -17,7 +17,7 @@ export const palette = {
   roadMajor: "#2e3a35",
   roadHighway: "#3a4741",
   streetGlow: "#f5c98a",
-  seu: "#0ea56b",
+  seu: "#b8835a",
 };
 
 const buildingTones = ["#efe7da", "#e2d6c3", "#d6cab6", "#f4efe6", "#cbbfac", "#e9dccb", "#ddd3c6"];

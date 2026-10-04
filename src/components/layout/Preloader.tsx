@@ -95,9 +95,9 @@ function Ornament() {
     <svg className="pl-ornament" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" fill="none" aria-hidden>
       <defs>
         <linearGradient id="pl-stroke" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#0ea56b" stopOpacity="0" />
-          <stop offset="0.5" stopColor="#2ecc71" stopOpacity="0.9" />
-          <stop offset="1" stopColor="#0ea56b" stopOpacity="0" />
+          <stop offset="0" stopColor="#8b5a3c" stopOpacity="0" />
+          <stop offset="0.5" stopColor="#c99268" stopOpacity="0.9" />
+          <stop offset="1" stopColor="#8b5a3c" stopOpacity="0" />
         </linearGradient>
       </defs>
       <g stroke="url(#pl-stroke)" strokeWidth="1">

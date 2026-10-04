@@ -156,7 +156,7 @@
   position: absolute;
   inset: -6px -10px;
   border-radius: 50%;
-  border: 1.5px solid var(--seu-green-bright);
+  border: 1.5px solid var(--seu-accent-hi);
   animation: pulse 2.4s ease-out infinite;
 }
 
@@ -221,7 +221,7 @@
 .chip {
   padding: 2px 6px;
   border-radius: 4px;
-  background: var(--seu-green);
+  background: var(--seu-accent);
   font-size: 10px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -361,7 +361,7 @@
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: var(--seu-green);
+  background: var(--seu-accent);
 }
 
 .legend span[data-status="finished"]::before {
@@ -429,7 +429,7 @@
 }
 
 .allLink:hover {
-  color: var(--seu-green-bright);
+  color: var(--seu-accent-hi);
 }
 
 .allLink:hover::after {

@@ -12,7 +12,7 @@ export default function Footer() {
     <footer>
       <nav className="flex flex-wrap justify-center gap-x-[8vw] gap-y-4 border-t border-white/10 px-6 py-7 text-[13px] tracking-[0.18em]">
         {nav.map((item) => (
-          <a key={item} href="#" className="transition-colors hover:text-seu-green-bright">
+          <a key={item} href="#" className="transition-colors hover:text-seu-accent-hi">
             {item}
           </a>
         ))}

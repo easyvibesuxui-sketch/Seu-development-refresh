@@ -19,7 +19,7 @@ export default function ContactSection() {
           Requests Call.
         </h2>
         {sent ? (
-          <p className="mt-10 text-lg text-seu-green-bright">Thank you! A sales manager will contact you shortly.</p>
+          <p className="mt-10 text-lg text-seu-accent-hi">Thank you! A sales manager will contact you shortly.</p>
         ) : (
           <form
             className="mt-10 max-w-md space-y-8"
@@ -36,14 +36,14 @@ export default function ContactSection() {
                   required={f.required}
                   placeholder={f.label}
                   aria-label={f.label}
-                  className="h-11 w-full rounded-md border border-white/60 bg-white/15 px-3 text-[14px] outline-none transition placeholder:text-white/80 focus:border-seu-green focus:bg-white/20"
+                  className="h-11 w-full rounded-md border border-white/60 bg-white/15 px-3 text-[14px] outline-none transition placeholder:text-white/80 focus:border-seu-accent focus:bg-white/20"
                 />
               </Reveal>
             ))}
             <Reveal delay={260}>
               <button
                 type="submit"
-                className="rounded-md bg-seu-green px-10 py-3 text-[14px] tracking-[0.08em] transition hover:brightness-110"
+                className="rounded-md bg-seu-accent px-10 py-3 text-[14px] tracking-[0.08em] transition hover:brightness-110"
               >
                 CONTACT
               </button>
@@ -58,10 +58,10 @@ export default function ContactSection() {
         </h2>
         <Reveal delay={120} className="mt-10 rounded-lg bg-[#13241e] p-5">
           <div className="flex flex-wrap gap-x-10 gap-y-2 text-[14px]">
-            <a href="mailto:info@seudevelopment.ge" className="hover:text-seu-green-bright">
+            <a href="mailto:info@seudevelopment.ge" className="hover:text-seu-accent-hi">
               ✉ Info@Seudevelopment.ge
             </a>
-            <a href="tel:+995596707070" className="text-seu-muted hover:text-seu-green-bright">
+            <a href="tel:+995596707070" className="text-seu-muted hover:text-seu-accent-hi">
               ☏ +995 596 70 70 70
             </a>
           </div>
@@ -72,7 +72,7 @@ export default function ContactSection() {
             className="group relative mt-5 block h-56 overflow-hidden rounded-lg border border-white/40 bg-[#262a28]"
           >
             <MapSketch />
-            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-full text-seu-green-bright transition-transform group-hover:-translate-y-[120%]">
+            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-full text-seu-accent-hi transition-transform group-hover:-translate-y-[120%]">
               <svg width="18" height="26" viewBox="0 0 18 26" fill="none" aria-hidden>
                 <path d="M9 25s8-9.5 8-15A8 8 0 0 0 1 10c0 5.5 8 15 8 15z" stroke="currentColor" strokeWidth="1.6" />
                 <circle cx="9" cy="10" r="3" stroke="currentColor" strokeWidth="1.6" />

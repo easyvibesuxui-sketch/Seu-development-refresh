@@ -6,15 +6,21 @@
   pointer-events: none;
 }
 
-.veil {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse at 50% 55%, #c9d3cdcc, #6f7d76e6 60%, #15201d);
-}
-
 .sheet {
   position: absolute;
+  top: 50%;
+  left: 50%;
   background-size: cover;
   will-change: transform, opacity;
-  filter: blur(2px);
+}
+
+.sheet[data-kind="near"] {
+  filter: blur(3px);
+}
+
+/* Haze toward the edges so the hole in the clouds reads as depth, not a cut-out. */
+.vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 46% 42% at 50% 50%, transparent 55%, #dfe5e066 80%, #c9d1ccd9 100%);
 }
