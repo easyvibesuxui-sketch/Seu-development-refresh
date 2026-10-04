@@ -1,6 +1,7 @@
 .root {
-  --dome-top: 20%;
-  --dome-rx: 85%;
+  --dome-top: 8%;
+  --hero-bottom: 48px;
+  --dome-rx: 95%;
   position: relative;
   width: 100%;
   height: 100svh;
@@ -18,12 +19,12 @@
   inset: 0;
   -webkit-mask-image: radial-gradient(
     ellipse var(--dome-rx) calc(100% - var(--dome-top)) at 50% 100%,
-    #000 96%,
+    #000 72%,
     transparent 100%
   );
   mask-image: radial-gradient(
     ellipse var(--dome-rx) calc(100% - var(--dome-top)) at 50% 100%,
-    #000 96%,
+    #000 72%,
     transparent 100%
   );
 }
@@ -62,21 +63,6 @@
   color: inherit;
 }
 
-/* Thin atmosphere glow along the horizon of the dome. */
-.rim {
-  position: absolute;
-  left: calc(50% - var(--dome-rx));
-  top: var(--dome-top);
-  width: calc(2 * var(--dome-rx));
-  height: calc(2 * (100% - var(--dome-top)));
-  border-radius: 50%;
-  pointer-events: none;
-  box-shadow:
-    0 -1px 0 #ffffff1f,
-    0 -18px 60px -20px #0ea56b40,
-    inset 0 30px 60px -30px #15201d;
-}
-
 /* Darken the bottom of the hero so the captions read like in the design. */
 .root::after {
   content: "";
@@ -90,96 +76,122 @@
 /* ---------- Pins ---------- */
 
 .pin {
-  position: relative;
-  display: block;
-  padding: 0 0 10px;
-  cursor: pointer;
-  background: none;
-  border: 0;
-}
-
-.root[data-mode="project"] .pin:not(:hover) {
-  z-index: 0;
-}
-
-.badge {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  place-items: center;
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: #0e1a16e6;
-  border: 2px solid var(--seu-green);
-  box-shadow: 0 0 26px #0ea56b80;
-  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.badge img {
-  width: 30px;
-  height: auto;
-}
-
-.badge::after {
-  content: "";
+  /* MapLibre positions markers absolutely via transform; keep that. */
   position: absolute;
-  bottom: -10px;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 70px;
+  height: 90px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.body {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 100%;
+  transition: transform 0.45s cubic-bezier(0.3, 1.4, 0.5, 1);
+  filter: drop-shadow(0 10px 14px #00000080);
+}
+
+.drop {
+  width: 100%;
+  height: 100%;
+}
+
+.logo {
+  position: absolute;
+  top: 21px;
   left: 50%;
-  width: 2px;
-  height: 10px;
-  background: var(--seu-green);
+  width: 32px;
   transform: translateX(-50%);
 }
 
-.pin:hover .badge {
-  transform: translateY(-4px) scale(1.08);
+.icon {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  width: 22px;
+  height: 22px;
+  color: var(--seu-cream);
+  transform: translateX(-50%);
+}
+
+.pin:hover .body {
+  transform: translateY(-8px) scale(1.06);
+}
+
+/* Soft contact shadow and pulse on the ground under the tip. */
+.ground {
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  width: 34px;
+  height: 12px;
+  margin-left: -17px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, #000000a6, transparent);
 }
 
 .pulse {
   position: absolute;
-  top: 0;
-  left: 50%;
-  width: 52px;
-  height: 52px;
-  margin-left: -26px;
+  inset: -6px -10px;
   border-radius: 50%;
-  border: 1px solid var(--seu-green);
+  border: 1.5px solid var(--seu-green-bright);
   animation: pulse 2.4s ease-out infinite;
 }
 
-.pin[data-status="finished"] .badge {
-  border-color: var(--seu-cream);
-  box-shadow: 0 0 18px #f3efe940;
-}
-
-.pin[data-status="finished"] .badge::after,
 .pin[data-status="finished"] .pulse {
-  background: var(--seu-cream);
   border-color: var(--seu-cream);
 }
 
-.pin[data-status="finished"] .pulse {
-  background: none;
+.highlightPin {
+  width: 48px;
+  height: 62px;
+  cursor: default;
 }
 
+/* MapLibre writes inline opacity on the marker itself, so visibility lives on the children. */
+.highlightPin > * {
+  transition: opacity 0.6s;
+}
+
+.highlightPin .icon {
+  top: 12px;
+  width: 20px;
+  height: 20px;
+  color: var(--seu-cream);
+}
+
+.highlightPin[data-visible="false"] {
+  pointer-events: none;
+}
+
+.highlightPin[data-visible="false"] > * {
+  opacity: 0;
+}
+
+/* Labels sit above the pin and appear on hover (always in the overview). */
 .label {
   position: absolute;
-  top: 50%;
-  left: calc(100% + 12px);
+  bottom: calc(100% + 12px);
+  left: 50%;
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 5px 6px 5px 10px;
   border-radius: 6px;
-  background: #0e1a16d9;
+  background: #0e1a16e6;
   border: 1px solid #ffffff26;
   white-space: nowrap;
   opacity: 0;
-  transform: translate(-6px, -50%);
+  transform: translate(-50%, 6px);
   transition:
     opacity 0.35s,
-    transform 0.35s;
+    transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
   pointer-events: none;
 }
 
@@ -203,34 +215,50 @@
   color: #15201d;
 }
 
+.distance {
+  color: var(--seu-muted);
+  font-size: 11px;
+}
+
 .pin:hover .label,
-.root[data-mode="overview"] .label {
+.root[data-mode="overview"] .projectPin .label {
   opacity: 1;
-  transform: translate(0, -50%);
+  transform: translate(-50%, 0);
 }
 
-.root[data-mode="overview"] .badge {
-  width: 40px;
-  height: 40px;
+.root[data-mode="overview"] .pin:hover .label {
+  transform: translate(-50%, -8px);
 }
 
-.root[data-mode="overview"] .badge img {
-  width: 22px;
+.root[data-mode="overview"] .projectPin .body {
+  transform: scale(0.8);
 }
 
-.root[data-mode="overview"] .pulse {
-  width: 40px;
-  height: 40px;
-  margin-left: -20px;
+.root[data-mode="overview"] .projectPin:hover .body {
+  transform: translateY(-6px) scale(0.86);
+}
+
+/* `translate` composes with the transform MapLibre sets on the marker. */
+.root[data-mode="overview"] .projectPin {
+  translate: var(--spread-x, 0) 0;
+}
+
+.projectPin {
+  transition: translate 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.root[data-mode="overview"] .projectPin[data-label-overview="below"] .label {
+  bottom: auto;
+  top: calc(100% + 14px);
 }
 
 @keyframes pulse {
   from {
-    transform: scale(1);
+    transform: scale(0.6);
     opacity: 0.9;
   }
   to {
-    transform: scale(2.4);
+    transform: scale(2.6);
     opacity: 0;
   }
 }
@@ -240,7 +268,7 @@
 .caption {
   position: absolute;
   left: 24px;
-  bottom: 56px;
+  bottom: var(--hero-bottom);
   z-index: 2;
   max-width: calc(100% - 48px);
 }
@@ -364,7 +392,7 @@
 .filter {
   position: absolute;
   right: 24px;
-  bottom: 140px;
+  bottom: var(--hero-bottom);
   z-index: 2;
 }
 
@@ -441,17 +469,15 @@
 
 @media (max-width: 900px) {
   .root {
-    --dome-top: 16%;
-    --dome-rx: 170%;
+    --dome-top: 6%;
+    --dome-rx: 200%;
+    --hero-bottom: 72px;
   }
 
   .filter {
     display: none;
   }
 
-  .caption {
-    bottom: 72px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

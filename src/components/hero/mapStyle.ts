@@ -1,19 +1,19 @@
 import type { StyleSpecification } from "maplibre-gl";
 import type { MappedProject } from "@/data/projects";
 
-// Sampled from the hero of the design: warm grey city, olive parks, slate river,
-// fading into the dark green page background at the horizon.
+// Light buildings on a ground that matches the page background, deep navy water.
 const palette = {
   bg: "#15201d",
-  land: "#45463f",
-  park: "#4d5340",
-  water: "#2c4652",
-  waterLine: "#35525f",
-  roadMinor: "#5b5a53",
-  roadMajor: "#6c6b63",
-  roadHighway: "#7b7a71",
-  buildingLow: "#7d7c75",
-  buildingHigh: "#b9b7ae",
+  // Ground shares the page colour so the city melts into the background, as in the reference.
+  land: "#15201d",
+  park: "#1b2e24",
+  water: "#0f3446",
+  waterLine: "#164257",
+  roadMinor: "#24302b",
+  roadMajor: "#2f3d37",
+  roadHighway: "#3a4943",
+  buildingLow: "#8c8a83",
+  buildingHigh: "#d2cfc6",
   seu: "#0ea56b",
 };
 
@@ -28,9 +28,9 @@ export function createMapStyle(): StyleSpecification {
       "sky-color": palette.bg,
       "horizon-color": palette.bg,
       "fog-color": palette.bg,
-      "sky-horizon-blend": 0.8,
-      "horizon-fog-blend": 0.6,
-      "fog-ground-blend": 0.2,
+      "sky-horizon-blend": 1,
+      "horizon-fog-blend": 0.8,
+      "fog-ground-blend": 0.35,
     },
     layers: [
       { id: "background", type: "background", paint: { "background-color": palette.land } },
@@ -115,7 +115,7 @@ export function createMapStyle(): StyleSpecification {
           // Most Tbilisi buildings lack height tags, so give them a believable minimum.
           "fill-extrusion-height": ["max", ["coalesce", ["get", "render_height"], 0], 9],
           "fill-extrusion-base": ["coalesce", ["get", "render_min_height"], 0],
-          "fill-extrusion-opacity": 0.95,
+          "fill-extrusion-opacity": 1,
           "fill-extrusion-vertical-gradient": true,
         },
       },

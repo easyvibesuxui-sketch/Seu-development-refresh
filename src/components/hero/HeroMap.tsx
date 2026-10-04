@@ -3,9 +3,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { LngLatBoundsLike, Map as MapLibreMap, Marker } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { mappedProjects, statusLabel, withBase, type MappedProject } from "@/data/projects";
+import { distanceKm, highlights, mappedProjects, statusLabel, withBase, type MappedProject } from "@/data/projects";
 import { createMapStyle, projectTowers, seuColor } from "./mapStyle";
 import FilterPanel from "./FilterPanel";
+import { createHighlightPin, createProjectPin } from "./pins";
 import styles from "./HeroMap.module.css";
 
 type Mode = "project" | "overview";
@@ -14,8 +15,8 @@ const TBILISI_BOUNDS: LngLatBoundsLike = [
   [44.58, 41.6],
   [45.05, 41.84],
 ];
-const PROJECT_ZOOM = 15.3;
-const PROJECT_PITCH = 62;
+const PROJECT_ZOOM = 14.2;
+const PROJECT_PITCH = 60;
 const ORBIT_DEG_PER_SEC = 2.2;
 const RESUME_ORBIT_AFTER_MS = 4000;
 
@@ -71,7 +72,7 @@ export default function HeroMap() {
       ],
     );
     const camera = map.cameraForBounds(bounds, {
-      padding: { top: 220, bottom: 260, left: 160, right: 160 },
+      padding: { top: 340, bottom: 240, left: 200, right: 200 },
       pitch: 48,
       bearing: -12,
     });
@@ -184,26 +185,14 @@ export default function HeroMap() {
         });
 
         for (const project of mappedProjects) {
-          const el = document.createElement("button");
-          el.type = "button";
-          el.className = styles.pin;
-          el.dataset.project = project.id;
-          el.dataset.status = project.status;
-          el.setAttribute("aria-label", project.name);
-          el.innerHTML = `
-            <span class="${styles.pulse}"></span>
-            <span class="${styles.badge}"><img src="${withBase("/brand/logo-wire.svg")}" alt="" /></span>
-            <span class="${styles.label}">
-              <span class="${styles.labelName}">${project.name}</span>
-              <span class="${styles.chip}">${statusLabel[project.status]}</span>
-            </span>`;
-          el.addEventListener("click", (event) => {
-            event.stopPropagation();
-            goToProject(project);
-          });
-          markers.push(
-            new maplibre.Marker({ element: el, anchor: "bottom" }).setLngLat(project.coords).addTo(map),
-          );
+          const el = createProjectPin(project, () => goToProject(project));
+          markers.push(new maplibre.Marker({ element: el, anchor: "bottom", opacityWhenCovered: 1 }).setLngLat(project.coords).addTo(map));
+        }
+        for (const highlight of highlights) {
+          const owner = mappedProjects.find((p) => p.id === highlight.project);
+          if (!owner) continue;
+          const el = createHighlightPin(highlight, distanceKm(owner.coords, highlight.coords));
+          markers.push(new maplibre.Marker({ element: el, anchor: "bottom", opacityWhenCovered: 1 }).setLngLat(highlight.coords).addTo(map));
         }
 
         setReady(true);
@@ -233,12 +222,18 @@ export default function HeroMap() {
     };
   }, [goToProject]);
 
+  // Landmarks only accompany their own project, never the city overview.
+  useEffect(() => {
+    rootRef.current?.querySelectorAll<HTMLElement>(`.${styles.highlightPin}`).forEach((el) => {
+      el.dataset.visible = String(mode === "project" && el.dataset.project === active.id);
+    });
+  }, [mode, active, ready]);
+
   return (
     <section ref={rootRef} className={styles.root} data-mode={mode} data-active={active.id}>
       <div className={styles.dome}>
         <div ref={containerRef} className={`${styles.map} ${ready ? styles.mapReady : ""}`} />
       </div>
-      <div className={styles.rim} aria-hidden />
 
       <div className={styles.caption}>
         {mode === "project" ? (
