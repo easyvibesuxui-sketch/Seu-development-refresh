@@ -9,7 +9,7 @@ const finished = projects.filter((p) => p.status === "finished");
 export default function ProjectsSections() {
   return (
     <div id="projects">
-      <section className="pb-40 pt-40">
+      <section className="pb-40 pt-40" data-section-out>
         <h2 className="section-title px-6 md:px-12" data-split>
           Ongoing.
         </h2>
@@ -20,7 +20,7 @@ export default function ProjectsSections() {
         </div>
       </section>
 
-      <section className="px-6 pb-48 md:px-12">
+      <section className="px-6 pb-48 md:px-12" data-section-out>
         <h2 className="section-title uppercase" data-split>
           Upcoming.
         </h2>
@@ -41,7 +41,7 @@ export default function ProjectsSections() {
         </div>
       </section>
 
-      <section className="px-6 pb-48 md:px-12">
+      <section className="px-6 pb-48 md:px-12" data-section-out>
         <h2 className="section-title uppercase" data-split>
           Finished.
         </h2>
@@ -64,7 +64,7 @@ export default function ProjectsSections() {
 function WideProject({ project }: { project: Project }) {
   return (
     <article className="group relative">
-      <Reveal variant="mask" className="relative h-[78vh] min-h-[460px] overflow-hidden">
+      <div className="relative h-[78vh] min-h-[460px] overflow-hidden" data-window>
         <div className="absolute inset-0" data-zoom>
           <img
             src={withBase(project.image)}
@@ -72,8 +72,9 @@ function WideProject({ project }: { project: Project }) {
             className="h-full w-full object-cover transition-transform duration-[2s] group-hover:scale-105"
           />
         </div>
+        <div className="sunbeams sunbeams--soft" />
         <div className="absolute inset-0 bg-gradient-to-b from-[#15201d]/70 via-transparent via-35% to-[#15201d]/90" />
-      </Reveal>
+      </div>
       <div className="absolute inset-x-6 bottom-10 flex flex-wrap items-end justify-between gap-6 md:inset-x-12">
         <Reveal>
           <StatusLine project={project} />

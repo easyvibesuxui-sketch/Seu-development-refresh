@@ -185,7 +185,7 @@ export function VirtualTour({ videoId }: { videoId: string }) {
       <h2 className="section-title px-6 md:px-12" data-split>
         Virtual Tour.
       </h2>
-      <div className="relative mt-14 h-[70vh] min-h-[420px] overflow-hidden" data-cursor="play">
+      <div className="relative mt-14 h-[70vh] min-h-[420px] overflow-hidden" data-cursor="play" data-window>
         {playing ? (
           <iframe
             className="h-full w-full"
@@ -197,9 +197,10 @@ export function VirtualTour({ videoId }: { videoId: string }) {
         ) : (
           <button type="button" onClick={() => setPlaying(true)} className="group absolute inset-0" aria-label="Play virtual tour">
             <div className="absolute inset-0" data-zoom>
-              <img src={withBase("/images/choose-varketili.jpg")} alt="" className="h-full w-full object-cover" />
+              <img src={withBase("/images/sun-interior.jpg")} alt="" className="h-full w-full object-cover" />
             </div>
-            <div className="absolute inset-0 bg-gradient-to-b from-[#15201d] via-transparent to-[#15201d]" />
+            <div className="sunbeams" />
+            <div className="absolute inset-0 bg-gradient-to-b from-[#15201d]/80 via-transparent to-[#15201d]/80" />
             <span className="absolute left-1/2 top-1/2 grid h-20 w-20 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-seu-accent/90 shadow-[0_0_40px_#8b5a3c80] transition-transform duration-500 group-hover:scale-110">
               <svg width="26" height="28" viewBox="0 0 22 24" fill="none" className="ml-1" aria-hidden>
                 <path d="M3 2l17 10L3 22V2z" stroke="#fff" strokeWidth="2" strokeLinejoin="round" />

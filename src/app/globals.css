@@ -41,7 +41,7 @@
   --color-seu-accent-hi: var(--seu-accent-hi);
   --color-seu-accent-lo: var(--seu-accent-lo);
   --font-sans: "Urbanist Variable", "BPG Rioni Contrast", system-ui, sans-serif;
-  --font-display: "Jost Variable", "BPG Rioni Contrast", "Helvetica Neue", sans-serif;
+  --font-display: "Sofia Sans Semi Condensed Variable", "BPG Rioni Contrast", "Helvetica Neue", sans-serif;
 }
 
 html {
@@ -130,7 +130,7 @@ body::before {
 
 .section-title {
   font-family: var(--font-display);
-  font-size: clamp(36px, 3.8vw, 60px);
+  font-size: clamp(40px, 4.4vw, 72px);
   font-weight: 300;
   line-height: 1.05;
   letter-spacing: 0.005em;
@@ -505,4 +505,87 @@ body:has(.presentation) .cursor {
   60% {
     transform: rotate(-5deg);
   }
+}
+
+/*
+ * Sunbeams: soft warm light shafts that drift slowly across a section, layered over photos
+ * and videos (or the page background) with `screen` so they only ever brighten.
+ */
+.sunbeams {
+  position: absolute;
+  inset: -10% -20%;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  background:
+    linear-gradient(112deg, transparent 18%, rgb(255 214 160 / 0.16) 22%, transparent 27%),
+    linear-gradient(112deg, transparent 31%, rgb(255 226 184 / 0.1) 33%, transparent 36%),
+    linear-gradient(112deg, transparent 44%, rgb(255 205 150 / 0.14) 49%, transparent 55%),
+    linear-gradient(112deg, transparent 62%, rgb(255 230 190 / 0.08) 64%, transparent 66%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 80% at 18% 0%, #000 0%, transparent 75%);
+  mask-image: radial-gradient(ellipse 70% 80% at 18% 0%, #000 0%, transparent 75%);
+  animation: sunbeams 16s ease-in-out infinite alternate;
+}
+
+.sunbeams::after {
+  content: "";
+  position: absolute;
+  left: 4%;
+  top: -12%;
+  width: 46%;
+  aspect-ratio: 1;
+  background: radial-gradient(circle, rgb(255 210 150 / 0.22), transparent 62%);
+  animation: sunglow 7s ease-in-out infinite alternate;
+}
+
+.sunbeams--soft {
+  opacity: 0.55;
+}
+
+@keyframes sunbeams {
+  from {
+    transform: translateX(-3%) skewX(0deg);
+    opacity: 0.75;
+  }
+  50% {
+    opacity: 1;
+  }
+  to {
+    transform: translateX(4%) skewX(-3deg);
+    opacity: 0.85;
+  }
+}
+
+@keyframes sunglow {
+  from {
+    opacity: 0.6;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sunbeams,
+  .sunbeams::after {
+    animation: none;
+  }
+}
+
+/* Outline words that slide sideways with the scroll. */
+.scroll-words {
+  font-family: var(--font-display);
+  font-weight: 200;
+  font-size: clamp(72px, 13vw, 220px);
+  line-height: 1;
+  white-space: nowrap;
+  text-transform: uppercase;
+  color: transparent;
+  -webkit-text-stroke: 1px rgb(243 239 233 / 0.28);
+}
+
+.scroll-words .is-solid {
+  color: var(--seu-accent-hi);
+  -webkit-text-stroke: 0;
 }

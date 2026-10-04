@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "@fontsource-variable/urbanist";
-import "@fontsource-variable/jost";
+import "@fontsource-variable/sofia-sans-semi-condensed";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";

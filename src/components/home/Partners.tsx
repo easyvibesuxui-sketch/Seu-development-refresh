@@ -15,7 +15,7 @@ function Tile({ name, logo }: { name: string; logo: string }) {
 export default function Partners({ variant = "marquee", subtitle }: { variant?: "marquee" | "grid"; subtitle?: string }) {
   if (variant === "grid") {
     return (
-      <section className="pb-40">
+      <section className="pb-40" data-section-out>
         <div className="bg-seu-cream px-6 pt-24 text-[#15201d] md:px-12">
           <h2 className="section-title translate-y-[0.18em] uppercase" data-split>
             Partners.
@@ -35,7 +35,7 @@ export default function Partners({ variant = "marquee", subtitle }: { variant?: 
 
   const row = [...partners, ...partners];
   return (
-    <section className="overflow-hidden pb-48">
+    <section className="overflow-hidden pb-48" data-section-out>
       <h2 className="section-title px-6 uppercase md:px-12" data-split>
         Partners.
       </h2>

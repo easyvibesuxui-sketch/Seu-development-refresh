@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { distanceKm, highlights, projects, withBase } from "@/data/projects";
+import AmbientVideo from "@/components/ui/AmbientVideo";
 
 const varketili = projects.find((p) => p.id === "varketili");
 const near = (id: string) => {
@@ -15,21 +16,21 @@ const TOPICS = [
     id: "infrastructure",
     title: "Infrastructure",
     text: `Varketili metro ${near("varketili-metro")}, Hualing Tbilisi Sea Plaza ${near("hualing-plaza")}, East Point ${near("east-point")} — shops, schools and the Tbilisi Sea are part of everyday life here.`,
-    image: "/images/varketili-panorama.jpg",
-    side: "/images/upcoming-2.jpg",
+    image: "/images/sun-aerial.jpg",
+    side: "/images/sun-balcony.jpg",
   },
   {
     id: "services",
     title: "Services",
     text: "A secure courtyard, a lobby at the entrance of every building, underground and surface parking, and retail and office space on site.",
-    image: "/images/finished-vaja.jpg",
-    side: "/images/upcoming-1.jpg",
+    image: "/images/sun-lobby.jpg",
+    side: "/images/sun-facade.jpg",
   },
   {
     id: "recreation",
     title: "Courtyard & recreation",
     text: "Up to two hectares of recreational space with playgrounds, sports grounds, tennis courts, a gym and a school within the complex.",
-    image: "/images/choose-varketili.jpg",
+    image: "/images/sun-courtyard.jpg",
     side: "/images/varketili-panorama.jpg",
   },
 ];
@@ -39,17 +40,26 @@ export default function Lifestyle() {
   const topic = TOPICS.find((t) => t.id === active) ?? TOPICS[0];
 
   return (
-    <section className="px-6 py-48 md:px-12">
-      <h2 className="text-center text-[clamp(40px,5.4vw,88px)] leading-none" data-split>
-        <span className="title-display uppercase" style={{ fontWeight: 600 }}>
-          A new way
-        </span>{" "}
-        <span className="title-display uppercase" style={{ fontWeight: 200 }}>
-          of living
-        </span>
-      </h2>
+    <section className="pb-48" data-section-out>
+      {/* Sunlit courtyard film behind the heading; it melts into the page at both edges. */}
+      <div className="relative grid h-[92svh] min-h-[560px] place-items-center overflow-hidden">
+        <div className="absolute inset-0" data-zoom>
+          <AmbientVideo name="courtyard-sun" className="h-full w-full object-cover" />
+        </div>
+        <div className="sunbeams" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgb(21_32_29/0.45),transparent_70%)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#16201d] via-transparent via-30% to-[#16201d]" />
+        <h2 className="relative px-6 text-center text-[clamp(44px,7vw,120px)] leading-[0.92]" data-split>
+          <span className="title-display uppercase" style={{ fontWeight: 600 }}>
+            A new way
+          </span>{" "}
+          <span className="title-display uppercase" style={{ fontWeight: 200 }}>
+            of living
+          </span>
+        </h2>
+      </div>
 
-      <div className="mt-20 grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+      <div className="relative -mt-16 grid gap-8 px-6 md:px-12 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <div className="relative aspect-[4/3] overflow-hidden lg:aspect-auto lg:min-h-[640px]">
           {TOPICS.map((t) => (
             <img

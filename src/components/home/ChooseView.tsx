@@ -111,7 +111,7 @@ export default function ChooseView() {
   const toggleRoom = (r: string) => setRooms((cur) => (cur.includes(r) ? cur.filter((x) => x !== r) : [...cur, r]));
 
   return (
-    <section id="choose-view" className="grid min-h-[100svh] md:grid-cols-[minmax(0,46%)_1fr]">
+    <section id="choose-view" className="grid min-h-[100svh] md:grid-cols-[minmax(0,46%)_1fr]" data-section-out>
       <form
         className="flex flex-col justify-center gap-14 px-6 py-32 md:px-12 lg:pr-16"
         onSubmit={(e) => {
