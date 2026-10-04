@@ -11,7 +11,7 @@ type Car = { road: Road; at: number; speed: number; forward: boolean };
 
 const SOURCE = "traffic";
 const ROAD_CLASSES = ["motorway", "trunk", "primary", "secondary", "tertiary"];
-const MAX_CARS = 260;
+const MAX_CARS = 720;
 const FRAME_MS = 33;
 const METERS_PER_DEG_LAT = 111_320;
 
@@ -93,10 +93,19 @@ export function createTraffic(map: MapLibreMap) {
     cars = [];
     if (!total) return;
     for (const road of roads) {
-      const count = Math.round((road.length / total) * MAX_CARS);
+      // At least one car per sampled road so side streets are alive too.
+      const count = Math.max(1, Math.round((road.length / total) * MAX_CARS));
       for (let i = 0; i < count; i++) {
-        cars.push({ road, at: Math.random() * road.length, speed: 9 + Math.random() * 9, forward: Math.random() > 0.5 });
+        cars.push({ road, at: Math.random() * road.length, speed: 7 + Math.random() * 6, forward: Math.random() > 0.5 });
       }
+    }
+    // Dense tiles can yield thousands of short segments; keep a random, bounded set.
+    if (cars.length > MAX_CARS) {
+      for (let i = cars.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [cars[i], cars[j]] = [cars[j], cars[i]];
+      }
+      cars.length = MAX_CARS;
     }
   };
 
@@ -106,7 +115,7 @@ export function createTraffic(map: MapLibreMap) {
     const dt = Math.min((now - last) / 1000, 0.1);
     last = now;
     // Visual speed is exaggerated so motion reads at city scale.
-    const boost = 6;
+    const boost = 2.2;
     const features: GeoJSON.Feature[] = cars.map((car) => {
       car.at += car.speed * boost * dt * (car.forward ? 1 : -1);
       if (car.at > car.road.length) car.at = 0;
