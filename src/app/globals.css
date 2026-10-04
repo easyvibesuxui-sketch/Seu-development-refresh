@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "BPG Rioni Contrast";
+  src: url("../fonts/bpg-rioni-contrast.woff2") format("woff2");
+  font-display: swap;
+  unicode-range: U+10A0-10FF, U+1C90-1CBF, U+2D00-2D2F;
+}
+
+:root {
+  --seu-bg: #16201d;
+  --seu-bg-deep: #0f1714;
+  --seu-surface: #1e2925;
+  --seu-line: #ffffff1f;
+  --seu-cream: #f3efe9;
+  --seu-fg: #f3efe9;
+  --seu-muted: #a5aca8;
+  --seu-green: #0ea56b;
+  --seu-green-bright: #2ecc71;
+  --seu-lime: #c3d62f;
+  --seu-blue: #1b4f72;
+  --seu-reserved: #1690a8;
+  --seu-sold: #b5123f;
+}
+
+@theme inline {
+  --color-seu-bg: var(--seu-bg);
+  --color-seu-bg-deep: var(--seu-bg-deep);
+  --color-seu-surface: var(--seu-surface);
+  --color-seu-line: var(--seu-line);
+  --color-seu-cream: var(--seu-cream);
+  --color-seu-fg: var(--seu-fg);
+  --color-seu-muted: var(--seu-muted);
+  --color-seu-green: var(--seu-green);
+  --color-seu-green-bright: var(--seu-green-bright);
+  --font-sans: "Montserrat Variable", "BPG Rioni Contrast", system-ui, sans-serif;
+  --font-display: "Helvetica Neue", "BPG Rioni Contrast", Arial, sans-serif;
+}
+
+html,
+body {
+  background: var(--seu-bg);
+  color: var(--seu-fg);
+}
+
+body {
+  font-family: var(--font-sans);
+}
