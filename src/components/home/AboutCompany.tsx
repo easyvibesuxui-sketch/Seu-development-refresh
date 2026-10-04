@@ -10,11 +10,11 @@ gsap.registerPlugin(ScrollTrigger);
 
 const VIDEO_ID = "6dCWXfB7nvc";
 
-// Rings enter from different corners and settle on the centre, largest first.
+// Rings rise from below the fold one after another, largest first, and settle on the centre.
 const RINGS = [
-  { size: "min(92vmin, 980px)", from: { xPercent: -60, yPercent: 35 }, dash: "4 9", dot: true },
-  { size: "min(72vmin, 760px)", from: { xPercent: 55, yPercent: -40 }, dash: "3 8", dot: false },
-  { size: "min(54vmin, 560px)", from: { xPercent: -30, yPercent: -55 }, dash: "2 7", dot: true },
+  { size: "min(92vmin, 980px)", dash: "4 9", dot: true },
+  { size: "min(72vmin, 760px)", dash: "3 8", dot: false },
+  { size: "min(54vmin, 560px)", dash: "2 7", dot: true },
 ];
 
 export default function AboutCompany() {
@@ -34,9 +34,9 @@ export default function AboutCompany() {
       gsap.utils.toArray<HTMLElement>(".ac-ring").forEach((ring, i) => {
         tl.fromTo(
           ring,
-          { ...RINGS[i].from, scale: 0.35, opacity: 0 },
-          { xPercent: 0, yPercent: 0, scale: 1, opacity: 1, duration: 1 },
-          i * 0.55,
+          { yPercent: 95, scale: 0.85, opacity: 0 },
+          { yPercent: 0, scale: 1, opacity: 1, duration: 1, ease: "power3.out" },
+          i * 0.5,
         );
       });
 
@@ -46,7 +46,7 @@ export default function AboutCompany() {
         { clipPath: "inset(0% 0% 0% 0% round 12px)", scale: 1, opacity: 1, duration: 1, ease: "power3.inOut" },
         1.5,
       )
-        .from(".ac-play", { scale: 0, opacity: 0, duration: 0.4, ease: "back.out(2)" }, 2.25)
+        .from(".ac-play", { scale: 0, opacity: 0, duration: 0.4, ease: "back.out(2)" }, 2.2)
         .fromTo(".ac-left", { x: -80, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8 }, 1.9)
         .fromTo(".ac-right", { x: 80, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8 }, 2.05)
         // Asymmetric drift: the two text columns travel at different speeds and directions.
@@ -60,8 +60,8 @@ export default function AboutCompany() {
   }, []);
 
   return (
-    <section id="about" ref={rootRef} className="relative isolate h-[100svh] min-h-[640px] overflow-hidden bg-seu-bg">
-      <div className="relative z-10 flex items-start justify-between px-6 pt-28">
+    <section id="about" ref={rootRef} className="relative isolate h-[100svh] min-h-[640px] overflow-hidden">
+      <div className="relative z-10 flex items-start justify-between px-6 pt-32 md:px-12">
         <h2 className="section-title" data-split>
           About company.
         </h2>
@@ -92,25 +92,28 @@ export default function AboutCompany() {
             className="h-full w-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#15201d]/60 via-transparent to-transparent" />
-          <button
-            type="button"
-            onClick={() => setPlaying(true)}
-            aria-label="Play SEU Varketili video"
-            data-cursor="play"
-            className="ac-play absolute left-1/2 top-1/2 grid h-16 w-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-seu-accent/90 shadow-[0_0_30px_#8b5a3c66] transition-transform duration-500 hover:scale-110"
-          >
-            <span className="absolute inset-0 animate-ping rounded-full bg-seu-accent/30" />
-            <svg width="22" height="24" viewBox="0 0 22 24" fill="none" aria-hidden>
-              <path d="M3 2l17 10L3 22V2z" stroke="#fff" strokeWidth="2" strokeLinejoin="round" />
-            </svg>
-          </button>
+          {/* Centring lives on the wrapper so GSAP can scale the button freely. */}
+          <div className="absolute inset-0 grid place-items-center">
+            <button
+              type="button"
+              onClick={() => setPlaying(true)}
+              aria-label="Play SEU Varketili video"
+              data-cursor="play"
+              className="ac-play relative grid h-16 w-16 place-items-center rounded-full bg-seu-accent/90 shadow-[0_0_30px_#8b5a3c66] transition-[background-color] duration-500 hover:bg-seu-accent-hi"
+            >
+              <span className="absolute inset-0 animate-ping rounded-full bg-seu-accent/30" />
+              <svg width="22" height="24" viewBox="0 0 22 24" fill="none" aria-hidden className="relative ml-1">
+                <path d="M3 2l17 10L3 22V2z" stroke="#fff" strokeWidth="2" strokeLinejoin="round" />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 
-      <p className="ac-left absolute left-6 top-[22%] z-10 max-w-[220px] text-[15px] md:top-[42%]">
+      <p className="ac-left absolute left-6 md:left-12 top-[22%] z-10 max-w-[220px] text-[15px] md:top-[42%]">
         Real estate market since 2014.
       </p>
-      <p className="ac-right absolute bottom-[12%] right-6 z-10 max-w-[340px] text-right text-[15px] leading-relaxed md:bottom-auto md:top-[38%]">
+      <p className="ac-right absolute bottom-[12%] right-6 md:right-12 z-10 max-w-[340px] text-right text-[15px] leading-relaxed md:bottom-auto md:top-[38%]">
         The company&apos;s team, consisting of experienced professionals, cares about continuous development,
         adheres to high construction standards and uses innovative technologies.
       </p>

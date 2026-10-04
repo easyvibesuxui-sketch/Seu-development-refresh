@@ -13,7 +13,7 @@ export default function ContactSection() {
   const [sent, setSent] = useState(false);
 
   return (
-    <section id="contact" className="grid gap-16 px-6 py-36 md:grid-cols-2">
+    <section id="contact" className="grid gap-20 px-6 py-48 md:grid-cols-2 md:px-12">
       <div>
         <h2 className="title-display text-[clamp(30px,2.6vw,42px)]" data-split>
           Requests Call.

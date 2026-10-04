@@ -3,31 +3,19 @@
 import { useEffect, useState } from "react";
 import LogoMark from "@/components/brand/LogoMark";
 
-const left = [
-  { label: "Search Apartment", pill: true },
-  { label: "Visual Search" },
-  { label: "SEU CARD" },
+const links = [
+  { label: "Projects", href: "#projects" },
+  { label: "Visual search", href: "#" },
+  { label: "SEU Card", href: "#" },
+  { label: "News", href: "#" },
+  { label: "About", href: "#about" },
 ];
-const right = [{ label: "NEWS" }, { label: "ABOUT" }];
 
-function NavLink({ label, pill }: { label: string; pill?: boolean }) {
-  return (
-    <a
-      href="#"
-      className={
-        pill
-          ? "rounded-md border border-white/25 bg-white/10 px-3 py-1.5 text-[13px] tracking-[0.06em] backdrop-blur transition-colors hover:bg-seu-accent"
-          : "text-[13px] tracking-[0.06em] transition-opacity hover:opacity-70"
-      }
-    >
-      {label}
-    </a>
-  );
-}
-
+/** Compact glass navigation bar with accent actions beside it (per the m² reference). */
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
+  const [lang, setLang] = useState<"EN" | "GE">("EN");
 
   useEffect(() => {
     let lastY = window.scrollY;
@@ -43,35 +31,64 @@ export default function Header() {
 
   return (
     <header
-      className={`pointer-events-none fixed inset-x-0 top-0 z-50 transition-[transform,background-color,backdrop-filter] duration-500 ${
-        scrolled ? "bg-[#15201d]/85 backdrop-blur-md" : ""
-      } ${hidden ? "-translate-y-full" : ""}`}
+      className={`pointer-events-none fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-5 transition-transform duration-500 ${
+        hidden ? "-translate-y-[130%]" : ""
+      }`}
     >
-      <div className="pointer-events-auto mx-auto grid grid-cols-[1fr_auto_1fr] items-center px-6 py-4">
-        <nav className="hidden items-center gap-12 lg:flex">
-          {left.map((l) => (
-            <NavLink key={l.label} {...l} />
-          ))}
+      <div className="pointer-events-auto flex items-stretch gap-2">
+        <nav
+          className={`flex h-12 items-center gap-1 rounded-xl border border-white/15 pl-3 pr-2 backdrop-blur-xl transition-colors duration-500 ${
+            scrolled ? "bg-[#101a17]/85" : "bg-[#101a17]/45"
+          }`}
+          aria-label="Main"
+        >
+          <a href="#" className="group mr-3 flex items-center gap-2" aria-label="SEU Development home">
+            <LogoMark className="h-8 w-auto overflow-visible" />
+            <span className="hidden flex-col leading-none sm:flex">
+              <span className="label text-[12px] tracking-[0.3em]">SEU</span>
+              <span className="text-[9px] text-seu-muted">Development</span>
+            </span>
+          </a>
+          <ul className="hidden items-center lg:flex">
+            {links.map((l) => (
+              <li key={l.label}>
+                <a
+                  href={l.href}
+                  className="label relative block px-3.5 py-2 text-[12px] tracking-[0.12em] uppercase transition-colors after:absolute after:inset-x-3.5 after:bottom-1 after:h-px after:origin-right after:scale-x-0 after:bg-current after:transition-transform after:duration-500 hover:text-seu-accent-hi hover:after:origin-left hover:after:scale-x-100"
+                >
+                  {l.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+          <button
+            type="button"
+            onClick={() => setLang(lang === "EN" ? "GE" : "EN")}
+            className="label ml-2 flex items-center gap-1 rounded-md px-2.5 py-2 text-[12px] tracking-[0.1em] transition-colors hover:bg-white/10"
+            aria-label="Switch language"
+          >
+            {lang}
+            <svg width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden>
+              <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.2" />
+            </svg>
+          </button>
         </nav>
-        <a href="#" className="group col-start-2 flex flex-col items-center" aria-label="SEU Development">
-          <LogoMark className="h-11 w-auto overflow-visible" />
-          <span className="-mt-1 text-[13px] leading-none tracking-[0.3em] transition-transform duration-700 [transition-timing-function:cubic-bezier(0.3,1.5,0.45,1)] group-hover:translate-y-[3px]">
-            SEU
-          </span>
-          <span className="mt-0.5 text-[10px] text-seu-muted transition-transform duration-700 [transition-timing-function:cubic-bezier(0.3,1.5,0.45,1)] group-hover:translate-y-[3px]">
-            Development
-          </span>
+        <a
+          href="#choose-view"
+          aria-label="Search apartments"
+          className="grid h-12 w-12 place-items-center rounded-xl bg-seu-accent transition-colors hover:bg-seu-accent-hi"
+        >
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden>
+            <circle cx="8" cy="8" r="6" stroke="#fff" strokeWidth="1.6" />
+            <path d="M12.5 12.5L17 17" stroke="#fff" strokeWidth="1.6" />
+          </svg>
         </a>
-        <nav className="hidden items-center justify-end gap-12 lg:flex">
-          {right.map((l) => (
-            <NavLink key={l.label} {...l} />
-          ))}
-          <NavLink label="Contact us" pill />
-          <div className="flex rounded-md border border-white/25 p-0.5 text-[12px]">
-            <span className="rounded bg-white/20 px-2.5 py-1">EN</span>
-            <span className="px-2.5 py-1 text-seu-muted">GE</span>
-          </div>
-        </nav>
+        <a
+          href="#contact"
+          className="label hidden h-12 items-center rounded-xl bg-seu-accent px-6 text-[12px] tracking-[0.14em] uppercase transition-colors hover:bg-seu-accent-hi sm:flex"
+        >
+          Contact us
+        </a>
       </div>
     </header>
   );

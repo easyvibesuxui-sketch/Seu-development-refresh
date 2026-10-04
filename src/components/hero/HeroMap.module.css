@@ -85,9 +85,9 @@
   top: 0;
   left: 0;
   display: block;
-  width: 70px;
+  width: 60px;
   /* Pin head floats above the rooftops on a thin stem, like the reference. */
-  height: calc(90px + var(--stem, 46px));
+  height: calc(77px + var(--stem, 12px));
   padding: 0;
   border: 0;
   background: none;
@@ -96,7 +96,7 @@
 
 .body {
   position: absolute;
-  inset: 0 0 var(--stem, 46px) 0;
+  inset: 0 0 var(--stem, 12px) 0;
   transform-origin: 50% 100%;
   transition: transform 0.45s cubic-bezier(0.3, 1.4, 0.5, 1);
   filter: drop-shadow(0 10px 14px #00000080);
@@ -109,9 +109,9 @@
 
 .logo {
   position: absolute;
-  top: 21px;
+  top: 18px;
   left: 50%;
-  width: 32px;
+  width: 28px;
   transform: translateX(-50%);
 }
 
@@ -136,7 +136,7 @@
   left: 50%;
   bottom: 2px;
   width: 1px;
-  height: var(--stem, 46px);
+  height: var(--stem, 12px);
   background: linear-gradient(to top, #ffffffcc, #ffffff00);
 }
 
@@ -165,7 +165,7 @@
 }
 
 .highlightPin {
-  --stem: 22px;
+  --stem: 8px;
   width: 48px;
   height: calc(62px + var(--stem));
   cursor: default;
@@ -248,7 +248,7 @@
 }
 
 .root[data-mode="overview"] .projectPin {
-  --stem: 18px;
+  --stem: 8px;
 }
 
 .root[data-mode="overview"] .projectPin .body {
@@ -534,6 +534,16 @@
   from {
     opacity: 0;
     transform: translateY(24px);
+  }
+}
+
+@media (min-width: 901px) {
+  .caption {
+    left: 48px;
+  }
+
+  .filter {
+    right: 48px;
   }
 }
 

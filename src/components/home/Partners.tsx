@@ -6,11 +6,11 @@ const partners = Array.from({ length: 8 }, (_, i) => ({ id: i, name: "Bank of Ge
 export default function Partners() {
   const row = [...partners, ...partners];
   return (
-    <section className="overflow-hidden pb-32">
-      <h2 className="section-title px-6 uppercase" data-split>
+    <section className="overflow-hidden pb-48">
+      <h2 className="section-title px-6 uppercase md:px-12" data-split>
         Partners.
       </h2>
-      <div className="marquee mt-14 flex w-max gap-8">
+      <div className="marquee mt-20 flex w-max gap-8">
         {row.map((p, i) => (
           <div
             key={`${p.id}-${i}`}

@@ -8,28 +8,29 @@ const finished = projects.filter((p) => p.status === "finished");
 export default function ProjectsSections() {
   return (
     <div id="projects">
-      <section className="pb-24">
-        <h2 className="section-title px-6" data-split>
+      <section className="pb-40 pt-40">
+        <h2 className="section-title px-6 md:px-12" data-split>
           Ongoing.
         </h2>
-        <div className="mt-12 space-y-4">
+        <div className="mt-16 space-y-4">
           {ongoing.map((p) => (
             <WideProject key={p.id} project={p} />
           ))}
         </div>
       </section>
 
-      <section className="px-6 pb-32">
+      <section className="px-6 pb-48 md:px-12">
         <h2 className="section-title uppercase" data-split>
           Upcoming.
         </h2>
-        <div className="mt-16 grid gap-y-16 md:grid-cols-2">
+        {/* Cards meet corner to corner: the right card starts exactly where the left one ends
+            (image at 2.6:1 plus the fixed-height caption), as in the design. */}
+        <div className="mt-20 grid gap-y-16 [container-type:inline-size] md:grid-cols-2 md:gap-y-0">
           {upcoming.map((p, i) => (
-            // Columns drift at opposite speeds for an asymmetric parallax.
-            <div key={p.id} className={i % 2 ? "md:mt-[18vw]" : ""} data-parallax={i % 2 ? "-0.12" : "0.08"}>
+            <div key={p.id} className={i % 2 ? "md:mt-[calc(50cqw/2.6+8rem)]" : ""}>
               <Reveal variant={i % 2 ? "right" : "left"} className="group">
                 <FadedImage project={p} className="aspect-[2.6/1]" />
-                <div className="mt-2 text-center">
+                <div className="flex h-32 flex-col items-center justify-center text-center">
                   <StatusLine project={p} centered />
                   <h3 className="title-display mt-1 text-[clamp(26px,2.4vw,38px)] uppercase">{p.name}</h3>
                 </div>
@@ -39,11 +40,11 @@ export default function ProjectsSections() {
         </div>
       </section>
 
-      <section className="px-6 pb-32">
+      <section className="px-6 pb-48 md:px-12">
         <h2 className="section-title uppercase" data-split>
           Finished.
         </h2>
-        <div className="mt-14 grid gap-6 md:grid-cols-2" data-stagger>
+        <div className="mt-20 grid gap-10 md:grid-cols-2" data-stagger>
           {finished.map((p) => (
             <article key={p.id} className="group">
               <FadedImage project={p} className="aspect-[4/3]" />
@@ -72,7 +73,7 @@ function WideProject({ project }: { project: Project }) {
         </div>
         <div className="absolute inset-0 bg-gradient-to-b from-[#15201d]/70 via-transparent via-35% to-[#15201d]/90" />
       </Reveal>
-      <div className="absolute inset-x-6 bottom-6 flex flex-wrap items-end justify-between gap-6">
+      <div className="absolute inset-x-6 bottom-10 flex flex-wrap items-end justify-between gap-6 md:inset-x-12">
         <Reveal>
           <StatusLine project={project} />
           <h3 className="title-display mt-1 text-[clamp(40px,5vw,76px)] uppercase leading-none">{project.name}</h3>

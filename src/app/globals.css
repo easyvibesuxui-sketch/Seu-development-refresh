@@ -40,18 +40,41 @@
   --color-seu-accent: var(--seu-accent);
   --color-seu-accent-hi: var(--seu-accent-hi);
   --color-seu-accent-lo: var(--seu-accent-lo);
-  --font-sans: "Montserrat Variable", "BPG Rioni Contrast", system-ui, sans-serif;
+  --font-sans: "Urbanist Variable", "BPG Rioni Contrast", system-ui, sans-serif;
   --font-display: "Jost Variable", "BPG Rioni Contrast", "Helvetica Neue", sans-serif;
 }
 
-html,
-body {
+html {
   background: var(--seu-bg);
+}
+
+body {
   color: var(--seu-fg);
 }
 
 body {
   font-family: var(--font-sans);
+  font-weight: 450;
+}
+
+/* Quiet depth instead of a flat green: a lighter green bloom top-left, a faint leather warmth
+   lower right. Fixed, so sections scroll over one continuous field. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(70vw 60vh at 12% 8%, #20302b 0%, transparent 65%),
+    radial-gradient(60vw 70vh at 92% 70%, #2a241c 0%, transparent 60%),
+    linear-gradient(180deg, #16211e 0%, #131c19 100%);
+}
+
+/* UI labels: uppercase, tracked (Gilroy-like Urbanist). */
+.label {
+  font-family: var(--font-sans);
+  font-weight: 600;
 }
 
 /* ---------- Scroll reveals (see components/ui/Reveal.tsx) ---------- */
@@ -296,4 +319,15 @@ html.is-loading body {
   font-size: 11px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
+}
+
+.lifestyle-copy {
+  animation: copy-in 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes copy-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
 }

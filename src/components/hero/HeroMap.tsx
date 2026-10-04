@@ -163,10 +163,9 @@ export default function HeroMap() {
           curve: 1.2,
           essential: true,
         });
-        map.once("moveend", () => {
-          setLanded(true);
-          startTraffic();
-        });
+        // Captions follow the descent on a timer; moveend can be swallowed by user input.
+        window.setTimeout(() => setLanded(true), reduceMotion ? 0 : INTRO_SECONDS * 650);
+        map.once("moveend", () => startTraffic());
       };
 
       map.on("load", () => {

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import "@fontsource-variable/montserrat";
+import "@fontsource-variable/urbanist";
 import "@fontsource-variable/jost";
 import "./globals.css";
 

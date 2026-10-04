@@ -46,7 +46,7 @@ export default function AboutSeu() {
   }, []);
 
   return (
-    <section className="overflow-hidden bg-seu-cream px-6 py-32 text-[#1d1d1b]">
+    <section className="overflow-hidden bg-seu-cream px-6 py-44 text-[#1d1d1b] md:px-12">
       <div className="grid items-center gap-16 md:grid-cols-2">
         <div className="max-w-md">
           <h2 className="section-title" data-split>
