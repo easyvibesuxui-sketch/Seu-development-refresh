@@ -28,8 +28,16 @@ export default function AboutCompany() {
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({
         defaults: { ease: "power2.out" },
-        // A tall track with a sticky stage (no JS pin), so the scene holds while it plays.
-        scrollTrigger: { trigger: root, start: "top top", end: "bottom bottom", scrub: 0.8 },
+        // A tall track with a sticky stage (no JS pin): the scene holds while it plays, and is
+        // done by the time the next section starts sliding over it.
+        scrollTrigger: {
+          trigger: root,
+          // Starts while the section is still coming up, so it never arrives empty.
+          start: "top 65%",
+          end: () => `top+=${root.offsetHeight - 2 * window.innerHeight} top`,
+          scrub: 0.8,
+          invalidateOnRefresh: true,
+        },
       });
 
       gsap.utils.toArray<HTMLElement>(".ac-ring").forEach((ring, i) => {
@@ -54,14 +62,34 @@ export default function AboutCompany() {
         .to(".ac-left", { yPercent: -25, duration: 1.2, ease: "none" }, 2.7)
         .to(".ac-right", { yPercent: 25, duration: 1.2, ease: "none" }, 2.7)
         .to(".ac-ring", { rotate: (i: number) => (i % 2 ? -25 : 25), duration: 3.9, ease: "none" }, 0);
+
+      // Held under the incoming section: the stage settles back and fades as it is covered.
+      gsap.fromTo(
+        ".ac-sticky",
+        { scale: 1, opacity: 1 },
+        {
+          scale: 0.92,
+          opacity: 0.3,
+          ease: "none",
+          scrollTrigger: {
+            trigger: root,
+            start: () => `top+=${root.offsetHeight - 2 * window.innerHeight} top`,
+            end: () => `top+=${root.offsetHeight - window.innerHeight} top`,
+            scrub: true,
+            invalidateOnRefresh: true,
+          },
+        },
+      );
     }, root);
 
     return () => ctx.revert();
   }, []);
 
   return (
-    <section id="about" ref={rootRef} data-tone="light" data-no-out className="tone-light relative h-[280vh]">
-      <div className="sticky top-0 isolate h-[100svh] min-h-[640px] overflow-hidden">
+    // The last screen of the track lies under the next section (negative margin), which slides
+    // up over the held stage.
+    <section id="about" ref={rootRef} data-tone="light" data-no-out className="tone-light relative z-0 mb-[-100svh] h-[360svh]">
+      <div className="ac-sticky sticky top-0 isolate h-[100svh] min-h-[640px] origin-top overflow-hidden">
         <div className="relative z-10 mx-auto flex max-w-[1680px] items-start justify-between px-gutter pt-28 md:pt-32">
           <div>
             <p className="eyebrow mb-5">

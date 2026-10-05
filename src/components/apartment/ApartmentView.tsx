@@ -1,25 +1,50 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { withBase } from "@/data/projects";
-import { roomText, statusText, units, viewText, type Unit } from "@/data/inventory";
+import { roomText, statusText, units, viewText, type RoomKind, type Unit, type ViewId } from "@/data/inventory";
 import { Container, Section, SectionHeader } from "@/components/ui/Section";
 import ApartmentCard from "@/components/ui/ApartmentCard";
 import BackLink from "@/components/ui/BackLink";
 import RequestCallModal from "@/components/ui/RequestCallModal";
 import { Benefits } from "@/components/project/ProjectDetails";
+import Icon, { type IconName } from "@/components/ui/Icon";
+import FloorPlanSheet from "./FloorPlanSheet";
+
+const roomIcon: Record<RoomKind, IconName> = {
+  living: "sofa",
+  kitchen: "kitchen",
+  bedroom: "bed",
+  bathroom: "bath",
+  wc: "wc",
+  hall: "hall",
+  balcony: "balcony",
+  storage: "storage",
+};
+
+const viewIcon: Record<ViewId, IconName> = {
+  park: "park",
+  city: "city",
+  sea: "sea",
+  mountains: "mountains",
+  courtyard: "courtyard",
+  panorama: "panorama",
+};
 
 type Tab = "3D" | "2D" | "Plan";
 
 export default function ApartmentView({ unit }: { unit: Unit }) {
   const [tab, setTab] = useState<Tab>("3D");
   const [asking, setAsking] = useState(false);
+  const [sheet, setSheet] = useState(false);
   const stageRef = useRef<HTMLDivElement>(null);
   const similar = units
     .filter((u) => u.id !== unit.id && u.bedrooms === unit.bedrooms && u.status !== "sold")
     .sort((a, b) => Math.abs(a.totalArea - unit.totalArea) - Math.abs(b.totalArea - unit.totalArea))
     .slice(0, 8);
+
+  const closeSheet = useCallback(() => setSheet(false), []);
 
   useEffect(() => {
     if (!stageRef.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -31,12 +56,14 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
       <section data-tone="dark" className="tone-dark mx-auto grid max-w-[1680px] gap-16 px-gutter pb-section pt-40 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
         <div>
           <BackLink href={`/projects/varketili/${unit.block}/`} />
-          <div className="mt-10 flex items-baseline gap-10">
-            <p className="text-[18px] text-seu-muted">
-              Block <span className="title-m ml-2 text-[32px] text-seu-fg">{unit.block.slice(1)}</span>
+          <div className="mt-10 flex items-center gap-8">
+            <p className="flex items-center gap-3 text-[16px] text-seu-muted">
+              <Icon name="block" size={22} className="text-seu-accent-hi" />
+              Block <span className="title-m text-[28px] text-seu-fg">{unit.block.slice(1)}</span>
             </p>
-            <p className="text-[18px] text-seu-muted">
-              Floor <span className="title-m ml-2 text-[32px] text-seu-fg">{unit.floor}</span>
+            <p className="flex items-center gap-3 text-[16px] text-seu-muted">
+              <Icon name="floor" size={22} className="text-seu-accent-hi" />
+              Floor <span className="title-m text-[28px] text-seu-fg">{unit.floor}</span>
             </p>
           </div>
           <p className="eyebrow mt-10">SEU Varketili · {statusText[unit.status]}</p>
@@ -44,22 +71,30 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
             Apartment {unit.number}<span className="text-seu-accent-hi">.</span>
           </h1>
 
-          <dl className="mt-8 grid grid-cols-2 gap-y-6 sm:grid-cols-4" data-stagger>
-            {[
-              ["Total size", `${unit.totalArea} m²`],
-              ["Main size", `${unit.livingArea} m²`],
-              ["Open space", `${unit.openArea} m²`],
-              ["Bedrooms", unit.bedrooms === 0 ? "Studio" : unit.bedrooms],
-            ].map(([k, v]) => (
-              <div key={k as string}>
-                <dt className="field-label">{k}</dt>
-                <dd className="title-m normal-case">{v}</dd>
+          <dl className="mt-8 grid grid-cols-2 gap-x-6 gap-y-6 sm:grid-cols-4" data-stagger>
+            {(
+              [
+                ["area", "Total size", `${unit.totalArea} m²`],
+                ["living", "Main size", `${unit.livingArea} m²`],
+                ["balcony", "Open space", `${unit.openArea} m²`],
+                ["bed", "Bedrooms", unit.bedrooms === 0 ? "Studio" : String(unit.bedrooms)],
+              ] as [IconName, string, string][]
+            ).map(([icon, k, v]) => (
+              <div key={k} className="flex flex-col gap-3">
+                <dt className="field-label mb-0 flex flex-col gap-3">
+                  <span className="grid h-11 w-11 place-items-center rounded-full border border-seu-line text-seu-accent-hi">
+                    <Icon name={icon} size={20} />
+                  </span>
+                  {k}
+                </dt>
+                <dd className="title-m -mt-2 normal-case">{v}</dd>
               </div>
             ))}
           </dl>
           <ul className="mt-8 flex flex-wrap gap-2" aria-label="Views">
             {unit.views.map((v) => (
-              <li key={v} className="tag">
+              <li key={v} className="tag gap-2 py-1.5">
+                <Icon name={viewIcon[v]} size={15} className="text-seu-accent-hi" />
                 {viewText[v]}
               </li>
             ))}
@@ -68,7 +103,9 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
 
           <div className="mt-8 flex flex-wrap items-end gap-8">
             <div>
-              <p className="field-label">Price</p>
+              <p className="field-label flex items-center gap-2">
+                <Icon name="price" size={15} className="text-seu-accent-hi" /> Price
+              </p>
               <p className="title-m text-[clamp(28px,2.4vw,38px)] normal-case">
                 ${unit.price.toLocaleString("en-US")}
                 <span className="ml-3 text-[15px] text-seu-muted">${unit.pricePerM2}/m²</span>
@@ -77,10 +114,9 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
             <button
               type="button"
               onClick={() => setAsking(true)}
-              disabled={unit.status === "sold"}
               className="btn btn-primary btn-lg"
             >
-              {unit.status === "sold" ? "Sold" : "Request a call"}
+              <Icon name="phone" size={16} /> Request a call
             </button>
           </div>
 
@@ -88,7 +124,10 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
           <ul className="mt-6 grid grid-cols-2 gap-x-8 gap-y-5 text-[15px] sm:grid-cols-3" data-stagger>
             {unit.rooms.map((r, i) => (
               <li key={i} className="flex items-center justify-between gap-3 border-b border-seu-line pb-3">
-                <span className="text-seu-muted">{roomText[r.kind]}</span>
+                <span className="flex items-center gap-2.5 text-seu-muted">
+                  <Icon name={roomIcon[r.kind]} size={18} className="text-seu-accent-hi" />
+                  {roomText[r.kind]}
+                </span>
                 <span className="label">{r.area} m²</span>
               </li>
             ))}
@@ -96,17 +135,14 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
         </div>
 
         <div>
-          <div className="flex items-center justify-between">
-            <p className="eyebrow">Floor plan</p>
+          <div className="flex items-center justify-end">
             <a
               href={withBase(`/apartments/${unit.id}/presentation/`)}
               target="_blank"
               rel="noreferrer"
               className="btn btn-sm"
             >
-              <svg width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" strokeWidth="1.2" aria-hidden>
-                <path d="M2 1h7l4 4v10H2zM9 1v4h4M4.5 9h5M4.5 12h5" />
-              </svg>
+              <Icon name="file" size={16} />
               See presentation <span aria-hidden>↗</span>
               <span className="sr-only">(opens in a new tab)</span>
             </a>
@@ -129,7 +165,7 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
             <Compass />
             <div className="absolute inset-0 grid place-items-center p-12">
               {tab === "3D" ? (
-                <img data-tab-img src={withBase("/images/apartment-3d.png")} alt={`Apartment ${unit.number}, 3D layout`} className="max-h-full w-[85%] rounded bg-[#313b38] object-contain" />
+                <img data-tab-img src={withBase("/images/apartment-3d.webp")} alt={`Apartment ${unit.number}, 3D layout`} className="max-h-full w-[92%] object-contain drop-shadow-[0_30px_40px_rgb(19_33_29/0.25)]" />
               ) : (
                 <img
                   data-tab-img
@@ -138,6 +174,12 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
                   className={`max-h-full w-[75%] object-contain ${tab === "2D" ? "[filter:sepia(.35)_saturate(1.4)_hue-rotate(-12deg)]" : ""}`}
                 />
               )}
+            </div>
+            {/* The whole floor opens from a centred button, in a bottom sheet. */}
+            <div className="absolute inset-x-0 bottom-5 z-10 flex justify-center">
+              <button type="button" aria-haspopup="dialog" onClick={() => setSheet(true)} className="btn btn-primary">
+                <Icon name="plan" size={18} /> Floor plan
+              </button>
             </div>
           </div>
           <p className="mt-3 text-[12px] text-seu-muted">Layout images are illustrative for this concept.</p>
@@ -158,6 +200,7 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
       </Section>
 
       <RequestCallModal unit={unit} open={asking} onClose={() => setAsking(false)} />
+      <FloorPlanSheet unit={unit} open={sheet} onClose={closeSheet} />
     </main>
   );
 }

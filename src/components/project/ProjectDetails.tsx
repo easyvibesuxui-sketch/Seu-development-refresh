@@ -8,6 +8,10 @@ import LogoMark from "@/components/brand/LogoMark";
 import { statusLabel, withBase, type Project } from "@/data/projects";
 import { benefits, bedroomText, units } from "@/data/inventory";
 import { Container, Section, SectionHeader } from "@/components/ui/Section";
+import Icon, { type IconName } from "@/components/ui/Icon";
+
+// One pictogram per entry of `benefits`, in the same order.
+const BENEFIT_ICONS: IconName[] = ["park", "shield", "parking", "store", "playground", "sports", "tennis", "gym", "lobby", "school"];
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -121,10 +125,12 @@ export function Benefits() {
       <Container className="grid gap-16 md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
       <div>
         <SectionHeader eyebrow="Why SEU" title="Benefits" className="lg:grid-cols-1" />
-        <ul className="mt-12 space-y-4" data-stagger>
-          {benefits.map((b) => (
-            <li key={b} className="lead flex items-center gap-4">
-              <span className="h-px w-5 shrink-0 bg-seu-accent-hi" />
+        <ul className="mt-12 grid gap-x-8 gap-y-5 sm:grid-cols-2" data-stagger>
+          {benefits.map((b, i) => (
+            <li key={b} className="flex items-center gap-4 text-[16px]">
+              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-seu-line text-seu-accent-hi">
+                <Icon name={BENEFIT_ICONS[i] ?? "shield"} size={20} />
+              </span>
               {b}
             </li>
           ))}

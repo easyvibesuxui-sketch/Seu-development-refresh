@@ -576,6 +576,12 @@ body::before {
     border-color: var(--accent-ink);
   }
 
+  /* Sold flats keep their place in a list but do not react like links. */
+  .card.is-sold:hover {
+    transform: none;
+    border-color: var(--glass-border);
+  }
+
   .tag {
     display: inline-flex;
     align-items: center;

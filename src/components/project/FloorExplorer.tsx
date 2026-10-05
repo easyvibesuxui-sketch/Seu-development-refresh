@@ -7,26 +7,10 @@ import gsap from "gsap";
 import { withBase } from "@/data/projects";
 import { bedroomText, blockById, statusText, unitsOn, varketiliBlocks, type Unit } from "@/data/inventory";
 import ApartmentCard from "@/components/ui/ApartmentCard";
+import Icon from "@/components/ui/Icon";
 import BackLink from "@/components/ui/BackLink";
 import { ArrowButton } from "./ProjectDetails";
-
-/*
- * Typical floor (Kling / Gemini 3 Pro drawing in the site palette): four flats on the north
- * facade facing Hualing, three on the south facing the Tbilisi Sea, a corridor and core
- * between. Outlines per slot measured on public/images/floor-plan.jpg, in percent.
- */
-const PLAN = "/images/floor-plan.jpg";
-const PLAN_RATIO = 2400 / 1200;
-const UNIT_SHAPES: number[][][] = [
-  [[2.3, 5], [13.9, 5], [13.9, 44.5], [2.3, 44.5]],
-  [[14.4, 5], [31.8, 5], [31.8, 44.5], [14.4, 44.5]],
-  [[32.4, 5], [60.7, 5], [60.7, 44.5], [32.4, 44.5]],
-  [[61.2, 5], [95.7, 5], [95.7, 49.6], [61.2, 49.6]],
-  [[2.3, 55.5], [27.6, 55.5], [27.6, 92], [2.3, 92]],
-  [[28, 55.5], [44.5, 55.5], [44.5, 92], [28, 92]],
-  [[61.2, 50.4], [95.7, 50.4], [95.7, 92], [61.2, 92]],
-];
-const centre = (pts: number[][]) => [pts.reduce((a, p) => a + p[0], 0) / pts.length, pts.reduce((a, p) => a + p[1], 0) / pts.length];
+import { PLAN, PLAN_RATIO, UNIT_SHAPES, centre } from "@/data/floorplan";
 
 /*
  * Site plan of SEU Varketili (Kling, from the aerial render): block footprints in percent of
@@ -160,24 +144,15 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
                   {floorUnits.map((u) => {
                     const [cx, cy] = centre(UNIT_SHAPES[u.slot]);
                     const on = hover === u.id;
-                    return (
-                      <Link
-                        key={u.id}
-                        // Sold flats still open their page (layout, sizes); only the call request is off there.
-                        href={`/apartments/${u.id}/`}
-                        onMouseEnter={() => setHover(u.id)}
-                        onMouseLeave={() => setHover(null)}
-                        onFocus={() => setHover(u.id)}
-                        onBlur={() => setHover(null)}
-                        className="absolute"
-                        style={{
-                          left: `${UNIT_SHAPES[u.slot][0][0]}%`,
-                          top: `${UNIT_SHAPES[u.slot][0][1]}%`,
-                          width: `${UNIT_SHAPES[u.slot][1][0] - UNIT_SHAPES[u.slot][0][0]}%`,
-                          height: `${UNIT_SHAPES[u.slot][2][1] - UNIT_SHAPES[u.slot][0][1]}%`,
-                        }}
-                        aria-label={`Apartment ${u.number}, ${bedroomText(u.bedrooms)}, ${u.totalArea} m², ${statusText[u.status]}`}
-                      >
+                    const box = {
+                      left: `${UNIT_SHAPES[u.slot][0][0]}%`,
+                      top: `${UNIT_SHAPES[u.slot][0][1]}%`,
+                      width: `${UNIT_SHAPES[u.slot][1][0] - UNIT_SHAPES[u.slot][0][0]}%`,
+                      height: `${UNIT_SHAPES[u.slot][2][1] - UNIT_SHAPES[u.slot][0][1]}%`,
+                    };
+                    const sold = u.status === "sold";
+                    const inner = (
+                      <>
                         <span
                           className="absolute grid place-items-center rounded-full text-center shadow-[0_10px_30px_rgb(0_0_0/0.35)] transition-transform duration-300"
                           style={{
@@ -190,17 +165,45 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
                             transform: `translate(-50%, -50%) scale(${on ? 1.12 : 1})`,
                           }}
                         >
-                          <span className="leading-tight">
+                          <span className="flex flex-col items-center leading-tight">
+                            {sold && <Icon name="lock" size={14} className="mb-0.5 hidden md:block" />}
                             <span className="label block text-[11px] font-semibold md:text-[14px]">{u.number}</span>
-                            <span className="hidden text-[11px] md:block">{u.bedrooms === 0 ? "Studio" : `${u.bedrooms} bd`}</span>
+                            {!sold && <span className="hidden text-[11px] md:block">{u.bedrooms === 0 ? "Studio" : `${u.bedrooms} bd`}</span>}
                           </span>
                         </span>
                         {on && (
                           <span className="label absolute bottom-3 left-1/2 w-max -translate-x-1/2 rounded-full bg-seu-ink/90 px-3 py-1.5 text-[12px] text-white ring-1 ring-white/20">
-                            {u.totalArea} m² · {statusText[u.status]}
-                            {u.status !== "sold" && ` · $${u.price.toLocaleString("en-US")}`}
+                            {sold ? "Sold" : `${u.totalArea} m² · ${statusText[u.status]} · $${u.price.toLocaleString("en-US")}`}
                           </span>
                         )}
+                      </>
+                    );
+                    // Sold flats are shown on the plan but cannot be opened.
+                    return sold ? (
+                      <div
+                        key={u.id}
+                        role="img"
+                        aria-label={`Apartment ${u.number}, sold`}
+                        onMouseEnter={() => setHover(u.id)}
+                        onMouseLeave={() => setHover(null)}
+                        className="absolute cursor-not-allowed"
+                        style={box}
+                      >
+                        {inner}
+                      </div>
+                    ) : (
+                      <Link
+                        key={u.id}
+                        href={`/apartments/${u.id}/`}
+                        onMouseEnter={() => setHover(u.id)}
+                        onMouseLeave={() => setHover(null)}
+                        onFocus={() => setHover(u.id)}
+                        onBlur={() => setHover(null)}
+                        className="absolute"
+                        style={box}
+                        aria-label={`Apartment ${u.number}, ${bedroomText(u.bedrooms)}, ${u.totalArea} m², ${statusText[u.status]}`}
+                      >
+                        {inner}
                       </Link>
                     );
                   })}

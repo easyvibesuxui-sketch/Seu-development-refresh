@@ -56,7 +56,7 @@ export default function LightScene() {
   }, []);
 
   return (
-    <section ref={rootRef} data-tone="dark" data-no-out className="tone-dark relative h-[340vh]" aria-label="Homes made of light">
+    <section ref={rootRef} data-tone="dark" data-no-out className="tone-dark relative z-10 h-[340vh] shadow-[0_-30px_80px_rgb(0_0_0/0.25)]" aria-label="Homes made of light">
       <div className="sticky top-0 h-[100svh] overflow-hidden bg-[#222a24]">
         {/* The film fills the stage; the wall with its window sits on top of it. */}
         <div className="absolute inset-0 overflow-hidden">

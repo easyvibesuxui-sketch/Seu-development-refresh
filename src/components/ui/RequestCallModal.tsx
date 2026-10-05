@@ -80,7 +80,7 @@ function Dialog({ unit, open, onClose }: { unit?: Unit; open: boolean; onClose: 
         {unit && (
           <div className="rc-unit hidden flex-col rounded-[20px] border border-seu-line bg-white p-5 md:flex">
             <p className="title-display text-[18px] uppercase">Apartment {unit.number}</p>
-            <img src={withBase("/images/apartment-3d.png")} alt="" className="my-4 rounded bg-[#313b38]" />
+            <img src={withBase("/images/apartment-3d.webp")} alt="" className="my-4 w-full object-contain" />
             <div className="flex flex-wrap gap-2 [&>span]:border [&>span]:border-seu-ink/15">
               <Chip>Varketili</Chip>
               <Chip>{block?.name}</Chip>

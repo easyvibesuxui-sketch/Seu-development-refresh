@@ -4,7 +4,8 @@ import { unitById, units } from "@/data/inventory";
 import ApartmentView from "@/components/apartment/ApartmentView";
 
 export function generateStaticParams() {
-  return units.map((u) => ({ id: u.id }));
+  // Sold flats have no page: they are closed to buyers.
+  return units.filter((u) => u.status !== "sold").map((u) => ({ id: u.id }));
 }
 
 export async function generateMetadata({ params }: PageProps<"/apartments/[id]">): Promise<Metadata> {
@@ -16,6 +17,6 @@ export async function generateMetadata({ params }: PageProps<"/apartments/[id]">
 export default async function ApartmentPage({ params }: PageProps<"/apartments/[id]">) {
   const { id } = await params;
   const unit = unitById(id);
-  if (!unit) notFound();
+  if (!unit || unit.status === "sold") notFound();
   return <ApartmentView unit={unit} />;
 }

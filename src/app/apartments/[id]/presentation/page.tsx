@@ -10,7 +10,8 @@ import PrintButton from "@/components/apartment/PrintButton";
  * (docs/design/apartment-profile-template.pdf). "Download PDF" uses the browser's print-to-PDF.
  */
 export function generateStaticParams() {
-  return units.map((u) => ({ id: u.id }));
+  // Sold flats have no page: they are closed to buyers.
+  return units.filter((u) => u.status !== "sold").map((u) => ({ id: u.id }));
 }
 
 export async function generateMetadata({ params }: PageProps<"/apartments/[id]/presentation">): Promise<Metadata> {
@@ -21,7 +22,7 @@ export async function generateMetadata({ params }: PageProps<"/apartments/[id]/p
 export default async function PresentationPage({ params }: PageProps<"/apartments/[id]/presentation">) {
   const { id } = await params;
   const unit = unitById(id);
-  if (!unit) notFound();
+  if (!unit || unit.status === "sold") notFound();
 
   return (
     <div className="presentation">
