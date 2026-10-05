@@ -300,21 +300,33 @@ html.is-loading body {
   background: #f3efe91a;
 }
 
+/* Over drag/play areas the ring becomes a frosted glass lens: the scene stays visible,
+   just blurred and brightened behind a thin lit edge. */
 .cursor[data-mode="drag"],
 .cursor[data-mode="play"] {
-  width: 78px;
-  height: 78px;
-  margin: -39px 0 0 -39px;
-  background: #f3efe9;
+  width: 84px;
+  height: 84px;
+  margin: -42px 0 0 -42px;
   mix-blend-mode: normal;
-  border-color: transparent;
+  border-color: rgb(255 255 255 / 0.35);
+  background:
+    radial-gradient(120% 90% at 30% 15%, rgb(255 255 255 / 0.22), transparent 55%),
+    rgb(243 239 233 / 0.08);
+  -webkit-backdrop-filter: blur(14px) saturate(1.6) brightness(1.08);
+  backdrop-filter: blur(14px) saturate(1.6) brightness(1.08);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.35),
+    inset 0 -8px 18px rgb(255 255 255 / 0.05),
+    0 10px 30px rgb(0 0 0 / 0.25);
 }
 
 .cursor span {
-  color: #15201d;
+  color: var(--seu-cream);
   font-size: 11px;
-  letter-spacing: 0.14em;
+  font-weight: 600;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
+  text-shadow: 0 1px 8px rgb(0 0 0 / 0.35);
 }
 
 .lifestyle-copy {
