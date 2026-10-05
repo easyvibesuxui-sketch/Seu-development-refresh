@@ -336,8 +336,10 @@ export default function HeroMap() {
 
       <FilterPanel className={styles.filter} />
 
-      <a href="#about" className={styles.scrollHint} aria-label="Scroll down">
-        <span />
+      <a href="#about" className={styles.scrollHint} aria-label="Scroll to About company">
+        <svg width="14" height="16" viewBox="0 0 14 16" fill="none" aria-hidden>
+          <path d="M7 1v13M1 8l6 6 6-6" stroke="currentColor" strokeWidth="1.4" />
+        </svg>
       </a>
     </section>
   );

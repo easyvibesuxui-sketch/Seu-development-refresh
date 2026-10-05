@@ -127,7 +127,7 @@ export default function ChooseView() {
             className="mt-14 flex flex-col gap-12"
             onSubmit={(e) => {
               e.preventDefault();
-              const q = new URLSearchParams({ project: "varketili" });
+              const q = new URLSearchParams({ project: "varketili", view: view.id });
               const picked = rooms.map((r) => Math.min(BEDROOMS.indexOf(r), 3));
               if (picked.length) q.set("rooms", [...new Set(picked)].sort().join(","));
               router.push(`/search/?${q}`);
@@ -168,7 +168,7 @@ export default function ChooseView() {
                   <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.6" />
                   <path d="M12.5 12.5L17 17" stroke="currentColor" strokeWidth="1.6" />
                 </svg>
-                Show apartments
+                Show apartments with this view
               </button>
             </div>
           </form>

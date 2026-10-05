@@ -1,17 +1,61 @@
 import type { GeoJSONSource, Map as MapLibreMap } from "maplibre-gl";
 
 /*
- * Glowing car lights driving along the real road network around the camera.
- * Roads come from the loaded vector tiles; cars are points pushed to a GeoJSON source
- * at ~30 fps. Headlights (warm white) and tail lights (red) travel in opposite directions.
+ * Cars as tiny faceted gems driving along the real road network around the camera, as in
+ * the ERA model. Roads come from the loaded vector tiles; cars are points pushed to a GeoJSON
+ * source at ~30 fps and drawn as an upright diamond icon (facing the camera, never flattened)
+ * over a soft contact shadow, each with its own slow shimmer.
  */
 
 type Road = { coords: [number, number][]; cumulative: number[]; length: number };
-type Car = { road: Road; at: number; speed: number; forward: boolean };
+type Car = { road: Road; at: number; speed: number; forward: boolean; phase: number };
 
 const SOURCE = "traffic";
 const ROAD_CLASSES = ["motorway", "trunk", "primary", "secondary", "tertiary"];
-const MAX_CARS = 720;
+const MAX_CARS = 820;
+const GEM = "car-gem";
+
+/** Faceted diamond drawn once on a canvas: light top facets, cooler lower facets, fine outline. */
+function gemImage(size = 40) {
+  const c = document.createElement("canvas");
+  c.width = c.height = size;
+  const g = c.getContext("2d")!;
+  const m = size / 2;
+  const w = size * 0.3;
+  const h = size * 0.42;
+  const top: [number, number] = [m, m - h];
+  const bottom: [number, number] = [m, m + h];
+  const left: [number, number] = [m - w, m];
+  const right: [number, number] = [m + w, m];
+  const face = (pts: [number, number][], fill: string) => {
+    g.beginPath();
+    g.moveTo(...pts[0]);
+    pts.slice(1).forEach((p) => g.lineTo(...p));
+    g.closePath();
+    g.fillStyle = fill;
+    g.fill();
+  };
+  // Four facets around a bright centre, like a cut stone.
+  face([top, right, [m, m]], "#ffffff");
+  face([top, left, [m, m]], "#eef2f4");
+  face([bottom, right, [m, m]], "#c9d3d8");
+  face([bottom, left, [m, m]], "#dfe6ea");
+  g.beginPath();
+  g.moveTo(...top);
+  g.lineTo(...right);
+  g.lineTo(...bottom);
+  g.lineTo(...left);
+  g.closePath();
+  g.lineWidth = size * 0.035;
+  g.strokeStyle = "rgba(19,33,29,0.55)";
+  g.stroke();
+  // Specular glint.
+  g.fillStyle = "rgba(255,255,255,0.95)";
+  g.beginPath();
+  g.arc(m - w * 0.28, m - h * 0.38, size * 0.05, 0, Math.PI * 2);
+  g.fill();
+  return g.getImageData(0, 0, size, size);
+}
 const FRAME_MS = 33;
 const METERS_PER_DEG_LAT = 111_320;
 
@@ -50,27 +94,35 @@ export function createTraffic(map: MapLibreMap) {
   let running = false;
 
   map.addSource(SOURCE, { type: "geojson", data: { type: "FeatureCollection", features: [] } });
+  if (!map.hasImage(GEM)) map.addImage(GEM, gemImage(), { pixelRatio: 2 });
   map.addLayer({
-    id: "traffic-glow",
+    // Contact shadow on the road surface.
+    id: "traffic-shadow",
     type: "circle",
     source: SOURCE,
     paint: {
-      "circle-color": ["match", ["get", "kind"], "head", "#13211d", "#a8541f"],
-      "circle-radius": ["interpolate", ["linear"], ["zoom"], 12, 1.6, 16, 5],
-      "circle-blur": 1,
-      "circle-opacity": 0.25,
+      "circle-color": "#13211d",
+      "circle-radius": ["interpolate", ["linear"], ["zoom"], 12, 1.2, 16, 3.4],
+      "circle-blur": 0.9,
+      "circle-opacity": 0.22,
+      "circle-translate": [1, 1.5],
       "circle-pitch-alignment": "map",
     },
   });
   map.addLayer({
-    id: "traffic-core",
-    type: "circle",
+    id: "traffic-gems",
+    type: "symbol",
     source: SOURCE,
-    paint: {
-      "circle-color": ["match", ["get", "kind"], "head", "#13211d", "#c2611f"],
-      "circle-radius": ["interpolate", ["linear"], ["zoom"], 12, 0.8, 16, 2.4],
-      "circle-pitch-alignment": "map",
+    layout: {
+      "icon-image": GEM,
+      "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.32, 14, 0.55, 16, 0.95],
+      "icon-allow-overlap": true,
+      "icon-ignore-placement": true,
+      "icon-pitch-alignment": "viewport",
+      "icon-rotation-alignment": "viewport",
+      "icon-anchor": "bottom",
     },
+    paint: { "icon-opacity": ["get", "tw"] },
   });
 
   const collectRoads = () => {
@@ -96,7 +148,13 @@ export function createTraffic(map: MapLibreMap) {
       // At least one car per sampled road so side streets are alive too.
       const count = Math.max(1, Math.round((road.length / total) * MAX_CARS));
       for (let i = 0; i < count; i++) {
-        cars.push({ road, at: Math.random() * road.length, speed: 7 + Math.random() * 6, forward: Math.random() > 0.5 });
+        cars.push({
+          road,
+          at: Math.random() * road.length,
+          speed: 7 + Math.random() * 6,
+          forward: Math.random() > 0.5,
+          phase: Math.random() * Math.PI * 2,
+        });
       }
     }
     // Dense tiles can yield thousands of short segments; keep a random, bounded set.
@@ -122,7 +180,8 @@ export function createTraffic(map: MapLibreMap) {
       if (car.at < 0) car.at = car.road.length;
       return {
         type: "Feature",
-        properties: { kind: car.forward ? "head" : "tail" },
+        // A slow shimmer per car, so the stream of gems sparkles.
+        properties: { tw: 0.72 + 0.28 * Math.sin(now * 0.004 + car.phase) },
         geometry: { type: "Point", coordinates: pointAt(car.road, car.at) },
       };
     });

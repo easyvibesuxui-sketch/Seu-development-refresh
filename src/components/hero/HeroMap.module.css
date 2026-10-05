@@ -60,7 +60,7 @@
 
 .map :global(.maplibregl-ctrl-attrib) {
   background: transparent;
-  color: rgb(19 33 29 / 0.5);
+  color: rgb(19 33 29 / 0.8);
   font-size: 10px;
 }
 
@@ -200,10 +200,14 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 5px 6px 5px 10px;
-  border-radius: 6px;
-  background: #0e1a16e6;
-  border: 1px solid #ffffff26;
+  padding: 6px 6px 6px 12px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.88);
+  border: 1px solid rgb(19 33 29 / 0.12);
+  box-shadow: 0 8px 24px rgb(19 33 29 / 0.18);
+  -webkit-backdrop-filter: blur(12px) saturate(1.4);
+  backdrop-filter: blur(12px) saturate(1.4);
+  color: #13211d;
   white-space: nowrap;
   opacity: 0;
   transform: translate(-50%, 6px);
@@ -215,27 +219,32 @@
 
 .labelName {
   font-size: 12px;
+  font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
 .chip {
-  padding: 2px 6px;
-  border-radius: 4px;
+  padding: 3px 8px;
+  border-radius: 999px;
   background: var(--seu-accent);
+  color: #fff;
   font-size: 10px;
+  font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .pin[data-status="finished"] .chip {
-  background: var(--seu-cream);
-  color: #15201d;
+  background: #2c4a41;
+  color: #fff;
 }
 
 .distance {
-  color: var(--seu-muted);
-  font-size: 11px;
+  padding-right: 6px;
+  color: #4a554f;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .pin:hover .label,
@@ -495,47 +504,29 @@
 .scrollHint {
   position: absolute;
   left: 50%;
-  bottom: 28px;
+  bottom: 24px;
   z-index: 2;
-  width: 14px;
-  height: 30px;
-  margin-left: -7px;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin-left: -24px;
+  border-radius: 999px;
+  border: 1px solid rgb(19 33 29 / 0.25);
+  background: rgb(255 255 255 / 0.6);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: #13211d;
 }
 
-.scrollHint::before,
-.scrollHint::after,
-.scrollHint span {
-  content: "";
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+.scrollHint svg {
+  animation: hint-bob 1.8s ease-in-out infinite;
 }
 
-.scrollHint::before,
-.scrollHint::after {
-  width: 8px;
-  height: 8px;
-  border-left: 1px solid #ffffffb3;
-  border-top: 1px solid #ffffffb3;
-}
-
-.scrollHint::before {
-  top: 0;
-  transform: translateX(-50%) rotate(45deg);
-}
-
-.scrollHint::after {
-  bottom: 0;
-  transform: translateX(-50%) rotate(225deg);
-}
-
-.scrollHint span {
-  top: 11px;
-  width: 7px;
-  height: 7px;
-  border: 1px solid rgb(19 33 29 / 0.55);
-  border-radius: 50%;
-  animation: bob 1.8s ease-in-out infinite;
+@keyframes hint-bob {
+  50% {
+    transform: translateY(4px);
+  }
 }
 
 @keyframes bob {
@@ -576,7 +567,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .pulse,
-  .scrollHint span {
+  .scrollHint svg {
     animation: none;
   }
 }

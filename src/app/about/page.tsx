@@ -32,7 +32,7 @@ export default function AboutPage() {
           <img src={withBase("/images/office.jpg")} alt="SEU Development office" className="h-full w-full object-cover" />
         </div>
         <div className="sunbeams sunbeams--soft" />
-        <div className="absolute inset-0 bg-gradient-to-b from-seu-ink/80 via-seu-ink/10 to-seu-bg" />
+        <div className="absolute inset-0 bg-gradient-to-b from-seu-ink/95 via-seu-ink/50 to-seu-bg" />
         <div className="relative z-10 mx-auto flex h-full max-w-[1680px] flex-col justify-between px-gutter pb-16 pt-44">
           <div>
             <p className="eyebrow mb-8">The company&apos;s team</p>

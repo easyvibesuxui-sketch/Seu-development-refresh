@@ -86,7 +86,10 @@ export function AboutProject({ project, address, text, award }: { project: Proje
                 alt=""
                 className="h-full w-full object-cover opacity-70 transition duration-700 group-hover:scale-105 group-hover:opacity-90"
               />
-              <span className="btn btn-glass btn-sm absolute bottom-5 left-5 text-white">Open in Google Maps ↗</span>
+              <span className="btn btn-glass btn-sm absolute bottom-5 left-5 text-white">
+                Open in Google Maps <span aria-hidden>↗</span>
+                <span className="sr-only">(opens in a new tab)</span>
+              </span>
             </a>
           </div>
           <div data-stagger>

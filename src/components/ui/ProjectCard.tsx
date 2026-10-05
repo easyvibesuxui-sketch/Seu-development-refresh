@@ -15,7 +15,7 @@ export default function ProjectCard({ project, wide = false }: { project: Projec
               className="h-full w-full object-cover transition-transform duration-[1.6s] ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:scale-105"
             />
           </div>
-          <div className="absolute inset-0 bg-gradient-to-t from-seu-ink/80 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-seu-ink/90 via-seu-ink/30 to-transparent" />
           <span className="btn btn-glass btn-icon absolute right-6 top-6 text-white opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-focus-visible:opacity-100" aria-hidden>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
               <path d="M3 13L13 3M5 3h8v8" stroke="currentColor" strokeWidth="1.4" />

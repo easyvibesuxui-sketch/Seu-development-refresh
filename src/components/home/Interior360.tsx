@@ -164,7 +164,7 @@ export default function Interior360() {
             </div>
           )}
           <div className="sunbeams sunbeams--soft" />
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#0c1613]/55 via-transparent via-35% to-[#0c1613]/85" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#0c1613]/80 via-[#0c1613]/5 via-35% to-[#0c1613]/90" />
 
           <ul className="pointer-events-none absolute left-1/2 top-[46%]" aria-hidden>
             {SPOTS.map((s, i) => (
@@ -191,8 +191,8 @@ export default function Interior360() {
         </div>
 
         <div className="pointer-events-none relative mx-auto flex h-full max-w-[1680px] flex-col justify-between px-gutter pb-14 pt-32">
-          <p className="eyebrow text-seu-fg">
-            <span className="text-seu-accent-hi">03</span>Inside · 360°
+          <p className="eyebrow glass glass-dark self-start rounded-full py-2 pl-4 pr-5 text-white [--muted:#fff]">
+            <span className="text-[#ffd7b5]">03</span>Inside · 360°
           </p>
           <div className="flex flex-wrap items-end justify-between gap-8">
             <h2 id="inside-title" className="section-title" data-split>

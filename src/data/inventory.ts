@@ -13,6 +13,30 @@ export type UnitStatus = "available" | "reserved" | "sold";
 export type Room = { kind: RoomKind; area: number };
 export type RoomKind = "living" | "kitchen" | "bedroom" | "bathroom" | "wc" | "hall" | "balcony" | "storage";
 
+export type ViewId = "park" | "city" | "sea" | "mountains" | "courtyard" | "panorama";
+
+export const viewText: Record<ViewId, string> = {
+  park: "Hualing Park",
+  city: "City",
+  sea: "Tbilisi Sea",
+  mountains: "Mountains",
+  courtyard: "Courtyard",
+  panorama: "Panorama",
+};
+
+/*
+ * Sample views from the floor plate: the four north flats face Hualing (park west, city east),
+ * the three south flats face the Tbilisi Sea (the corner one also the hills), the two middle
+ * flats look into the courtyard, and from the 9th floor up every flat gets the panorama.
+ */
+function viewsFor(slot: number, floor: number): ViewId[] {
+  const v: ViewId[] = slot < 4 ? [slot < 2 ? "park" : "city"] : ["sea"];
+  if (slot === 6) v.push("mountains");
+  if (slot === 1 || slot === 5) v.push("courtyard");
+  if (floor >= 9) v.push("panorama");
+  return v;
+}
+
 export type Unit = {
   id: string;
   number: number;
@@ -29,6 +53,7 @@ export type Unit = {
   price: number;
   status: UnitStatus;
   discounted: boolean;
+  views: ViewId[];
   rooms: Room[];
 };
 
@@ -113,6 +138,7 @@ function buildInventory(): Unit[] {
           price: Math.round((pricePerM2 * layout.total) / 100) * 100,
           status,
           discounted: status === "available" && rand() < 0.12,
+          views: viewsFor(slot, floor),
           rooms: roomsFor(layout.bedrooms, layout.total, rand),
         });
       });

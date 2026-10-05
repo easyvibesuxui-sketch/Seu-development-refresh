@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { withBase } from "@/data/projects";
-import { roomText, statusText, units, type Unit } from "@/data/inventory";
+import { roomText, statusText, units, viewText, type Unit } from "@/data/inventory";
 import { Container, Section, SectionHeader } from "@/components/ui/Section";
 import ApartmentCard from "@/components/ui/ApartmentCard";
 import BackLink from "@/components/ui/BackLink";
@@ -57,6 +57,13 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
               </div>
             ))}
           </dl>
+          <ul className="mt-8 flex flex-wrap gap-2" aria-label="Views">
+            {unit.views.map((v) => (
+              <li key={v} className="tag">
+                {viewText[v]}
+              </li>
+            ))}
+          </ul>
           <div className="mt-10 h-px bg-seu-line" />
 
           <div className="mt-8 flex flex-wrap items-end gap-8">
@@ -100,7 +107,8 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
               <svg width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" strokeWidth="1.2" aria-hidden>
                 <path d="M2 1h7l4 4v10H2zM9 1v4h4M4.5 9h5M4.5 12h5" />
               </svg>
-              See presentation
+              See presentation <span aria-hidden>↗</span>
+              <span className="sr-only">(opens in a new tab)</span>
             </a>
           </div>
           <div ref={stageRef} className="relative mt-4 aspect-[4/3.3] overflow-hidden rounded-[24px] bg-seu-paper">

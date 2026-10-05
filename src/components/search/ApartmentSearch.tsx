@@ -3,16 +3,16 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import gsap from "gsap";
-import { units, varketiliBlocks } from "@/data/inventory";
+import { units, varketiliBlocks, viewText, type ViewId } from "@/data/inventory";
 import ApartmentCard from "@/components/ui/ApartmentCard";
 import { Container, Section } from "@/components/ui/Section";
 
 const GEL_PER_USD = 2.7; // indicative rate for the price filter
 const PAGE = 24;
 
-type Filters = { project: string; block: string; rooms: number[]; sizeFrom: string; sizeTo: string; priceFrom: string; priceTo: string; currency: "USD" | "GEL"; available: boolean };
+type Filters = { project: string; block: string; view: ViewId | ""; rooms: number[]; sizeFrom: string; sizeTo: string; priceFrom: string; priceTo: string; currency: "USD" | "GEL"; available: boolean };
 
-const empty: Filters = { project: "", block: "", rooms: [], sizeFrom: "", sizeTo: "", priceFrom: "", priceTo: "", currency: "USD", available: true };
+const empty: Filters = { project: "", block: "", view: "", rooms: [], sizeFrom: "", sizeTo: "", priceFrom: "", priceTo: "", currency: "USD", available: true };
 
 export default function ApartmentSearch() {
   const params = useSearchParams();
@@ -23,7 +23,8 @@ export default function ApartmentSearch() {
       .filter(Boolean)
       .map((r) => Math.min(Number(r), 3))
       .filter((r) => !Number.isNaN(r));
-    return { ...empty, project: params.get("project") ?? "", rooms, sizeFrom: params.get("from") ?? "", sizeTo: params.get("to") ?? "" };
+    const view = params.get("view") ?? "";
+    return { ...empty, project: params.get("project") ?? "", view: view in viewText ? (view as ViewId) : "", rooms, sizeFrom: params.get("from") ?? "", sizeTo: params.get("to") ?? "" };
   }, [params]);
   const [draft, setDraft] = useState<Filters>(initial);
   const [applied, setApplied] = useState<Filters>(initial);
@@ -36,6 +37,7 @@ export default function ApartmentSearch() {
     return units.filter((u) => {
       if (applied.project && u.project !== applied.project) return false;
       if (applied.block && u.block !== applied.block) return false;
+      if (applied.view && !u.views.includes(applied.view)) return false;
       if (applied.rooms.length && !applied.rooms.includes(Math.min(u.bedrooms, 3))) return false;
       if (applied.available && u.status === "sold") return false;
       const sf = n(applied.sizeFrom), st = n(applied.sizeTo), pf = n(applied.priceFrom), pt = n(applied.priceTo);
@@ -97,6 +99,17 @@ export default function ApartmentSearch() {
               {varketiliBlocks.map((b) => (
                 <option key={b.id} value={b.id}>
                   {b.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="block">
+            <span className="field-label">View</span>
+            <select className={field} value={draft.view} onChange={(e) => set("view", e.target.value as ViewId | "")}>
+              <option value="">Any view</option>
+              {(Object.keys(viewText) as ViewId[]).map((v) => (
+                <option key={v} value={v}>
+                  {viewText[v]}
                 </option>
               ))}
             </select>

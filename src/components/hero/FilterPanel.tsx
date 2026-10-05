@@ -24,7 +24,7 @@ export default function FilterPanel({ className = "" }: { className?: string }) 
   return (
     <form
       aria-labelledby={`${id}-title`}
-      className={`w-[320px] rounded-[20px] border border-seu-line bg-[#f6f1e8]/72 p-6 text-seu-fg shadow-[0_20px_60px_rgb(19_33_29/0.12)] backdrop-blur-2xl backdrop-saturate-150 ${className}`}
+      className={`vars-light glass w-[320px] rounded-[24px] p-6 text-seu-fg ${className}`}
       onSubmit={(e) => {
         e.preventDefault();
         const q = new URLSearchParams({ project: "varketili" });

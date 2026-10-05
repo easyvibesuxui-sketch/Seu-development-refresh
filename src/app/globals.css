@@ -31,12 +31,17 @@
 
   /* ---- Tone-dependent roles (dark by default; .tone-light flips them) ---- */
   --fg: #f6f1e8;
-  --muted: #a9b4ae;
+  --muted: #b3bdb8;
   --line: rgb(246 241 232 / 0.16);
   --line-strong: rgb(246 241 232 / 0.4);
   --accent-ink: #e39a62;
   --surface: #1b2c27;
   --field: rgb(246 241 232 / 0.06);
+  /* Glass: tinted enough that text keeps ≥4.5:1 over any photo behind it. */
+  --glass-bg: linear-gradient(140deg, rgb(22 38 33 / 0.86), rgb(10 18 16 / 0.8));
+  --glass-border: rgb(255 255 255 / 0.14);
+  --glass-hi: rgb(255 255 255 / 0.14);
+  --glass-shadow: 0 24px 60px rgb(0 0 0 / 0.3);
   --seu-fg: var(--fg);
   --seu-muted: var(--muted);
   --seu-line: var(--line);
@@ -53,12 +58,27 @@
 .tone-light,
 .vars-light {
   --fg: #13211d;
-  --muted: #5b6661;
+  --muted: #535e59;
   --line: rgb(19 33 29 / 0.14);
-  --line-strong: rgb(19 33 29 / 0.4);
-  --accent-ink: #9c4b1a;
+  --line-strong: rgb(19 33 29 / 0.45);
+  --accent-ink: #8e4416;
   --surface: #ebe2d3;
-  --field: rgb(19 33 29 / 0.05);
+  --field: rgb(255 255 255 / 0.55);
+  --glass-bg: linear-gradient(140deg, rgb(255 255 255 / 0.86), rgb(246 241 232 / 0.78));
+  --glass-border: rgb(255 255 255 / 0.85);
+  --glass-hi: rgb(255 255 255 / 0.95);
+  --glass-shadow: 0 24px 60px rgb(19 33 29 / 0.14);
+  /* Aliases resolve where they are declared, so re-point them in the light tone too. */
+  --seu-fg: var(--fg);
+  --seu-muted: var(--muted);
+  --seu-line: var(--line);
+  --seu-accent-hi: var(--accent-ink);
+}
+
+/* Inside glass the backdrop can be a busy photo: muted text gets darker for margin. */
+.glass.vars-light,
+.vars-light .glass {
+  --muted: #3f4a45;
 }
 
 .tone-light {
@@ -318,9 +338,9 @@ body::before {
 }
 
 .btn-glass {
-  --btn-bg: rgb(246 241 232 / 0.08);
-  --btn-fg: var(--fg);
-  --btn-border: rgb(246 241 232 / 0.28);
+  --btn-bg: rgb(12 22 19 / 0.55);
+  --btn-fg: #fff;
+  --btn-border: rgb(255 255 255 / 0.35);
   -webkit-backdrop-filter: blur(16px) saturate(1.4);
   backdrop-filter: blur(16px) saturate(1.4);
 }
@@ -388,6 +408,11 @@ body::before {
     background-color 0.3s;
 }
 
+.field::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+
 .field:focus {
   border-color: var(--accent-ink);
 }
@@ -407,13 +432,36 @@ body::before {
 
 @layer components {
   /* Content tiles (apartments, news, partners): one radius, one border, one hover. */
+  .glass {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow:
+      inset 0 1px 0 var(--glass-hi),
+      var(--glass-shadow);
+    -webkit-backdrop-filter: blur(24px) saturate(1.5);
+    backdrop-filter: blur(24px) saturate(1.5);
+  }
+
+  /* Dark glass whatever the section tone: for labels laid over photos and films. */
+  .glass-dark {
+    --glass-bg: linear-gradient(140deg, rgb(22 38 33 / 0.86), rgb(10 18 16 / 0.8));
+    --glass-border: rgb(255 255 255 / 0.14);
+    --glass-hi: rgb(255 255 255 / 0.14);
+    --glass-shadow: 0 24px 60px rgb(0 0 0 / 0.3);
+  }
+
   .card {
     display: flex;
     flex-direction: column;
     padding: 20px;
-    border: 1px solid var(--line);
+    border: 1px solid var(--glass-border);
     border-radius: 24px;
-    background: var(--surface);
+    background: var(--glass-bg);
+    box-shadow:
+      inset 0 1px 0 var(--glass-hi),
+      var(--glass-shadow);
+    -webkit-backdrop-filter: blur(24px) saturate(1.5);
+    backdrop-filter: blur(24px) saturate(1.5);
     transition:
       transform 0.5s var(--ease-out),
       border-color 0.5s var(--ease-out);
@@ -1008,125 +1056,3 @@ body:has(.presentation) .cursor {
 
 
 
-/* ---------- Arched window architrave (LightScene) ----------
-   --t/--r/--b/--l: the opening's insets; --rad: its arch radius. */
-.ls-frame > span {
-  position: absolute;
-  display: block;
-}
-
-.arch-glow {
-  inset: var(--t) var(--r) var(--b) var(--l);
-  border-radius: var(--rad) var(--rad) 0 0;
-  box-shadow:
-    0 0 120px 20px rgb(255 205 150 / 0.18),
-    inset 0 0 60px rgb(0 0 0 / 0.35);
-}
-
-.arch-moulding {
-  border: 1px solid rgb(246 241 232 / 0.22);
-  border-bottom: 0;
-}
-
-.arch-moulding--outer {
-  inset: calc(var(--t) - 46px) calc(var(--r) - 46px) var(--b) calc(var(--l) - 46px);
-  border-radius: calc(var(--rad) + 46px) calc(var(--rad) + 46px) 0 0;
-  border-color: rgb(246 241 232 / 0.12);
-}
-
-.arch-moulding--mid {
-  inset: calc(var(--t) - 34px) calc(var(--r) - 34px) var(--b) calc(var(--l) - 34px);
-  border-radius: calc(var(--rad) + 34px) calc(var(--rad) + 34px) 0 0;
-}
-
-/* Bronze band: a gradient ring cut out with a mask so only the border shows. */
-.arch-band {
-  inset: calc(var(--t) - 22px) calc(var(--r) - 22px) var(--b) calc(var(--l) - 22px);
-  padding: 14px 14px 0;
-  border-radius: calc(var(--rad) + 22px) calc(var(--rad) + 22px) 0 0;
-  background: linear-gradient(160deg, #f6d2a6 0%, #b06a35 28%, #6e3613 52%, #d79a62 74%, #5a2d10 100%);
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask:
-    linear-gradient(#000 0 0) content-box exclude,
-    linear-gradient(#000 0 0);
-  box-shadow: 0 20px 60px rgb(0 0 0 / 0.45);
-}
-
-.arch-bead {
-  inset: calc(var(--t) - 4px) calc(var(--r) - 4px) var(--b) calc(var(--l) - 4px);
-  border: 1.5px solid rgb(255 226 190 / 0.7);
-  border-bottom: 0;
-  border-radius: calc(var(--rad) + 4px) calc(var(--rad) + 4px) 0 0;
-}
-
-/* Pilasters: fluted columns from the spring line down to the sill. */
-.arch-pilaster {
-  top: calc(var(--t) + var(--rad));
-  bottom: var(--b);
-  width: 18px;
-  background: repeating-linear-gradient(90deg, rgb(246 241 232 / 0.16) 0 1px, transparent 1px 6px);
-  border-inline: 1px solid rgb(246 241 232 / 0.2);
-}
-
-.arch-pilaster--left {
-  left: calc(var(--l) - 66px);
-}
-
-.arch-pilaster--right {
-  right: calc(var(--r) - 66px);
-}
-
-.arch-impost {
-  top: calc(var(--t) + var(--rad) - 8px);
-  width: 40px;
-  height: 10px;
-  background: linear-gradient(#d79a62, #6e3613);
-  border-radius: 2px;
-}
-
-.arch-impost--left {
-  left: calc(var(--l) - 77px);
-}
-
-.arch-impost--right {
-  right: calc(var(--r) - 77px);
-}
-
-.arch-keystone {
-  top: calc(var(--t) - 30px);
-  left: 50%;
-  width: 34px;
-  height: 46px;
-  transform: translateX(-50%);
-  clip-path: polygon(0 0, 100% 0, 80% 100%, 20% 100%);
-  background: linear-gradient(180deg, #f6d2a6, #a85a24 60%, #6e3613);
-  box-shadow: 0 0 30px rgb(227 154 98 / 0.5);
-}
-
-.arch-sill {
-  bottom: calc(var(--b) - 26px);
-  left: calc(var(--l) - 92px);
-  right: calc(var(--r) - 92px);
-  height: 26px;
-  border-top: 1px solid rgb(255 226 190 / 0.6);
-  background: linear-gradient(180deg, #2c3c37, #121d1a);
-  box-shadow:
-    0 24px 50px rgb(0 0 0 / 0.55),
-    inset 0 6px 0 rgb(246 241 232 / 0.06);
-}
-
-@media (max-width: 767px) {
-  .arch-pilaster,
-  .arch-impost,
-  .arch-moulding--outer {
-    display: none;
-  }
-
-  .arch-sill {
-    left: calc(var(--l) - 28px);
-    right: calc(var(--r) - 28px);
-  }
-}

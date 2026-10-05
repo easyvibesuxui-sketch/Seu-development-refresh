@@ -19,7 +19,8 @@ export default function NewsPage() {
           <>
             Construction updates, interviews and videos from our sites.{" "}
             <a href="https://www.youtube.com/@seudevelopment9577" target="_blank" rel="noreferrer" className="text-seu-fg underline decoration-seu-accent-hi decoration-2 underline-offset-4">
-              Watch on YouTube ↗
+              Watch on YouTube <span aria-hidden>↗</span>
+              <span className="sr-only">(opens in a new tab)</span>
             </a>
           </>
         }
@@ -30,7 +31,7 @@ export default function NewsPage() {
           <div className="absolute inset-0 animate-[kenburns_18s_ease-in-out_infinite_alternate]">
             <img src={withBase(featured.image)} alt="" className="h-full w-full object-cover" />
           </div>
-          <div className="absolute inset-0 bg-gradient-to-t from-seu-ink/90 via-seu-ink/20 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-seu-ink/95 via-seu-ink/55 to-seu-ink/20" />
           <div className="absolute inset-x-8 bottom-10 md:inset-x-12 md:bottom-14">
             <p className="eyebrow text-white/85 [--muted:rgb(255_255_255/0.85)]">Featured</p>
             <h2 className="section-title mt-5 max-w-5xl text-[clamp(30px,3.4vw,60px)] text-white">{featured.title}</h2>

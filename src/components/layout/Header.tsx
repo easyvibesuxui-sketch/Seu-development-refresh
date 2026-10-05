@@ -144,7 +144,8 @@ export default function Header() {
               </span>
             </button>
           </nav>
-          <Link href="/search/" aria-label="Search apartments" className="btn btn-primary btn-icon h-14 w-14">
+          {/* Shortcut to search only where the "Apartments" link is folded into the menu. */}
+          <Link href="/search/" aria-label="Search apartments" className="btn btn-primary btn-icon h-14 w-14 xl:hidden">
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden>
               <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.6" />
               <path d="M12.5 12.5L17 17" stroke="currentColor" strokeWidth="1.6" />

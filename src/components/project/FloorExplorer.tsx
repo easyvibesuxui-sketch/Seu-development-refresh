@@ -111,9 +111,8 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
                     return (
                       <Link
                         key={u.id}
-                        href={u.status === "sold" ? "#" : `/apartments/${u.id}/`}
-                        aria-disabled={u.status === "sold"}
-                        onClick={(e) => u.status === "sold" && e.preventDefault()}
+                        // Sold flats still open their page (layout, sizes); only the call request is off there.
+                        href={`/apartments/${u.id}/`}
                         onMouseEnter={() => setHover(u.id)}
                         onMouseLeave={() => setHover(null)}
                         onFocus={() => setHover(u.id)}
@@ -135,7 +134,7 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
                         >
                           {statusText[u.status]}
                         </span>
-                        <span className="label absolute left-2 top-1 text-[11px] text-seu-cream/70">{u.number}</span>
+                        <span className="label absolute left-1.5 top-1.5 rounded-full bg-seu-ink/85 px-2 py-0.5 text-[11px] text-white">{u.number}</span>
                         {hover === u.id && (
                           <span className="label absolute bottom-2 left-1/2 w-max -translate-x-1/2 rounded bg-seu-ink/90 px-2 py-1 text-[11px]">
                             {u.totalArea} m² · {u.bedrooms === 0 ? "Studio" : `${u.bedrooms} bd`}
