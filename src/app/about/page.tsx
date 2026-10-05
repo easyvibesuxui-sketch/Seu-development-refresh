@@ -21,8 +21,13 @@ const MISSION = [
   "SEU Development aims to create a multifunctional residential complex that meets the needs and wishes of each client and ensures that such projects are accessible to every member of society.",
 ];
 
-// Placeholder roster: the design shows one team member; names and roles to be supplied by SEU.
-const TEAM = Array.from({ length: 4 }, (_, i) => ({ id: i, name: "Kate Arveladze", role: "Marketing & SEO", photo: "/images/team-1.jpg" }));
+// Illustrative roster for this concept: Kling portraits and sample names. SEU supplies the real team.
+const TEAM = [
+  { id: 1, name: "Giorgi Beridze", role: "Managing director", photo: "/images/team-1.jpg" },
+  { id: 2, name: "Nino Kapanadze", role: "Head of sales", photo: "/images/team-2.jpg" },
+  { id: 3, name: "Levan Tsiklauri", role: "Chief engineer", photo: "/images/team-3.jpg" },
+  { id: 4, name: "Ana Japaridze", role: "Marketing & SEO", photo: "/images/team-4.jpg" },
+];
 
 export default function AboutPage() {
   return (
@@ -71,12 +76,13 @@ export default function AboutPage() {
               Successfully completed projects by SEU Development include the old and new buildings of the Georgian National University,
               which house modern educational and exhibition facilities, as well as a business center in the suburbs of Tbilisi.
             </p>
+            <p className="mt-6 text-[12px] text-seu-muted">Portraits and names are illustrative for this concept.</p>
           </div>
           <div className="-mr-gutter flex snap-x gap-6 overflow-x-auto pb-4 pr-gutter" data-cursor="drag" tabIndex={0} aria-label="Team, scroll horizontally">
             {TEAM.map((m) => (
               <figure key={m.id} className="card group w-[280px] shrink-0 snap-start overflow-hidden p-0">
                 <div className="overflow-hidden">
-                  <img src={withBase(m.photo)} alt={m.name} className="aspect-[3/4] w-full object-cover grayscale transition duration-700 group-hover:scale-105 group-hover:grayscale-0" />
+                  <img src={withBase(m.photo)} alt={`${m.name}, ${m.role}`} loading="lazy" className="aspect-[3/4] w-full object-cover grayscale transition duration-700 group-hover:scale-105 group-hover:grayscale-0" />
                 </div>
                 <figcaption className="p-5">
                   <p className="title-m text-[22px]">{m.name}</p>

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import Sheet from "@/components/ui/Sheet";
 import type { GeoJSONSource, Map as MapLibreMap, Marker } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { mappedProjects, withBase } from "@/data/projects";
@@ -44,7 +45,7 @@ function hull(points: Pt[]): Pt[] {
   return lower.slice(0, -1).concat(upper.slice(0, -1));
 }
 
-export default function SunStudy({ onClose }: { onClose: () => void }) {
+export default function SunStudy({ onClose, variant = "full", place }: { onClose: () => void; variant?: "full" | "sheet"; place?: string }) {
   const site = mappedProjects[0];
   const [lng, lat] = site.coords;
   const now = new Date();
@@ -98,6 +99,8 @@ export default function SunStudy({ onClose }: { onClose: () => void }) {
     closeFn.current = onClose;
   }, [onClose]);
   useEffect(() => {
+    // In a sheet, the sheet owns focus, Escape and the page lock.
+    if (variant === "sheet") return;
     closeRef.current?.focus();
     const key = (e: KeyboardEvent) => e.key === "Escape" && closeFn.current();
     window.addEventListener("keydown", key);
@@ -108,7 +111,7 @@ export default function SunStudy({ onClose }: { onClose: () => void }) {
       window.removeEventListener("keydown", key);
       html.style.overflow = prev;
     };
-  }, []);
+  }, [variant]);
 
   // The map, the ring and the static paths.
   useEffect(() => {
@@ -343,9 +346,8 @@ export default function SunStudy({ onClose }: { onClose: () => void }) {
     setMinutes(l.getUTCHours() * 60 + l.getUTCMinutes());
   };
 
-  // Portalled to <body>: above the site header and clear of any transformed section.
-  return createPortal(
-    <div role="dialog" aria-modal="true" aria-label="Sun study, SEU Varketili" className="tone-dark fixed inset-0 z-[400] bg-seu-ink" data-lenis-prevent>
+  const body = (
+    <>
       {/* Inline position: MapLibre's stylesheet sets its container to position: relative. */}
       <div ref={containerRef} style={{ position: "absolute", inset: 0 }} />
       {sun.altitude <= 0.5 && <div className="pointer-events-none absolute inset-0 bg-[#0c1a2a]/45" aria-hidden />}
@@ -355,8 +357,8 @@ export default function SunStudy({ onClose }: { onClose: () => void }) {
         className="glass glass-dark absolute left-4 right-4 top-4 rounded-[24px] p-5 text-white md:left-auto md:right-6 md:top-6 md:w-[380px]"
       >
         <div className="flex items-center justify-between">
-          <p className="eyebrow text-white/85">Sun study · SEU Varketili</p>
-          <button ref={closeRef} type="button" onClick={onClose} aria-label="Close sun study" className="btn btn-icon btn-sm h-10 w-10 border-white/40 text-white">
+          <p className="eyebrow text-white/85">Sun study · {place ?? "SEU Varketili"}</p>
+          <button ref={closeRef} type="button" onClick={onClose} data-autofocus aria-label="Close sun study" className="btn btn-icon btn-sm h-10 w-10 border-white/40 text-white">
             <svg width="14" height="14" viewBox="0 0 14 14" stroke="currentColor" strokeWidth="1.5" aria-hidden>
               <path d="M1 1l12 12M13 1L1 13" />
             </svg>
@@ -453,6 +455,20 @@ export default function SunStudy({ onClose }: { onClose: () => void }) {
           </span>
         </p>
       </section>
+    </>
+  );
+
+  if (variant === "sheet")
+    return (
+      <Sheet open onClose={onClose} label={`Sun study${place ? `, ${place}` : ""}, SEU Varketili`} bodyClassName="relative h-[86svh] overflow-hidden bg-seu-ink">
+        {body}
+      </Sheet>
+    );
+
+  // Portalled to <body>: above the site header and clear of any transformed section.
+  return createPortal(
+    <div role="dialog" aria-modal="true" aria-label="Sun study, SEU Varketili" className="tone-dark fixed inset-0 z-[400] bg-seu-ink" data-lenis-prevent>
+      {body}
     </div>,
     document.body,
   );

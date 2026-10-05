@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import gsap from "gsap";
 import { withBase } from "@/data/projects";
 import { roomText, statusText, units, viewText, type RoomKind, type Unit, type ViewId } from "@/data/inventory";
@@ -11,6 +12,9 @@ import RequestCallModal from "@/components/ui/RequestCallModal";
 import { Benefits } from "@/components/project/ProjectDetails";
 import Icon, { type IconName } from "@/components/ui/Icon";
 import FloorPlanSheet from "./FloorPlanSheet";
+
+// The sun study brings MapLibre; load it only when asked for.
+const SunStudy = dynamic(() => import("@/components/project/SunStudy"), { ssr: false });
 
 const roomIcon: Record<RoomKind, IconName> = {
   living: "sofa",
@@ -38,6 +42,7 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
   const [tab, setTab] = useState<Tab>("3D");
   const [asking, setAsking] = useState(false);
   const [sheet, setSheet] = useState(false);
+  const [sun, setSun] = useState(false);
   const stageRef = useRef<HTMLDivElement>(null);
   const similar = units
     .filter((u) => u.id !== unit.id && u.bedrooms === unit.bedrooms && u.status !== "sold")
@@ -45,6 +50,7 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
     .slice(0, 8);
 
   const closeSheet = useCallback(() => setSheet(false), []);
+  const closeSun = useCallback(() => setSun(false), []);
 
   useEffect(() => {
     if (!stageRef.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -176,9 +182,12 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
               )}
             </div>
             {/* The whole floor opens from a centred button, in a bottom sheet. */}
-            <div className="absolute inset-x-0 bottom-5 z-10 flex justify-center">
+            <div className="vars-light absolute inset-x-0 bottom-5 z-10 flex flex-wrap justify-center gap-3 px-4">
               <button type="button" aria-haspopup="dialog" onClick={() => setSheet(true)} className="btn btn-primary">
                 <Icon name="plan" size={18} /> Floor plan
+              </button>
+              <button type="button" aria-haspopup="dialog" onClick={() => setSun(true)} className="btn bg-white/70 backdrop-blur">
+                <Icon name="sun" size={18} /> Sun study
               </button>
             </div>
           </div>
@@ -201,6 +210,7 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
 
       <RequestCallModal unit={unit} open={asking} onClose={() => setAsking(false)} />
       <FloorPlanSheet unit={unit} open={sheet} onClose={closeSheet} />
+      {sun && <SunStudy variant="sheet" place={`Block ${unit.block.slice(1)}, floor ${unit.floor}`} onClose={closeSun} />}
     </main>
   );
 }

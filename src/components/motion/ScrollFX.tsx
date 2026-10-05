@@ -69,9 +69,9 @@ export default function ScrollFX() {
     const ctx = gsap.context(() => {
       gsap.utils.toArray<HTMLElement>("[data-split]").forEach((el) => {
         const split = SplitText.create(el, { type: "words,lines", mask: "lines", linesClass: "split-line" });
-        gsap.from(split.words, {
-          yPercent: 110,
-          rotate: 4,
+        gsap.fromTo(split.words, { yPercent: 110, rotate: 4 }, {
+          yPercent: 0,
+          rotate: 0,
           duration: 1.1,
           ease: "expo.out",
           stagger: 0.06,
@@ -153,9 +153,10 @@ export default function ScrollFX() {
       });
 
       gsap.utils.toArray<HTMLElement>("[data-stagger]").forEach((el) => {
-        gsap.from(el.children, {
-          y: 60,
-          opacity: 0,
+        // fromTo, not from: a second pass over the same nodes must still end fully visible.
+        gsap.fromTo(el.children, { y: 60, opacity: 0 }, {
+          y: 0,
+          opacity: 1,
           duration: 1,
           ease: "power3.out",
           stagger: 0.1,
