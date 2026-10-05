@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import LogoLines from "@/components/brand/LogoLines";
 import LightTrails from "@/components/motion/LightTrails";
 import BackLink from "./BackLink";
 import { Container, Section } from "./Section";
@@ -27,7 +26,6 @@ export default function PageHero({
 }) {
   return (
     <Section tone={tone} data-page-hero className="overflow-hidden pb-12 pt-44 md:pb-16 md:pt-52">
-      {tone === "dark" && <LogoLines x={0.9} size={0.8} />}
       <Container className="relative">
         {back && (
           <div className="mb-14">

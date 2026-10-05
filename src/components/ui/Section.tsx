@@ -1,17 +1,21 @@
 import type { ElementType, ReactNode } from "react";
+import LogoLines from "@/components/brand/LogoLines";
 
 type Tone = "dark" | "light";
 
 /**
  * Every content block of the site sits in one of these: a tone (dark forest or light paper),
  * the shared gutter, and the shared vertical rhythm. `flush` drops the vertical padding for
- * full-bleed media sections.
+ * full-bleed media sections. Behind the content runs the SEU line drawing, as era.estate runs
+ * its own mark through its pages: on the right of dark blocks and the left of light ones by
+ * default, sized to the viewport; `pattern="none"` leaves a block plain.
  */
 export function Section({
   as: Tag = "section",
   tone = "dark",
   flush = false,
   className = "",
+  pattern,
   children,
   ...rest
 }: {
@@ -19,10 +23,17 @@ export function Section({
   tone?: Tone;
   flush?: boolean;
   className?: string;
+  pattern?: "left" | "right" | "none";
   children: ReactNode;
 } & Record<string, unknown>) {
+  const side = pattern ?? (flush ? "none" : tone === "dark" ? "right" : "left");
   return (
-    <Tag data-tone={tone} className={`tone-${tone} relative ${flush ? "" : "py-section"} ${className}`} {...rest}>
+    <Tag data-tone={tone} className={`tone-${tone} relative isolate ${flush ? "" : "py-section"} ${className}`} {...rest}>
+      {side !== "none" && (
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[min(100%,110svh)] overflow-hidden">
+          <LogoLines tone={tone} x={side === "right" ? 0.82 : 0.18} size={0.8} />
+        </div>
+      )}
       {children}
     </Tag>
   );

@@ -31,7 +31,7 @@
 
   /* ---- Tone-dependent roles (dark by default; .tone-light flips them) ---- */
   --fg: #f6f1e8;
-  --muted: #b3bdb8;
+  --muted: #c0c9c4;
   --line: rgb(246 241 232 / 0.16);
   --line-strong: rgb(246 241 232 / 0.4);
   --accent-ink: #e39a62;

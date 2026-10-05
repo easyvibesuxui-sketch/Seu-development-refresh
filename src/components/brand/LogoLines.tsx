@@ -76,11 +76,15 @@ export default function LogoLines({
   // Where the mark sits: share of the width for its centre, and its height relative to the block.
   x = 0.75,
   size = 0.78,
+  tone = "dark",
 }: {
   className?: string;
   x?: number;
   size?: number;
+  /** Cream hairlines on the dark forest, ink hairlines on paper. */
+  tone?: "dark" | "light";
 }) {
+  const ink = tone === "dark" ? "246 241 232" : "19 33 29";
   const id = useId().replace(/:/g, "");
   const ref = useRef<SVGSVGElement>(null);
   const [aspect, setAspect] = useState(16 / 9);
@@ -124,7 +128,7 @@ export default function LogoLines({
         {/* A narrow band of cognac light sweeping diagonally across the drawing. */}
         <linearGradient id={`${id}-gleam`} x1="-60" y1="-20" x2="0" y2="20" gradientUnits="userSpaceOnUse">
           <stop offset="0" stopColor="#e39a62" stopOpacity="0" />
-          <stop offset="0.5" stopColor="#ffc89a" stopOpacity="0.9" />
+          <stop offset="0.5" stopColor={tone === "dark" ? "#ffc89a" : "#b45a22"} stopOpacity={tone === "dark" ? 0.55 : 0.35} />
           <stop offset="1" stopColor="#e39a62" stopOpacity="0" />
           <animateTransform
             attributeName="gradientTransform"
@@ -136,11 +140,11 @@ export default function LogoLines({
         </linearGradient>
       </defs>
       <g mask={`url(#${id}-mask)`} vectorEffect="non-scaling-stroke">
-        <path d={GUIDE_D} stroke="rgb(246 241 232 / 0.05)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-        <path d={GUIDE_D} stroke={`url(#${id}-gleam)`} strokeOpacity="0.35" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+        <path d={GUIDE_D} stroke={`rgb(${ink} / 0.035)`} strokeWidth="1" vectorEffect="non-scaling-stroke" />
+        <path d={GUIDE_D} stroke={`url(#${id}-gleam)`} strokeOpacity="0.25" strokeWidth="1" vectorEffect="non-scaling-stroke" />
       </g>
-      <path d={STRIP_D} stroke="rgb(246 241 232 / 0.14)" strokeWidth="1" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
-      <path d={STRIP_D} stroke={`url(#${id}-gleam)`} strokeWidth="1.2" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+      <path d={STRIP_D} stroke={`rgb(${ink} / ${tone === "dark" ? 0.1 : 0.08})`} strokeWidth="1" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+      <path d={STRIP_D} stroke={`url(#${id}-gleam)`} strokeWidth="1" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
     </svg>
   );
 }

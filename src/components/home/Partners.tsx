@@ -1,4 +1,3 @@
-import LogoLines from "@/components/brand/LogoLines";
 import { withBase } from "@/data/projects";
 import { Container, Section, SectionHeader } from "@/components/ui/Section";
 
@@ -33,8 +32,7 @@ export default function Partners({ variant = "marquee", subtitle }: { variant?: 
   const row = [...partners, ...partners];
   return (
     <Section tone="dark" className="overflow-hidden">
-      <LogoLines x={0.82} size={0.8} />
-      <Container className="relative">
+      <Container>
         <SectionHeader index="06" eyebrow="Together with" title="Partners" />
       </Container>
       <div className="marquee relative mt-20 flex w-max gap-6">
