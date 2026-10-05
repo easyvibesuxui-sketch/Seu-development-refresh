@@ -747,6 +747,58 @@ html.is-loading body {
   line-height: 1;
 }
 
+/* ---------- Sun study ---------- */
+.sun-compass {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 400;
+  color: #13211d;
+  text-shadow: 0 0 6px rgb(255 255 255 / 0.9);
+  pointer-events: none;
+}
+
+.sun-degree {
+  font-size: 11px;
+  font-weight: 600;
+  color: #13211d;
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+.sun-badge {
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #13211d;
+  pointer-events: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.sun-badge--edge {
+  width: 44px;
+  height: 44px;
+  background: #fbe27a;
+  box-shadow: 0 0 0 4px rgb(251 226 122 / 0.35);
+}
+
+.sun-badge--sun {
+  width: 58px;
+  height: 58px;
+  font-size: 13px;
+  background: radial-gradient(circle, #fff6c9 0%, #ffd23f 55%, #f2b51c 100%);
+  box-shadow:
+    0 0 0 6px rgb(255 210 63 / 0.35),
+    0 0 40px 12px rgb(255 210 63 / 0.55);
+}
+
+.sun-range {
+  accent-color: #f2c230;
+  height: 24px;
+  cursor: pointer;
+}
+
 /* ---------- Custom cursor (fine pointers only) ---------- */
 .cursor {
   position: fixed;

@@ -1,12 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { withBase } from "@/data/projects";
 import { bedroomText, unitsOn, varketiliBlocks, type Block } from "@/data/inventory";
 import FilterPanel from "@/components/hero/FilterPanel";
-import BackLink from "@/components/ui/BackLink";
+
+// The 3D sun study loads its map only when opened.
+const SunStudy = dynamic(() => import("./SunStudy"), { ssr: false });
 
 // Golden-hour render of SEU Varketili (Kling / Gemini 3 Pro from the developer's panorama).
 const RENDER = "/images/varketili-rise.jpg";
@@ -69,6 +72,7 @@ type Hover = { block: Block; floor: number };
 export default function BlockPicker() {
   const [hover, setHover] = useState<Hover | null>(null);
   const [sun, setSun] = useState(false);
+  const sunButton = useRef<HTMLButtonElement>(null);
   const scrollerRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
@@ -88,7 +92,6 @@ export default function BlockPicker() {
           onMouseLeave={() => setHover(null)}
         >
           <img src={withBase(RENDER)} alt="SEU Varketili at golden hour: five residential blocks" className="h-full w-full" />
-          {sun && <SunPath />}
           <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" data-cursor="native">
             {varketiliBlocks.map((b) =>
               Array.from({ length: b.floors }, (_, i) => {
@@ -151,14 +154,24 @@ export default function BlockPicker() {
       </div>
       {/* Shade under the title and a short fade into the page below; the render stays bright between. */}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[34%] bg-gradient-to-b from-seu-ink/75 via-seu-ink/30 to-transparent" />
+      {/* A softer shade in the corner under the heading and its links. */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[40%] bg-[radial-gradient(60%_80%_at_0%_10%,rgb(12_22_19/0.7),transparent_72%)] max-md:bg-[radial-gradient(130%_75%_at_0%_10%,rgb(12_22_19/0.85),transparent_78%)]" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-seu-bg to-transparent" />
 
       {/* Compact heading, as on era.estate: the buildings carry the screen. */}
       <div className="pointer-events-none relative z-10 mx-auto max-w-[1680px] px-gutter pt-28 [&_a]:pointer-events-auto [&_button]:pointer-events-auto">
-        <div className="flex flex-wrap items-center gap-3">
-          <BackLink href="/projects/" label="All projects" className="btn-glass" />
-          <button type="button" aria-pressed={sun} onClick={() => setSun(!sun)} className="btn btn-glass btn-sm aria-pressed:bg-seu-accent">
-            <SunIcon /> {sun ? "Hide sun path" : "Sun path"}
+        {/* Navigation reads as a quiet text link; the sun study is the one call to action. */}
+        <div className="flex flex-wrap items-center gap-6">
+          <Link href="/projects/" className="group inline-flex items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-white">
+            <span className="grid h-10 w-10 place-items-center rounded-full border border-white/50 bg-seu-ink/55 backdrop-blur transition-colors group-hover:border-white group-hover:bg-seu-ink/80">
+              <svg width="8" height="12" viewBox="0 0 8 12" fill="none" aria-hidden className="transition-transform group-hover:-translate-x-0.5">
+                <path d="M7 1L2 6l5 5" stroke="currentColor" strokeWidth="1.4" />
+              </svg>
+            </span>
+            <span className="[text-shadow:0_1px_12px_rgb(0_0_0/0.6)]">All projects</span>
+          </Link>
+          <button ref={sunButton} type="button" aria-haspopup="dialog" onClick={() => setSun(true)} className="btn btn-primary btn-sm">
+            <SunIcon /> Sun study
           </button>
         </div>
         <p className="eyebrow mt-8 text-white/85">Visual search · Choose a floor</p>
@@ -168,6 +181,14 @@ export default function BlockPicker() {
       </div>
 
       <FilterPanel tone="dark" className="absolute bottom-10 right-gutter z-10 hidden lg:block" />
+      {sun && (
+        <SunStudy
+          onClose={() => {
+            setSun(false);
+            sunButton.current?.focus();
+          }}
+        />
+      )}
     </section>
   );
 }
@@ -238,28 +259,6 @@ function FloorCard({ block, floor }: Hover) {
         <p className="mt-3 text-[14px] text-seu-muted">No flats available on this floor</p>
       )}
     </div>
-  );
-}
-
-/** Morning-to-evening sun arc over the render, east (left) to west (right). */
-function SunPath() {
-  return (
-    <svg className="sun-path absolute inset-0 h-full w-full" viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden>
-      <defs>
-        <linearGradient id="sun-arc" x1="0" x2="1">
-          <stop offset="0" stopColor="#ffd59a" stopOpacity="0.2" />
-          <stop offset="0.5" stopColor="#ffd59a" stopOpacity="0.9" />
-          <stop offset="1" stopColor="#ff9a5c" stopOpacity="0.3" />
-        </linearGradient>
-      </defs>
-      <path d="M2 38 Q50 -6 98 38" fill="none" stroke="url(#sun-arc)" strokeWidth="0.25" strokeDasharray="0.8 0.8" vectorEffect="non-scaling-stroke" />
-      <circle r="1.4" fill="#ffd59a">
-        <animateMotion dur="8s" repeatCount="indefinite" path="M2 38 Q50 -6 98 38" />
-      </circle>
-      <text x="2" y="36" fontSize="1.6" fill="#f3efe9" fontFamily="sans-serif">E · morning</text>
-      <text x="46" y="10" fontSize="1.6" fill="#f3efe9" fontFamily="sans-serif">S · noon</text>
-      <text x="88" y="36" fontSize="1.6" fill="#f3efe9" fontFamily="sans-serif">W · evening</text>
-    </svg>
   );
 }
 
