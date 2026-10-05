@@ -1,5 +1,7 @@
 import Link from "next/link";
+import LogoLines from "@/components/brand/LogoLines";
 import LogoMark from "@/components/brand/LogoMark";
+import LightTrails from "@/components/motion/LightTrails";
 
 const nav = [
   { label: "Projects", href: "/projects/" },
@@ -18,7 +20,9 @@ const socials = [
 export default function Footer() {
   return (
     <footer data-tone="dark" className="tone-dark relative overflow-hidden border-t border-seu-line bg-seu-ink">
-      <div className="mx-auto grid max-w-[1680px] gap-16 px-gutter pb-12 pt-24 md:grid-cols-[1.2fr_1fr_1fr]">
+      <LogoLines x={0.9} size={0.72} />
+      <LightTrails preset="orbit" seed={11} className="absolute inset-x-0 bottom-0 h-[70%] w-full" cx={0.34} cy={0.7} />
+      <div className="relative mx-auto grid max-w-[1680px] gap-16 px-gutter pb-12 pt-24 md:grid-cols-[1.2fr_1fr_1fr]">
         <div>
           <p className="eyebrow">Get in touch</p>
           <a href="tel:+995596707070" className="title-m mt-6 block transition-colors hover:text-seu-accent-hi">
@@ -56,7 +60,7 @@ export default function Footer() {
           </ul>
         </div>
       </div>
-      <div className="mx-auto flex max-w-[1680px] items-end justify-between gap-8 px-gutter pb-10">
+      <div className="relative mx-auto flex max-w-[1680px] items-end justify-between gap-8 px-gutter pb-10">
         <p className="page-title text-[clamp(48px,9vw,168px)] leading-[0.8] text-seu-fg/90" aria-hidden data-split>
           SEU development
         </p>
@@ -64,7 +68,7 @@ export default function Footer() {
           <LogoMark className="w-20 overflow-visible lg:w-24" />
         </span>
       </div>
-      <p className="mx-auto max-w-[1680px] border-t border-seu-line px-gutter py-6 text-[13px] text-seu-muted">
+      <p className="relative mx-auto max-w-[1680px] border-t border-seu-line px-gutter py-6 text-[13px] text-seu-muted">
         © {new Date().getFullYear()} SEU Development · Concept redesign
       </p>
     </footer>

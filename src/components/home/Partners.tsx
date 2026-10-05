@@ -1,3 +1,4 @@
+import LogoLines from "@/components/brand/LogoLines";
 import { withBase } from "@/data/projects";
 import { Container, Section, SectionHeader } from "@/components/ui/Section";
 
@@ -32,10 +33,11 @@ export default function Partners({ variant = "marquee", subtitle }: { variant?: 
   const row = [...partners, ...partners];
   return (
     <Section tone="dark" className="overflow-hidden">
-      <Container>
+      <LogoLines x={0.82} size={0.8} />
+      <Container className="relative">
         <SectionHeader index="06" eyebrow="Together with" title="Partners" />
       </Container>
-      <div className="marquee mt-20 flex w-max gap-6">
+      <div className="marquee relative mt-20 flex w-max gap-6">
         {row.map((p, i) => (
           <div key={`${p.id}-${i}`} className="w-64 shrink-0">
             <Tile {...p} />

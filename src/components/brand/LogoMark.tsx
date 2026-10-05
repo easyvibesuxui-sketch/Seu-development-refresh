@@ -3,7 +3,7 @@
  * On hover of any ancestor with `group` the lower layers drop by the offsets taken from
  * the brand's stretched variant (logo-wire-stretched.svg), so the mark stretches downward.
  */
-const paths: { d: string; t: [number, number]; drop: number }[] = [
+export const LOGO_PATHS: { d: string; t: [number, number]; drop: number }[] = [
   { d: "M164.491,134.89l-18.667-6.2v-7.478l18.667,6.2Z", t: [769.508, -74.94], drop: 10.45 },
   { d: "M164.491,13.673l-18.667-6.2V0l18.667,6.2Z", t: [769.508, 20.5], drop: 0 },
   { d: "M0,135.243l32.9-6.549v-7.478L0,127.765Z", t: [882, -74.939], drop: 10.45 },
@@ -22,7 +22,7 @@ export default function LogoMark({ className = "", color = "#18a874" }: { classN
   return (
     <svg className={`logo-mark ${className}`} viewBox="0 0 53 58" fill="none" aria-hidden>
       <g transform="translate(-881.5 -19.807)" stroke={color} strokeWidth="1.1" strokeLinejoin="round">
-        {paths.map((p, i) => (
+        {LOGO_PATHS.map((p, i) => (
           <g key={i} className="logo-layer" style={{ ["--drop" as string]: `${p.drop}px` }}>
             <path d={p.d} transform={`translate(${p.t[0]} ${p.t[1]})`} />
           </g>
