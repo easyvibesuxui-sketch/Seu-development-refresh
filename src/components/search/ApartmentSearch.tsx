@@ -6,6 +6,8 @@ import gsap from "gsap";
 import { units, varketiliBlocks, viewText, type ViewId } from "@/data/inventory";
 import ApartmentCard from "@/components/ui/ApartmentCard";
 import { Container, Section } from "@/components/ui/Section";
+import Select, { type Option } from "@/components/ui/Select";
+import Icon from "@/components/ui/Icon";
 
 const GEL_PER_USD = 2.7; // indicative rate for the price filter
 const PAGE = 24;
@@ -67,115 +69,86 @@ export default function ApartmentSearch() {
     setShown(PAGE);
   };
 
-  const field = "field min-h-12";
+  const projectOptions: Option<string>[] = [
+    { value: "", label: "All projects" },
+    { value: "varketili", label: "SEU Varketili" },
+  ];
+  const blockOptions: Option<string>[] = [{ value: "", label: "All blocks" }, ...varketiliBlocks.map((b) => ({ value: b.id, label: b.name }))];
+  const viewOptions: Option<ViewId | "">[] = [{ value: "", label: "Any view" }, ...(Object.keys(viewText) as ViewId[]).map((v) => ({ value: v, label: viewText[v] }))];
 
   return (
     <main>
-      <Section tone="light" className="pb-20 pt-44 md:pt-52">
+      <Section tone="light" pattern="right" patternAt={{ x: 0.86, y: 0.3, size: 0.42 }} className="z-10 pb-12 pt-36 md:pt-40">
         <Container>
-        <p className="eyebrow mb-8">Search</p>
+        <p className="eyebrow mb-6">Search</p>
         <h1 className="page-title" data-split>
           Apartments<span className="text-seu-accent-hi">.</span>
         </h1>
-        <h2 className="field-label mt-16 border-b border-seu-line pb-4">Filter apartments</h2>
+        <h2 className="field-label mt-10 border-b border-seu-line pb-4">Filter apartments</h2>
+        {/* One grid, every control on the same 48px line: labels above, controls aligned to the bottom. */}
         <form
-          className="mt-8 grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-4"
+          className="mt-8 grid items-end gap-x-10 gap-y-6 sm:grid-cols-2 lg:grid-cols-4"
           onSubmit={(e) => {
             e.preventDefault();
             search();
           }}
         >
-          <label className="block">
-            <span className="field-label">Project</span>
-            <select className={field} value={draft.project} onChange={(e) => set("project", e.target.value)}>
-              <option value="">All projects</option>
-              <option value="varketili">SEU Varketili</option>
-            </select>
-          </label>
-          <label className="block">
-            <span className="field-label">Block</span>
-            <select className={field} value={draft.block} onChange={(e) => set("block", e.target.value)}>
-              <option value="">All blocks</option>
-              {varketiliBlocks.map((b) => (
-                <option key={b.id} value={b.id}>
-                  {b.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="block">
-            <span className="field-label">View</span>
-            <select className={field} value={draft.view} onChange={(e) => set("view", e.target.value as ViewId | "")}>
-              <option value="">Any view</option>
-              {(Object.keys(viewText) as ViewId[]).map((v) => (
-                <option key={v} value={v}>
-                  {viewText[v]}
-                </option>
-              ))}
-            </select>
-          </label>
-          <div>
-            <span className="field-label">Size m²</span>
+          <Select label="Project" value={draft.project} options={projectOptions} onChange={(v) => set("project", v)} />
+          <Select label="Block" value={draft.block} options={blockOptions} onChange={(v) => set("block", v)} />
+          <Select label="View" value={draft.view} options={viewOptions} onChange={(v) => set("view", v)} />
+          <fieldset className="min-w-0">
+            <legend className="field-label">Size, m²</legend>
             <div className="grid grid-cols-2 gap-3">
-              <input className={field} inputMode="numeric" placeholder="From" aria-label="Size from" value={draft.sizeFrom} onChange={(e) => set("sizeFrom", e.target.value)} />
-              <input className={field} inputMode="numeric" placeholder="To" aria-label="Size to" value={draft.sizeTo} onChange={(e) => set("sizeTo", e.target.value)} />
+              <input className="field" inputMode="numeric" placeholder="From" aria-label="Size from, m²" value={draft.sizeFrom} onChange={(e) => set("sizeFrom", e.target.value.replace(/\D/g, ""))} />
+              <input className="field" inputMode="numeric" placeholder="To" aria-label="Size to, m²" value={draft.sizeTo} onChange={(e) => set("sizeTo", e.target.value.replace(/\D/g, ""))} />
             </div>
-          </div>
-          <div>
-            <span className="field-label">Bedrooms</span>
-            <div className="flex gap-2">
+          </fieldset>
+          <fieldset className="min-w-0">
+            <legend className="field-label">Bedrooms</legend>
+            <div className="grid grid-cols-4 gap-2">
               {[0, 1, 2, 3].map((r) => (
-                <button
-                  key={r}
-                  type="button"
-                  aria-pressed={draft.rooms.includes(r)}
-                  onClick={() => toggleRoom(r)}
-                  className="chip min-h-12 min-w-12"
-                >
+                <button key={r} type="button" aria-pressed={draft.rooms.includes(r)} onClick={() => toggleRoom(r)} className="chip px-0">
                   {r === 0 ? "Studio" : r === 3 ? "3+" : r}
                 </button>
               ))}
             </div>
-          </div>
-          <div>
-            <div className="mb-2 flex items-center justify-between">
-              <span className="field-label mb-0">Price</span>
-              <div className="flex rounded-full border border-seu-line-strong p-1 text-[12px]">
+          </fieldset>
+          <fieldset className="min-w-0">
+            <legend className="field-label">Price, {draft.currency}</legend>
+            <div className="flex gap-3">
+              <input className="field min-w-0 flex-1" inputMode="numeric" placeholder="From" aria-label={`Price from, ${draft.currency}`} value={draft.priceFrom} onChange={(e) => set("priceFrom", e.target.value.replace(/\D/g, ""))} />
+              <input className="field min-w-0 flex-1" inputMode="numeric" placeholder="To" aria-label={`Price to, ${draft.currency}`} value={draft.priceTo} onChange={(e) => set("priceTo", e.target.value.replace(/\D/g, ""))} />
+              <div className="segmented" role="group" aria-label="Currency">
                 {(["USD", "GEL"] as const).map((c) => (
-                  <button
-                    key={c}
-                    type="button"
-                    aria-pressed={draft.currency === c}
-                    onClick={() => set("currency", c)}
-                    className="label min-h-8 rounded-full px-3 transition-colors aria-pressed:bg-seu-accent aria-pressed:text-white"
-                  >
+                  <button key={c} type="button" aria-pressed={draft.currency === c} onClick={() => set("currency", c)}>
                     {c}
                   </button>
                 ))}
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <input className={field} inputMode="numeric" placeholder="From" aria-label="Price from" value={draft.priceFrom} onChange={(e) => set("priceFrom", e.target.value)} />
-              <input className={field} inputMode="numeric" placeholder="To" aria-label="Price to" value={draft.priceTo} onChange={(e) => set("priceTo", e.target.value)} />
-            </div>
+          </fieldset>
+          <div>
+            <span className="field-label" aria-hidden>
+              Availability
+            </span>
+            <label className="check-row">
+              <input type="checkbox" className="check" checked={draft.available} onChange={(e) => set("available", e.target.checked)} />
+              Hide sold apartments
+            </label>
           </div>
-          <label className="flex cursor-pointer items-center gap-3 self-end pb-2 text-[14px]">
-            <input type="checkbox" checked={draft.available} onChange={(e) => set("available", e.target.checked)} className="h-5 w-5 accent-[var(--seu-accent)]" />
-            Hide sold apartments
-          </label>
-          <div className="flex items-end gap-6 sm:col-span-2">
-            <button type="submit" className="btn btn-primary">
+          <div className="flex items-center gap-3">
+            <button type="submit" className="btn btn-primary flex-1">
               Search
             </button>
-            <button type="button" onClick={clear} className="btn">
-              Clear filters
+            <button type="button" onClick={clear} className="btn btn-icon" aria-label="Clear filters" title="Clear filters">
+              <Icon name="reset" size={18} />
             </button>
           </div>
         </form>
         </Container>
       </Section>
 
-      <Section tone="dark" className="min-h-[60vh] py-20">
+      <Section tone="dark" className="min-h-[60vh] pb-20 pt-12">
         <Container>
         <p className="eyebrow mb-10" role="status">
           {results.length} apartments

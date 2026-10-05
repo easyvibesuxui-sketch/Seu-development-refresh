@@ -156,7 +156,7 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
                   role="tab"
                   aria-selected={tab === t}
                   onClick={() => setTab(t)}
-                  className="chip min-h-10 rounded-full px-4"
+                  className="chip ctl-sm rounded-full px-4"
                 >
                   {t}
                 </button>

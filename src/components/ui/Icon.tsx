@@ -4,7 +4,7 @@
  * Each entry is the inner markup of a 24×24 outline icon.
  */
 const ICONS = {
-  area: "<path d=\"M10 15v-3\" /><path d=\"M14 15v-3\" /><path d=\"M18 15v-3\" /><path d=\"M2 8V4\" /><path d=\"M22 6H2\" /><path d=\"M22 8V4\" /><path d=\"M6 15v-3\" /><rect x=\"2\" y=\"12\" width=\"20\" height=\"8\" rx=\"2\" />",
+  area: "<path d=\"M3 5h11\" /><path d=\"m12 7 2-2-2-2\" /><path d=\"m5 3-2 2 2 2\" /><path d=\"M19 10v11\" /><path d=\"m17 19 2 2 2-2\" /><path d=\"m21 12-2-2-2 2\" /><rect x=\"3\" y=\"10\" width=\"11\" height=\"11\" rx=\"2\" />",
   living: "<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\" /><path d=\"M3 9h18M9 21V9\" />",
   balcony: "<path d=\"M4 3 2 5v15c0 .6.4 1 1 1h2c.6 0 1-.4 1-1V5Z\" /><path d=\"M6 8h4\" /><path d=\"M6 18h4\" /><path d=\"m12 3-2 2v15c0 .6.4 1 1 1h2c.6 0 1-.4 1-1V5Z\" /><path d=\"M14 8h4\" /><path d=\"M14 18h4\" /><path d=\"m20 3-2 2v15c0 .6.4 1 1 1h2c.6 0 1-.4 1-1V5Z\" />",
   bed: "<path d=\"M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8\" /><path d=\"M4 10V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4\" /><path d=\"M12 4v6\" /><path d=\"M2 18h20\" />",
@@ -38,6 +38,9 @@ const ICONS = {
   sun: "<circle cx=\"12\" cy=\"12\" r=\"4\" /><path d=\"M12 2v2\" /><path d=\"M12 20v2\" /><path d=\"m4.93 4.93 1.41 1.41\" /><path d=\"m17.66 17.66 1.41 1.41\" /><path d=\"M2 12h2\" /><path d=\"M20 12h2\" /><path d=\"m6.34 17.66-1.41 1.41\" /><path d=\"m19.07 4.93-1.41 1.41\" />",
   phone: "<path d=\"M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384\" />",
   close: "<path d=\"M18 6 6 18\" /><path d=\"m6 6 12 12\" />",
+  chevron: "<path d=\"m6 9 6 6 6-6\" />",
+  check: "<path d=\"M20 6 9 17l-5-5\" />",
+  reset: "<path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\" /><path d=\"M3 3v5h5\" />",
 } as const;
 
 export type IconName = keyof typeof ICONS;

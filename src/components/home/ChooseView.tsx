@@ -142,7 +142,7 @@ export default function ChooseView() {
                     type="button"
                     aria-pressed={view.id === v.id}
                     onClick={() => pickView(v)}
-                    className="chip h-14 [&>svg]:h-5 [&>svg]:w-5 [&>svg]:shrink-0"
+                    className="chip ctl-lg [&>svg]:h-5 [&>svg]:w-5 [&>svg]:shrink-0"
                   >
                     {v.icon}
                     <span className="truncate">{v.label}</span>
@@ -155,7 +155,7 @@ export default function ChooseView() {
               <legend className="field-label mb-4">Bedrooms</legend>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3" data-stagger>
                 {BEDROOMS.map((r) => (
-                  <button key={r} type="button" aria-pressed={rooms.includes(r)} onClick={() => toggleRoom(r)} className="chip h-14">
+                  <button key={r} type="button" aria-pressed={rooms.includes(r)} onClick={() => toggleRoom(r)} className="chip ctl-lg">
                     {r}
                   </button>
                 ))}

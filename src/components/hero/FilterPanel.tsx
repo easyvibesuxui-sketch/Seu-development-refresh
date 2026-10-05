@@ -2,6 +2,7 @@
 
 import { useId, useState } from "react";
 import { useRouter } from "next/navigation";
+import Icon from "@/components/ui/Icon";
 
 // Same buckets as the apartment search: studio, 1, 2 and 3+ bedrooms.
 const ROOMS = [
@@ -46,11 +47,11 @@ export default function FilterPanel({ className = "", tone = "light" }: { classN
         <div className="grid grid-cols-2 gap-3">
           <label>
             <span className="sr-only">From, m²</span>
-            <input className="field min-h-12" inputMode="numeric" placeholder="From" value={from} onChange={(e) => setFrom(e.target.value.replace(/\D/g, ""))} />
+            <input className="field" inputMode="numeric" placeholder="From" value={from} onChange={(e) => setFrom(e.target.value.replace(/\D/g, ""))} />
           </label>
           <label>
             <span className="sr-only">To, m²</span>
-            <input className="field min-h-12" inputMode="numeric" placeholder="To" value={to} onChange={(e) => setTo(e.target.value.replace(/\D/g, ""))} />
+            <input className="field" inputMode="numeric" placeholder="To" value={to} onChange={(e) => setTo(e.target.value.replace(/\D/g, ""))} />
           </label>
         </div>
       </fieldset>
@@ -59,7 +60,7 @@ export default function FilterPanel({ className = "", tone = "light" }: { classN
         <legend className="field-label">Bedrooms</legend>
         <div className="grid grid-cols-4 gap-2">
           {ROOMS.map((r) => (
-            <button key={r.value} type="button" aria-pressed={rooms.includes(r.value)} onClick={() => toggle(r.value)} className="chip min-h-11 px-0">
+            <button key={r.value} type="button" aria-pressed={rooms.includes(r.value)} onClick={() => toggle(r.value)} className="chip px-0">
               {r.label}
             </button>
           ))}
@@ -80,9 +81,7 @@ export default function FilterPanel({ className = "", tone = "light" }: { classN
             setRooms([]);
           }}
         >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
-            <path d="M12.5 8a4.5 4.5 0 1 1-1.5-3.4M12 2v3h-3" stroke="currentColor" strokeWidth="1.4" />
-          </svg>
+          <Icon name="reset" size={18} />
         </button>
       </div>
     </form>

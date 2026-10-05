@@ -16,6 +16,7 @@ export function Section({
   flush = false,
   className = "",
   pattern,
+  patternAt,
   children,
   ...rest
 }: {
@@ -24,6 +25,8 @@ export function Section({
   flush?: boolean;
   className?: string;
   pattern?: "left" | "right" | "none";
+  /** Fine placement of the drawing: centre as shares of the block, and its relative size. */
+  patternAt?: { x?: number; y?: number; size?: number };
   children: ReactNode;
 } & Record<string, unknown>) {
   const side = pattern ?? (flush ? "none" : tone === "dark" ? "right" : "left");
@@ -31,7 +34,7 @@ export function Section({
     <Tag data-tone={tone} className={`tone-${tone} relative isolate ${flush ? "" : "py-section"} ${className}`} {...rest}>
       {side !== "none" && (
         <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[min(100%,110svh)] overflow-hidden">
-          <LogoLines tone={tone} x={side === "right" ? 0.82 : 0.18} size={0.8} />
+          <LogoLines tone={tone} x={side === "right" ? 0.82 : 0.18} size={0.8} {...patternAt} />
         </div>
       )}
       {children}

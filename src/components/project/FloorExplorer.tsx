@@ -81,7 +81,7 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
               role="tab"
               aria-selected={view === v}
               onClick={() => setView(v)}
-              className="chip min-h-11 rounded-full px-5"
+              className="chip ctl-sm rounded-full px-5"
             >
               {v === "plan" ? "Floor plan" : "Grid view"}
             </button>

@@ -75,11 +75,13 @@ export default function LogoLines({
   className = "",
   // Where the mark sits: share of the width for its centre, and its height relative to the block.
   x = 0.75,
+  y = 0.5,
   size = 0.78,
   tone = "dark",
 }: {
   className?: string;
   x?: number;
+  y?: number;
   size?: number;
   /** Cream hairlines on the dark forest, ink hairlines on paper. */
   tone?: "dark" | "light";
@@ -105,7 +107,7 @@ export default function LogoLines({
   const vh = 47.4 / size;
   const vw = vh * aspect;
   const vx = 26.5 - vw * x;
-  const vy = 23.7 - vh / 2;
+  const vy = 23.7 - vh * y;
 
   return (
     <svg
