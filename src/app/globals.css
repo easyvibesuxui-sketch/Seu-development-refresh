@@ -774,7 +774,8 @@ html.is-loading body {
   place-items: center;
 }
 
-.cursor[data-hidden="true"] {
+.cursor[data-hidden="true"],
+.cursor[data-mode="native"] {
   opacity: 0;
 }
 

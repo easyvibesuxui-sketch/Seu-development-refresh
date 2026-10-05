@@ -89,7 +89,7 @@ export default function BlockPicker() {
         >
           <img src={withBase(RENDER)} alt="SEU Varketili at golden hour: five residential blocks" className="h-full w-full" />
           {sun && <SunPath />}
-          <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" data-cursor="native">
             {varketiliBlocks.map((b) =>
               Array.from({ length: b.floors }, (_, i) => {
                 const floor = i + 1;
@@ -114,10 +114,7 @@ export default function BlockPicker() {
                         key={k}
                         points={band(p, b.floors, floor).map((pt) => pt.join(",")).join(" ")}
                         fill={on ? "#e07a3a" : "#fff"}
-                        fillOpacity={on ? 0.55 : inBlock ? 0.06 : 0}
-                        stroke={on ? "#ffd2ad" : "none"}
-                        strokeWidth={1}
-                        vectorEffect="non-scaling-stroke"
+                        fillOpacity={on ? 0.5 : inBlock ? 0.06 : 0}
                         style={{ transition: "fill-opacity .25s, fill .25s" }}
                       />
                     ))}
