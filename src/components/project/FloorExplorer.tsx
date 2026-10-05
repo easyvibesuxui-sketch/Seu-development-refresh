@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import gsap from "gsap";
 import { withBase } from "@/data/projects";
@@ -25,6 +26,15 @@ const statusFill: Record<Unit["status"], string> = {
   reserved: "var(--seu-reserved)",
   sold: "var(--seu-sold)",
 };
+
+/** Opens the floor named in `?floor=` (the visual search links each floor band here). */
+function FloorFromQuery({ max, onFloor }: { max: number; onFloor: (f: number) => void }) {
+  const wanted = Number(useSearchParams().get("floor"));
+  useEffect(() => {
+    if (wanted >= 2 && wanted <= max) onFloor(wanted);
+  }, [wanted, max, onFloor]);
+  return null;
+}
 
 export default function FloorExplorer({ blockId }: { blockId: string }) {
   const block = blockById(blockId)!;
@@ -51,6 +61,9 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
 
   return (
     <main data-tone="dark" className="tone-dark relative min-h-[100svh] px-gutter pb-section pt-36">
+      <Suspense fallback={null}>
+        <FloorFromQuery max={block.floors} onFloor={setFloor} />
+      </Suspense>
       <div className="flex items-center justify-between">
         <BackLink href="/projects/varketili/" />
         <div className="flex gap-2" role="tablist" aria-label="Layout view">

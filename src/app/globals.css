@@ -49,7 +49,7 @@
 
   /* ---- Rhythm ---- */
   --gutter: clamp(20px, 5vw, 96px);
-  --section-y: clamp(120px, 14vw, 224px);
+  --section-y: clamp(96px, 10vw, 168px);
   --radius: 10px;
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
   --ease-in-out: cubic-bezier(0.7, 0, 0.2, 1);
@@ -117,6 +117,12 @@
   .glass.glass-clear.glass-dark {
     --glass-bg: rgb(12 22 19 / 0.96);
   }
+}
+
+/* A page title flows straight into a following block of the same tone: no second full gap. */
+[data-page-hero][data-tone="dark"] + [data-tone="dark"],
+[data-page-hero][data-tone="light"] + [data-tone="light"] {
+  padding-top: clamp(32px, 4vw, 64px);
 }
 
 .tone-light {
@@ -835,7 +841,7 @@ html.is-loading body {
 @keyframes pin-drop {
   from {
     opacity: 0;
-    transform: translate(-50%, -40px);
+    transform: translateY(-40px);
   }
 }
 
