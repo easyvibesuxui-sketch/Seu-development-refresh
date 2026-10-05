@@ -53,7 +53,7 @@ export default function Lifestyle() {
           <p className="eyebrow justify-center text-white [--muted:#fff]">
             <span className="text-[#f2b27e]">05</span>Neighbourhood
           </p>
-          <h2 className="mt-8 text-[clamp(48px,8vw,140px)] leading-[0.9]" data-split>
+          <h2 className="mt-8 text-[clamp(40px,5.6vw,96px)] leading-[0.9]" data-split>
             <span className="title-display uppercase" style={{ fontWeight: 600 }}>
               A new way
             </span>{" "}

@@ -74,7 +74,7 @@ export default function Hiring() {
         </div>
         <div ref={cardRef} className="rounded-[28px] bg-white p-8 shadow-[0_30px_80px_rgb(19_33_29/0.12)] md:p-12">
           <p className="eyebrow">Open role</p>
-          <h3 className="section-title mt-4 text-[clamp(36px,3.4vw,56px)]">{role.title}</h3>
+          <h3 className="section-title mt-4 text-[clamp(30px,2.6vw,44px)]">{role.title}</h3>
           <p className="lead mt-3">{role.lead}</p>
           <div className="mt-8 h-px bg-seu-line" />
           <div className="body-copy mt-8 space-y-5">

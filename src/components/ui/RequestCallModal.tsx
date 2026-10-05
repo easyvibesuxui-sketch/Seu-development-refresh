@@ -47,7 +47,7 @@ function Dialog({ unit, open, onClose }: { unit?: Unit; open: boolean; onClose: 
           </svg>
         </button>
         <div>
-          <h2 className="section-title text-[clamp(36px,3.4vw,56px)]">Request a call<span className="text-seu-accent-hi">.</span></h2>
+          <h2 className="section-title text-[clamp(30px,2.6vw,44px)]">Request a call<span className="text-seu-accent-hi">.</span></h2>
           {sent ? (
             <p role="status" className="lead mt-10">Thank you! A sales manager will call you shortly.</p>
           ) : (

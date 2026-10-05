@@ -171,7 +171,7 @@ export default function Header() {
                   href={l.href}
                   aria-current={same(pathname, l.href) ? "page" : undefined}
                   onClick={() => setOpen(false)}
-                  className="title-m block py-2 text-[clamp(40px,10vw,64px)] aria-[current=page]:text-seu-accent-hi"
+                  className="title-m block py-2 text-[clamp(34px,9vw,52px)] aria-[current=page]:text-seu-accent-hi"
                 >
                   {l.label}
                 </Link>

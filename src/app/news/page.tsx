@@ -33,7 +33,7 @@ export default function NewsPage() {
           <div className="absolute inset-0 bg-gradient-to-t from-seu-ink/90 via-seu-ink/20 to-transparent" />
           <div className="absolute inset-x-8 bottom-10 md:inset-x-12 md:bottom-14">
             <p className="eyebrow text-white/85 [--muted:rgb(255_255_255/0.85)]">Featured</p>
-            <h2 className="section-title mt-5 max-w-5xl text-[clamp(36px,4.6vw,80px)] text-white">{featured.title}</h2>
+            <h2 className="section-title mt-5 max-w-5xl text-[clamp(30px,3.4vw,60px)] text-white">{featured.title}</h2>
             <span className="btn btn-primary mt-8">Read the article</span>
           </div>
         </Link>

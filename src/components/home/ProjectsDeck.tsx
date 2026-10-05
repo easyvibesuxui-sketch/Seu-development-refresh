@@ -3,9 +3,10 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { projects, statusLabel, withBase } from "@/data/projects";
+import { projects, statusLabel } from "@/data/projects";
 import { Container, Section, SectionHeader } from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
+import AmbientVideo from "@/components/ui/AmbientVideo";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -60,16 +61,8 @@ export default function ProjectsDeck() {
           <article key={p.id} className="deck-card sticky top-0 h-[100svh] p-2 md:p-3" aria-labelledby={`deck-${p.id}`}>
             <div className="deck-inner relative h-full origin-top overflow-hidden rounded-[20px] bg-seu-ink ring-1 ring-white/10 will-change-transform md:rounded-[28px]">
               <div className="deck-media absolute -inset-y-[8%] inset-x-0">
-                {/* "Living" still: a slow drift of the camera, a passing cloud shadow and a light sweep. */}
-                <div className="living h-full w-full">
-                  <img
-                    src={withBase(p.image)}
-                    alt={`${p.name} render`}
-                    loading={i < 2 ? "eager" : "lazy"}
-                    style={{ objectPosition: p.imagePosition, animationDelay: `${-i * 4}s` }}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
+                {/* Kling film made from the project render; the render is its poster. */}
+                <AmbientVideo name={`deck-${p.id}`} className="h-full w-full object-cover" />
               </div>
               <div className="sunbeams sunbeams--soft" />
               <div className="absolute inset-0 bg-gradient-to-b from-[#0c1613]/60 via-transparent via-40% to-[#0c1613]/90" />
@@ -81,7 +74,7 @@ export default function ProjectsDeck() {
                   {statusLabel[p.status]} · {p.date}
                 </p>
                 <div className="grid items-end gap-10 lg:grid-cols-[1.4fr_1fr]">
-                  <h3 id={`deck-${p.id}`} className="page-title text-[clamp(44px,6.4vw,120px)]">
+                  <h3 id={`deck-${p.id}`} className="page-title text-[clamp(36px,4.6vw,80px)]">
                     {p.name}
                   </h3>
                   <div className="flex flex-col items-start gap-8 lg:items-end">

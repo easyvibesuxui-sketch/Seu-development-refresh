@@ -33,14 +33,14 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
           <BackLink href={`/projects/varketili/${unit.block}/`} />
           <div className="mt-10 flex items-baseline gap-10">
             <p className="text-[18px] text-seu-muted">
-              Block <span className="title-m ml-2 text-[40px] text-seu-fg">{unit.block.slice(1)}</span>
+              Block <span className="title-m ml-2 text-[32px] text-seu-fg">{unit.block.slice(1)}</span>
             </p>
             <p className="text-[18px] text-seu-muted">
-              Floor <span className="title-m ml-2 text-[40px] text-seu-fg">{unit.floor}</span>
+              Floor <span className="title-m ml-2 text-[32px] text-seu-fg">{unit.floor}</span>
             </p>
           </div>
           <p className="eyebrow mt-10">SEU Varketili · {statusText[unit.status]}</p>
-          <h1 className="page-title mt-4 text-[clamp(52px,6vw,104px)]">
+          <h1 className="page-title mt-4 text-[clamp(40px,4.4vw,76px)]">
             Apartment {unit.number}<span className="text-seu-accent-hi">.</span>
           </h1>
 
@@ -62,7 +62,7 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
           <div className="mt-8 flex flex-wrap items-end gap-8">
             <div>
               <p className="field-label">Price</p>
-              <p className="title-m text-[clamp(32px,3vw,44px)] normal-case">
+              <p className="title-m text-[clamp(28px,2.4vw,38px)] normal-case">
                 ${unit.price.toLocaleString("en-US")}
                 <span className="ml-3 text-[15px] text-seu-muted">${unit.pricePerM2}/m²</span>
               </p>

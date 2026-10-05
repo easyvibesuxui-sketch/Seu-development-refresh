@@ -66,28 +66,37 @@ export default function LightScene() {
           <div className="ls-shade absolute inset-0 bg-gradient-to-t from-seu-ink/90 via-seu-ink/35 to-seu-ink/10 opacity-0" />
         </div>
 
-        {/* Architrave: an outer hairline, an inner cognac band, a keystone and a stone sill. */}
+        {/* Architrave around the opening: glow spill, stepped mouldings, a bronze band with a
+            fine inner bead, pilasters with fluting, imposts at the spring line, a keystone and a
+            stone sill. Everything is placed from the opening's CSS variables, so it opens with it. */}
         <div className="ls-frame pointer-events-none absolute inset-0" style={FRAME as CSSProperties} aria-hidden>
-          <span className="absolute rounded-t-[calc(var(--rad)+22px)] border border-b-0 border-seu-cream/30 [inset:calc(var(--t)-22px)_calc(var(--r)-22px)_calc(var(--b)-0px)_calc(var(--l)-22px)]" />
-          <span className="absolute rounded-t-[calc(var(--rad)+9px)] border-[1.5px] border-b-0 border-[#e39a62]/80 shadow-[0_0_40px_rgb(227_154_98/0.25)] [inset:calc(var(--t)-9px)_calc(var(--r)-9px)_calc(var(--b)-0px)_calc(var(--l)-9px)]" />
-          <span className="absolute left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 border border-[#e39a62] bg-seu-bg [top:calc(var(--t)-28px)]" />
-          <span className="absolute h-4 border-t border-seu-cream/50 bg-gradient-to-b from-seu-cream/10 to-transparent [bottom:calc(var(--b)-16px)] [left:calc(var(--l)-48px)] [right:calc(var(--r)-48px)]" />
+          <span className="arch-glow" />
+          <span className="arch-moulding arch-moulding--outer" />
+          <span className="arch-moulding arch-moulding--mid" />
+          <span className="arch-band" />
+          <span className="arch-bead" />
+          <span className="arch-pilaster arch-pilaster--left" />
+          <span className="arch-pilaster arch-pilaster--right" />
+          <span className="arch-impost arch-impost--left" />
+          <span className="arch-impost arch-impost--right" />
+          <span className="arch-keystone" />
+          <span className="arch-sill" />
         </div>
 
         <h2 className="pointer-events-none absolute inset-0 uppercase">
-          <span className="ls-top title-display absolute left-1/2 top-[7%] -translate-x-1/2 text-[clamp(56px,17vw,160px)] leading-none md:left-[18.5%] md:top-1/2 md:-translate-y-1/2 md:text-[clamp(48px,7.6vw,168px)]">
+          <span className="ls-top title-display absolute left-1/2 top-[7%] -translate-x-1/2 text-[clamp(48px,14vw,120px)] leading-none md:left-[18.5%] md:top-1/2 md:-translate-y-1/2 md:text-[clamp(44px,6vw,124px)]">
             Homes
           </span>
           <span className="ls-mid label absolute left-1/2 top-[19%] -translate-x-1/2 text-[12px] tracking-[0.5em] text-seu-cream/80 md:top-[9%] md:text-[14px]">
             made of
           </span>
-          <span className="ls-bottom title-display absolute bottom-[5%] left-1/2 -translate-x-1/2 text-[clamp(56px,17vw,160px)] leading-none text-seu-accent-hi md:bottom-auto md:left-[81.5%] md:top-1/2 md:-translate-y-1/2 md:text-[clamp(48px,7.6vw,168px)]">
+          <span className="ls-bottom title-display absolute bottom-[5%] left-1/2 -translate-x-1/2 text-[clamp(48px,14vw,120px)] leading-none text-seu-accent-hi md:bottom-auto md:left-[81.5%] md:top-1/2 md:-translate-y-1/2 md:text-[clamp(44px,6vw,124px)]">
             light
           </span>
         </h2>
 
         <div className="ls-copy absolute inset-x-gutter bottom-[10vh] grid gap-8 md:grid-cols-[1.2fr_1fr] md:items-end">
-          <p className="title-display text-[clamp(34px,4.4vw,72px)] uppercase leading-[0.95]">
+          <p className="title-display text-[clamp(30px,3.4vw,56px)] uppercase leading-[0.98]">
             Planned around
             <br />
             daylight

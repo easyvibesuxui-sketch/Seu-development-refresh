@@ -57,7 +57,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="mx-auto flex max-w-[1680px] items-end justify-between gap-8 px-gutter pb-10">
-        <p className="page-title text-[clamp(56px,13vw,240px)] leading-[0.8] text-seu-fg/90" aria-hidden data-split>
+        <p className="page-title text-[clamp(48px,9vw,168px)] leading-[0.8] text-seu-fg/90" aria-hidden data-split>
           SEU development
         </p>
         <span className="group hidden shrink-0 pb-4 md:block">

@@ -84,14 +84,14 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
         <aside aria-label="Block and floor" className="flex flex-row items-center justify-between gap-6 lg:flex-col lg:items-start lg:justify-start">
           <div>
             <p className="eyebrow mb-4">SEU Varketili</p>
-            <h1 className="section-title text-[clamp(40px,4vw,64px)]" data-split>
+            <h1 className="section-title text-[clamp(32px,3vw,52px)]" data-split>
               {block.name}
             </h1>
           </div>
           <div className="flex items-center gap-4 lg:mt-24 lg:flex-col lg:items-start">
             <ArrowButton dir="up" onClick={() => step(1)} label="Floor up" />
             <div className="overflow-hidden">
-              <span ref={numberRef} className="page-title block text-[clamp(56px,5vw,88px)] leading-none tabular-nums">
+              <span ref={numberRef} className="page-title block text-[clamp(48px,4vw,72px)] leading-none tabular-nums">
                 {floor}
               </span>
               <span className="text-[13px] text-seu-muted">Floor · {available} available</span>

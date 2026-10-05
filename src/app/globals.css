@@ -184,26 +184,26 @@ body::before {
 /* ---------- Type scale (one set for every page) ---------- */
 .section-title {
   font-family: var(--font-display);
-  font-size: clamp(44px, 6.2vw, 108px);
+  font-size: clamp(36px, 4.4vw, 76px);
   font-weight: 300;
-  line-height: 0.94;
+  line-height: 0.98;
   letter-spacing: 0;
   text-transform: uppercase;
 }
 
 .page-title {
   font-family: var(--font-display);
-  font-size: clamp(52px, 8.4vw, 150px);
+  font-size: clamp(42px, 5.8vw, 104px);
   font-weight: 300;
-  line-height: 0.9;
+  line-height: 0.94;
   text-transform: uppercase;
 }
 
 .title-m {
   font-family: var(--font-display);
-  font-size: clamp(28px, 2.6vw, 44px);
+  font-size: clamp(22px, 1.8vw, 32px);
   font-weight: 300;
-  line-height: 1;
+  line-height: 1.05;
   text-transform: uppercase;
 }
 
@@ -227,13 +227,13 @@ body::before {
 }
 
 .lead {
-  font-size: clamp(17px, 1.35vw, 20px);
+  font-size: clamp(16px, 1.15vw, 18px);
   line-height: 1.65;
   color: var(--fg);
 }
 
 .body-copy {
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1.75;
   color: var(--muted);
 }
@@ -971,7 +971,7 @@ body:has(.presentation) .cursor {
 .scroll-words {
   font-family: var(--font-display);
   font-weight: 200;
-  font-size: clamp(72px, 13vw, 220px);
+  font-size: clamp(64px, 10vw, 168px);
   line-height: 1;
   white-space: nowrap;
   text-transform: uppercase;
@@ -1007,3 +1007,126 @@ body:has(.presentation) .cursor {
 }
 
 
+
+/* ---------- Arched window architrave (LightScene) ----------
+   --t/--r/--b/--l: the opening's insets; --rad: its arch radius. */
+.ls-frame > span {
+  position: absolute;
+  display: block;
+}
+
+.arch-glow {
+  inset: var(--t) var(--r) var(--b) var(--l);
+  border-radius: var(--rad) var(--rad) 0 0;
+  box-shadow:
+    0 0 120px 20px rgb(255 205 150 / 0.18),
+    inset 0 0 60px rgb(0 0 0 / 0.35);
+}
+
+.arch-moulding {
+  border: 1px solid rgb(246 241 232 / 0.22);
+  border-bottom: 0;
+}
+
+.arch-moulding--outer {
+  inset: calc(var(--t) - 46px) calc(var(--r) - 46px) var(--b) calc(var(--l) - 46px);
+  border-radius: calc(var(--rad) + 46px) calc(var(--rad) + 46px) 0 0;
+  border-color: rgb(246 241 232 / 0.12);
+}
+
+.arch-moulding--mid {
+  inset: calc(var(--t) - 34px) calc(var(--r) - 34px) var(--b) calc(var(--l) - 34px);
+  border-radius: calc(var(--rad) + 34px) calc(var(--rad) + 34px) 0 0;
+}
+
+/* Bronze band: a gradient ring cut out with a mask so only the border shows. */
+.arch-band {
+  inset: calc(var(--t) - 22px) calc(var(--r) - 22px) var(--b) calc(var(--l) - 22px);
+  padding: 14px 14px 0;
+  border-radius: calc(var(--rad) + 22px) calc(var(--rad) + 22px) 0 0;
+  background: linear-gradient(160deg, #f6d2a6 0%, #b06a35 28%, #6e3613 52%, #d79a62 74%, #5a2d10 100%);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+  box-shadow: 0 20px 60px rgb(0 0 0 / 0.45);
+}
+
+.arch-bead {
+  inset: calc(var(--t) - 4px) calc(var(--r) - 4px) var(--b) calc(var(--l) - 4px);
+  border: 1.5px solid rgb(255 226 190 / 0.7);
+  border-bottom: 0;
+  border-radius: calc(var(--rad) + 4px) calc(var(--rad) + 4px) 0 0;
+}
+
+/* Pilasters: fluted columns from the spring line down to the sill. */
+.arch-pilaster {
+  top: calc(var(--t) + var(--rad));
+  bottom: var(--b);
+  width: 18px;
+  background: repeating-linear-gradient(90deg, rgb(246 241 232 / 0.16) 0 1px, transparent 1px 6px);
+  border-inline: 1px solid rgb(246 241 232 / 0.2);
+}
+
+.arch-pilaster--left {
+  left: calc(var(--l) - 66px);
+}
+
+.arch-pilaster--right {
+  right: calc(var(--r) - 66px);
+}
+
+.arch-impost {
+  top: calc(var(--t) + var(--rad) - 8px);
+  width: 40px;
+  height: 10px;
+  background: linear-gradient(#d79a62, #6e3613);
+  border-radius: 2px;
+}
+
+.arch-impost--left {
+  left: calc(var(--l) - 77px);
+}
+
+.arch-impost--right {
+  right: calc(var(--r) - 77px);
+}
+
+.arch-keystone {
+  top: calc(var(--t) - 30px);
+  left: 50%;
+  width: 34px;
+  height: 46px;
+  transform: translateX(-50%);
+  clip-path: polygon(0 0, 100% 0, 80% 100%, 20% 100%);
+  background: linear-gradient(180deg, #f6d2a6, #a85a24 60%, #6e3613);
+  box-shadow: 0 0 30px rgb(227 154 98 / 0.5);
+}
+
+.arch-sill {
+  bottom: calc(var(--b) - 26px);
+  left: calc(var(--l) - 92px);
+  right: calc(var(--r) - 92px);
+  height: 26px;
+  border-top: 1px solid rgb(255 226 190 / 0.6);
+  background: linear-gradient(180deg, #2c3c37, #121d1a);
+  box-shadow:
+    0 24px 50px rgb(0 0 0 / 0.55),
+    inset 0 6px 0 rgb(246 241 232 / 0.06);
+}
+
+@media (max-width: 767px) {
+  .arch-pilaster,
+  .arch-impost,
+  .arch-moulding--outer {
+    display: none;
+  }
+
+  .arch-sill {
+    left: calc(var(--l) - 28px);
+    right: calc(var(--r) - 28px);
+  }
+}

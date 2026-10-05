@@ -41,7 +41,7 @@ export function ProjectStats({ stats }: { stats: Stat[] }) {
           {stats.map((s) => (
             <div key={s.label}>
               <p className="field-label">{s.label}</p>
-              <p className="title-m mt-3 text-[clamp(28px,2.8vw,48px)] normal-case">
+              <p className="title-m mt-3 text-[clamp(24px,2.2vw,38px)] normal-case">
                 {typeof s.value === "number" ? <span data-count={s.value}>{s.value}</span> : s.value}
                 {s.suffix}
               </p>

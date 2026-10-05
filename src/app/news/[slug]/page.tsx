@@ -48,7 +48,7 @@ export default async function NewsPostPage({ params }: PageProps<"/news/[slug]">
               <span className="tag tag-solid">{item.minutes} min read</span>
               <span className="tag tag-solid">{item.date}</span>
             </div>
-            <h1 className="section-title mt-8 max-w-6xl text-[clamp(40px,5.4vw,96px)]" data-split>
+            <h1 className="section-title mt-8 max-w-6xl text-[clamp(34px,4vw,72px)]" data-split>
               {item.title}
             </h1>
             <p className="lead mt-8 max-w-3xl text-seu-muted">{item.excerpt}</p>
