@@ -21,9 +21,9 @@ const SLOT_POS = [
 ];
 
 const statusFill: Record<Unit["status"], string> = {
-  available: "#0e8f5c",
-  reserved: "#1690a8",
-  sold: "#a3173f",
+  available: "var(--seu-available)",
+  reserved: "var(--seu-reserved)",
+  sold: "var(--seu-sold)",
 };
 
 export default function FloorExplorer({ blockId }: { blockId: string }) {
@@ -50,10 +50,10 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
   const available = floorUnits.filter((u) => u.status === "available").length;
 
   return (
-    <main className="relative min-h-[100svh] px-6 pb-24 pt-28 md:px-12">
+    <main data-tone="dark" className="tone-dark relative min-h-[100svh] px-gutter pb-section pt-36">
       <div className="flex items-center justify-between">
         <BackLink href="/projects/varketili/" />
-        <div className="label flex gap-8 text-[13px] uppercase tracking-[0.16em]" role="tablist">
+        <div className="flex gap-2" role="tablist" aria-label="Layout view">
           {(["plan", "grid"] as const).map((v) => (
             <button
               key={v}
@@ -61,7 +61,7 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
               role="tab"
               aria-selected={view === v}
               onClick={() => setView(v)}
-              className="relative pb-1 text-seu-muted transition-colors aria-selected:text-seu-fg after:absolute after:inset-x-0 after:bottom-0 after:h-px after:origin-left after:scale-x-0 after:bg-current after:transition-transform after:duration-500 aria-selected:after:scale-x-100"
+              className="chip min-h-11 rounded-full px-5"
             >
               {v === "plan" ? "Floor plan" : "Grid view"}
             </button>
@@ -72,7 +72,7 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
           aria-pressed={sun}
           aria-label="Toggle sun directions"
           onClick={() => setSun(!sun)}
-          className="grid h-11 w-11 place-items-center rounded-full border border-white/40 transition-colors aria-pressed:border-seu-accent aria-pressed:bg-seu-accent"
+          className="btn btn-icon aria-pressed:border-seu-accent aria-pressed:bg-seu-accent aria-pressed:text-white"
         >
           <svg width="22" height="16" viewBox="0 0 20 14" fill="none" stroke="currentColor" strokeWidth="1.2" aria-hidden>
             <path d="M1 13h18M5 13a5 5 0 0 1 10 0M10 2v2M3.5 5l1.4 1.4M16.5 5l-1.4 1.4M1 9h2M17 9h2" />
@@ -81,14 +81,17 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
       </div>
 
       <div className="mt-10 grid gap-10 lg:grid-cols-[160px_minmax(0,1fr)_220px]">
-        <aside className="flex flex-row items-center justify-between gap-6 lg:flex-col lg:items-start lg:justify-start">
-          <h1 className="title-display text-[clamp(30px,2.6vw,40px)] tracking-[0.08em]" data-split>
-            {block.name}
-          </h1>
+        <aside aria-label="Block and floor" className="flex flex-row items-center justify-between gap-6 lg:flex-col lg:items-start lg:justify-start">
+          <div>
+            <p className="eyebrow mb-4">SEU Varketili</p>
+            <h1 className="section-title text-[clamp(40px,4vw,64px)]" data-split>
+              {block.name}
+            </h1>
+          </div>
           <div className="flex items-center gap-4 lg:mt-24 lg:flex-col lg:items-start">
             <ArrowButton dir="up" onClick={() => step(1)} label="Floor up" />
             <div className="overflow-hidden">
-              <span ref={numberRef} className="title-display block text-[48px] leading-none tabular-nums">
+              <span ref={numberRef} className="page-title block text-[clamp(56px,5vw,88px)] leading-none tabular-nums">
                 {floor}
               </span>
               <span className="text-[13px] text-seu-muted">Floor · {available} available</span>
@@ -134,7 +137,7 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
                         </span>
                         <span className="label absolute left-2 top-1 text-[11px] text-seu-cream/70">{u.number}</span>
                         {hover === u.id && (
-                          <span className="label absolute bottom-2 left-1/2 w-max -translate-x-1/2 rounded bg-[#0e1a16]/90 px-2 py-1 text-[11px]">
+                          <span className="label absolute bottom-2 left-1/2 w-max -translate-x-1/2 rounded bg-seu-ink/90 px-2 py-1 text-[11px]">
                             {u.totalArea} m² · {u.bedrooms === 0 ? "Studio" : `${u.bedrooms} bd`}
                           </span>
                         )}
@@ -170,7 +173,7 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
           </div>
         </div>
 
-        <aside className="lg:pt-48">
+        <aside aria-label="Legend and blocks" className="lg:pt-48">
           <p className="title-display text-right text-[22px] tracking-[0.08em]">Blocks</p>
           <div className="relative mt-3 aspect-[5/4] border-l border-t border-white/40">
             {varketiliBlocks.map((b) => (
@@ -178,7 +181,7 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
                 key={b.id}
                 href={`/projects/varketili/${b.id}/`}
                 className={`label absolute grid place-items-center border text-[11px] uppercase transition-colors ${
-                  b.id === blockId ? "border-seu-cream bg-seu-cream text-[#15201d]" : "border-white/50 hover:border-seu-accent-hi hover:text-seu-accent-hi"
+                  b.id === blockId ? "border-seu-cream bg-seu-cream text-seu-ink" : "border-white/50 hover:border-seu-accent-hi hover:text-seu-accent-hi"
                 }`}
                 style={{ left: `${b.plan.x}%`, top: `${b.plan.y}%`, width: `${b.plan.w}%`, height: `${b.plan.h}%` }}
               >

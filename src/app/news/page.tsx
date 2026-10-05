@@ -3,57 +3,52 @@ import Link from "next/link";
 import { withBase } from "@/data/projects";
 import { featured, news } from "@/data/news";
 import NewsCard from "@/components/news/NewsCard";
+import PageHero from "@/components/ui/PageHero";
+import { Container, Section } from "@/components/ui/Section";
 
 export const metadata: Metadata = { title: "News" };
 
 export default function NewsPage() {
   const rest = news.filter((n) => n.slug !== featured.slug);
   return (
-    <main className="pt-36">
-      <div className="px-6 md:px-12">
-        <p className="label text-[14px] uppercase tracking-[0.2em] text-seu-muted">SEU Development</p>
-        <h1 className="title-display mt-2 text-[clamp(48px,6vw,96px)] leading-none" data-split>
-          News
-        </h1>
-      </div>
+    <main>
+      <PageHero
+        eyebrow="SEU Development"
+        title="News"
+        intro={
+          <>
+            Construction updates, interviews and videos from our sites.{" "}
+            <a href="https://www.youtube.com/@seudevelopment9577" target="_blank" rel="noreferrer" className="text-seu-fg underline decoration-seu-accent-hi decoration-2 underline-offset-4">
+              Watch on YouTube ↗
+            </a>
+          </>
+        }
+      />
 
-      <Link href={`/news/${featured.slug}/`} className="group relative mt-16 block h-[72vh] min-h-[460px] overflow-hidden">
-        <div className="absolute inset-0 animate-[kenburns_18s_ease-in-out_infinite_alternate]">
-          <img src={withBase(featured.image)} alt="" className="h-full w-full object-cover" />
-        </div>
-        <div className="absolute inset-0 bg-gradient-to-b from-[#15201d] via-[#15201d]/20 to-[#15201d]/85" />
-        <div className="absolute inset-x-6 bottom-16 text-center">
-          <h2 className="title-display text-[clamp(34px,4vw,64px)]" data-split>
-            {featured.title}
-          </h2>
-          <span className="label mt-6 inline-block rounded bg-seu-accent px-5 py-2 text-[12px] uppercase tracking-[0.16em] transition-colors group-hover:bg-seu-accent-hi">
-            Read this article
-          </span>
-        </div>
-      </Link>
+      <Section tone="dark" className="pb-0">
+        <Link href={`/news/${featured.slug}/`} className="group relative mx-gutter block h-[78vh] min-h-[480px] overflow-hidden rounded-[28px]" data-window>
+          <div className="absolute inset-0 animate-[kenburns_18s_ease-in-out_infinite_alternate]">
+            <img src={withBase(featured.image)} alt="" className="h-full w-full object-cover" />
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-seu-ink/90 via-seu-ink/20 to-transparent" />
+          <div className="absolute inset-x-8 bottom-10 md:inset-x-12 md:bottom-14">
+            <p className="eyebrow text-white/85 [--muted:rgb(255_255_255/0.85)]">Featured</p>
+            <h2 className="section-title mt-5 max-w-5xl text-[clamp(36px,4.6vw,80px)] text-white">{featured.title}</h2>
+            <span className="btn btn-primary mt-8">Read the article</span>
+          </div>
+        </Link>
+      </Section>
 
-      {/* Alternating 7/5 and 5/7 rows, as in the design. */}
-      <div className="grid gap-8 px-6 py-24 md:grid-cols-12 md:px-12" data-stagger>
-        {rest.map((item, i) => (
-          <NewsCard key={item.slug} item={item} wide={Math.floor(i / 2) % 2 === 0 ? i % 2 === 0 : i % 2 === 1} />
-        ))}
-      </div>
-
-      <section className="px-6 pb-40 md:px-12">
-        <div className="flex flex-wrap items-end justify-between gap-6">
-          <h2 className="section-title" data-split>
-            Videos
-          </h2>
-          <a
-            href="https://www.youtube.com/@seudevelopment9577"
-            target="_blank"
-            rel="noreferrer"
-            className="label text-[13px] uppercase tracking-[0.14em] text-seu-accent-hi hover:underline"
-          >
-            Visit our channel ↗
-          </a>
-        </div>
-      </section>
+      <Section tone="dark">
+        <Container>
+          {/* Alternating 7/5 and 5/7 rows, as in the design. */}
+          <div className="grid gap-8 md:grid-cols-12" data-stagger>
+            {rest.map((item, i) => (
+              <NewsCard key={item.slug} item={item} wide={Math.floor(i / 2) % 2 === 0 ? i % 2 === 0 : i % 2 === 1} />
+            ))}
+          </div>
+        </Container>
+      </Section>
     </main>
   );
 }

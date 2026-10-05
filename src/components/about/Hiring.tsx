@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import gsap from "gsap";
 import { ArrowButton } from "@/components/project/ProjectDetails";
+import { Container, Section, SectionHeader } from "@/components/ui/Section";
 
 const ROLES = [
   {
@@ -56,59 +57,54 @@ export default function Hiring() {
   };
 
   return (
-    <section id="career" className="relative">
-      <div className="bg-seu-cream text-[#15201d]">
-        <div className="grid gap-12 px-6 pb-0 pt-36 md:grid-cols-2 md:px-12">
-          <div className="flex flex-col pb-16">
-            <h2 className="section-title uppercase" data-split>
-              We are hiring.
-            </h2>
-            <p className="title-display mt-6 text-[26px] italic">Benefits of working with us.</p>
-            <div className="mt-auto flex gap-3 pt-16 [&_button]:border-[#15201d]/50 [&_button]:text-[#15201d] [&_button:hover]:text-white">
-              <ArrowButton dir="prev" onClick={() => go(-1)} label="Previous role" />
-              <ArrowButton dir="next" onClick={() => go(1)} label="Next role" />
-            </div>
-          </div>
-          <div ref={cardRef} className="relative z-10 -mb-40 rounded-t-md bg-white p-8 shadow-[0_30px_80px_#15201d26] md:rounded-md">
-            <h3 className="title-display text-[28px] uppercase">{role.title}</h3>
-            <p className="mt-2 text-[15px]">{role.lead}</p>
-            <div className="mt-5 h-px bg-gradient-to-r from-[#15201d]/40 via-[#15201d]/40 to-transparent" />
-            <div className="mt-8 space-y-5 text-[15px] leading-relaxed text-[#15201d]/85">
-              {role.body.map((p) => (
-                <p key={p.slice(0, 16)}>{p}</p>
-              ))}
-            </div>
-            {sent ? (
-              <p className="mt-8 text-[15px] text-seu-accent">Thank you! Your resume has been sent.</p>
-            ) : (
-              <form
-                className="mt-8 flex flex-wrap items-center gap-4"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  if (file) setSent(true);
-                }}
-              >
-                <label className="label cursor-pointer rounded-md border border-[#15201d]/30 px-4 py-2 text-[13px] transition-colors hover:border-seu-accent">
-                  <input type="file" accept=".pdf,.doc,.docx" className="sr-only" onChange={(e) => setFile(e.target.files?.[0]?.name ?? null)} />
-                  {file ?? "Attach CV (PDF, DOC)"}
-                </label>
-                <button
-                  type="submit"
-                  disabled={!file}
-                  className="label rounded-md bg-seu-accent px-6 py-2.5 text-[13px] uppercase tracking-[0.12em] text-white transition-colors hover:bg-seu-accent-hi disabled:opacity-40"
-                >
-                  Send resume
-                </button>
-              </form>
-            )}
+    <Section id="career" tone="light">
+      <Container className="grid gap-16 md:grid-cols-2">
+        <div className="flex flex-col">
+          <SectionHeader index="03" eyebrow="Benefits of working with us" title="We are hiring" className="lg:grid-cols-1" />
+          <p className="body-copy mt-10 max-w-md">
+            The company&apos;s team cares about continuous development and provides the best working environment.
+          </p>
+          <div className="mt-auto flex items-center gap-3 pt-16">
+            <ArrowButton dir="prev" onClick={() => go(-1)} label="Previous role" />
+            <ArrowButton dir="next" onClick={() => go(1)} label="Next role" />
+            <p className="label ml-4 text-[13px] tabular-nums text-seu-muted" aria-live="polite">
+              {index + 1} / {ROLES.length}
+            </p>
           </div>
         </div>
-      </div>
-      <div className="px-6 pb-16 pt-52 md:w-1/2 md:px-12 md:pt-24">
-        <p className="max-w-md text-[17px] leading-[1.7] text-seu-cream/80">
-          The company&apos;s team cares about continuous development and provides the best working environment.
-        </p>
-      </div>
-    </section>
+        <div ref={cardRef} className="rounded-[28px] bg-white p-8 shadow-[0_30px_80px_rgb(19_33_29/0.12)] md:p-12">
+          <p className="eyebrow">Open role</p>
+          <h3 className="section-title mt-4 text-[clamp(36px,3.4vw,56px)]">{role.title}</h3>
+          <p className="lead mt-3">{role.lead}</p>
+          <div className="mt-8 h-px bg-seu-line" />
+          <div className="body-copy mt-8 space-y-5">
+            {role.body.map((p) => (
+              <p key={p.slice(0, 16)}>{p}</p>
+            ))}
+          </div>
+          {sent ? (
+            <p role="status" className="lead mt-10 text-seu-accent-hi">
+              Thank you! Your resume has been sent.
+            </p>
+          ) : (
+            <form
+              className="mt-10 flex flex-wrap items-center gap-3"
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (file) setSent(true);
+              }}
+            >
+              <label className="btn cursor-pointer focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-seu-accent-hi">
+                <input type="file" accept=".pdf,.doc,.docx" className="sr-only" onChange={(e) => setFile(e.target.files?.[0]?.name ?? null)} />
+                {file ?? "Attach CV (PDF, DOC)"}
+              </label>
+              <button type="submit" disabled={!file} className="btn btn-primary">
+                Send resume
+              </button>
+            </form>
+          )}
+        </div>
+      </Container>
+    </Section>
   );
 }

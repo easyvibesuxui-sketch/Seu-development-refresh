@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import gsap from "gsap";
 import { units, varketiliBlocks } from "@/data/inventory";
 import ApartmentCard from "@/components/ui/ApartmentCard";
+import { Container, Section } from "@/components/ui/Section";
 
 const GEL_PER_USD = 2.7; // indicative rate for the price filter
 const PAGE = 24;
@@ -16,8 +17,13 @@ const empty: Filters = { project: "", block: "", rooms: [], sizeFrom: "", sizeTo
 export default function ApartmentSearch() {
   const params = useSearchParams();
   const initial = useMemo<Filters>(() => {
-    const rooms = params.get("rooms");
-    return { ...empty, project: params.get("project") ?? "", rooms: rooms ? [Number(rooms)] : [] };
+    // Links from the home filters and visual search carry rooms as a list and the size range.
+    const rooms = (params.get("rooms") ?? "")
+      .split(",")
+      .filter(Boolean)
+      .map((r) => Math.min(Number(r), 3))
+      .filter((r) => !Number.isNaN(r));
+    return { ...empty, project: params.get("project") ?? "", rooms, sizeFrom: params.get("from") ?? "", sizeTo: params.get("to") ?? "" };
   }, [params]);
   const [draft, setDraft] = useState<Filters>(initial);
   const [applied, setApplied] = useState<Filters>(initial);
@@ -59,21 +65,17 @@ export default function ApartmentSearch() {
     setShown(PAGE);
   };
 
-  const field = "h-10 w-full rounded-md border border-[#15201d]/25 bg-white/60 px-3 text-[14px] text-[#15201d] outline-none transition focus:border-seu-accent focus:bg-white";
+  const field = "field min-h-12";
 
   return (
     <main>
-      <section className="bg-seu-cream px-6 pb-16 pt-40 text-[#15201d] md:px-12">
-        <h1 className="title-display text-[clamp(48px,5.6vw,88px)] uppercase leading-none" data-split>
-          Apartments.
+      <Section tone="light" className="pb-20 pt-44 md:pt-52">
+        <Container>
+        <p className="eyebrow mb-8">Search</p>
+        <h1 className="page-title" data-split>
+          Apartments<span className="text-seu-accent-hi">.</span>
         </h1>
-        <p className="label mt-12 flex items-center gap-3 border-b border-[#15201d]/25 pb-4 text-[12px] uppercase tracking-[0.16em] text-[#15201d]/70">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" aria-hidden>
-            <circle cx="7" cy="7" r="5.5" />
-            <path d="M11 11l4 4" />
-          </svg>
-          Filter apartments
-        </p>
+        <h2 className="field-label mt-16 border-b border-seu-line pb-4">Filter apartments</h2>
         <form
           className="mt-8 grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-4"
           onSubmit={(e) => {
@@ -82,15 +84,15 @@ export default function ApartmentSearch() {
           }}
         >
           <label className="block">
-            <span className="label text-[14px]">Project</span>
-            <select className={`${field} mt-2`} value={draft.project} onChange={(e) => set("project", e.target.value)}>
+            <span className="field-label">Project</span>
+            <select className={field} value={draft.project} onChange={(e) => set("project", e.target.value)}>
               <option value="">All projects</option>
               <option value="varketili">SEU Varketili</option>
             </select>
           </label>
           <label className="block">
-            <span className="label text-[14px]">Block</span>
-            <select className={`${field} mt-2`} value={draft.block} onChange={(e) => set("block", e.target.value)}>
+            <span className="field-label">Block</span>
+            <select className={field} value={draft.block} onChange={(e) => set("block", e.target.value)}>
               <option value="">All blocks</option>
               {varketiliBlocks.map((b) => (
                 <option key={b.id} value={b.id}>
@@ -100,22 +102,22 @@ export default function ApartmentSearch() {
             </select>
           </label>
           <div>
-            <span className="label text-[14px]">Size m²</span>
-            <div className="mt-2 grid grid-cols-2 gap-3">
+            <span className="field-label">Size m²</span>
+            <div className="grid grid-cols-2 gap-3">
               <input className={field} inputMode="numeric" placeholder="From" aria-label="Size from" value={draft.sizeFrom} onChange={(e) => set("sizeFrom", e.target.value)} />
               <input className={field} inputMode="numeric" placeholder="To" aria-label="Size to" value={draft.sizeTo} onChange={(e) => set("sizeTo", e.target.value)} />
             </div>
           </div>
           <div>
-            <span className="label text-[14px]">Bedrooms</span>
-            <div className="mt-2 flex gap-2">
+            <span className="field-label">Bedrooms</span>
+            <div className="flex gap-2">
               {[0, 1, 2, 3].map((r) => (
                 <button
                   key={r}
                   type="button"
                   aria-pressed={draft.rooms.includes(r)}
                   onClick={() => toggleRoom(r)}
-                  className="label h-10 min-w-10 rounded-md border border-[#15201d]/30 px-3 text-[14px] transition-colors aria-pressed:border-seu-accent aria-pressed:bg-seu-accent aria-pressed:text-white"
+                  className="chip min-h-12 min-w-12"
                 >
                   {r === 0 ? "Studio" : r === 3 ? "3+" : r}
                 </button>
@@ -123,44 +125,48 @@ export default function ApartmentSearch() {
             </div>
           </div>
           <div>
-            <div className="flex items-center justify-between">
-              <span className="label text-[14px]">Price</span>
-              <div className="flex rounded-md border border-[#15201d]/20 p-0.5 text-[12px]">
+            <div className="mb-2 flex items-center justify-between">
+              <span className="field-label mb-0">Price</span>
+              <div className="flex rounded-full border border-seu-line-strong p-1 text-[12px]">
                 {(["USD", "GEL"] as const).map((c) => (
                   <button
                     key={c}
                     type="button"
                     aria-pressed={draft.currency === c}
                     onClick={() => set("currency", c)}
-                    className="label rounded px-2.5 py-0.5 transition-colors aria-pressed:bg-seu-accent aria-pressed:text-white"
+                    className="label min-h-8 rounded-full px-3 transition-colors aria-pressed:bg-seu-accent aria-pressed:text-white"
                   >
                     {c}
                   </button>
                 ))}
               </div>
             </div>
-            <div className="mt-2 grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3">
               <input className={field} inputMode="numeric" placeholder="From" aria-label="Price from" value={draft.priceFrom} onChange={(e) => set("priceFrom", e.target.value)} />
               <input className={field} inputMode="numeric" placeholder="To" aria-label="Price to" value={draft.priceTo} onChange={(e) => set("priceTo", e.target.value)} />
             </div>
           </div>
           <label className="flex cursor-pointer items-center gap-3 self-end pb-2 text-[14px]">
-            <input type="checkbox" checked={draft.available} onChange={(e) => set("available", e.target.checked)} className="h-5 w-5 accent-[#8b5a3c]" />
+            <input type="checkbox" checked={draft.available} onChange={(e) => set("available", e.target.checked)} className="h-5 w-5 accent-[var(--seu-accent)]" />
             Hide sold apartments
           </label>
           <div className="flex items-end gap-6 sm:col-span-2">
-            <button type="submit" className="label h-11 rounded-md bg-seu-accent px-10 text-[13px] uppercase tracking-[0.14em] text-white transition-colors hover:bg-seu-accent-hi">
+            <button type="submit" className="btn btn-primary">
               Search
             </button>
-            <button type="button" onClick={clear} className="label h-11 text-[13px] uppercase tracking-[0.12em] hover:text-seu-accent">
+            <button type="button" onClick={clear} className="btn">
               Clear filters
             </button>
           </div>
         </form>
-      </section>
+        </Container>
+      </Section>
 
-      <section className="min-h-[60vh] px-6 py-16 md:px-12">
-        <p className="label mb-8 text-[13px] uppercase tracking-[0.14em] text-seu-muted">{results.length} apartments</p>
+      <Section tone="dark" className="min-h-[60vh] py-20">
+        <Container>
+        <p className="eyebrow mb-10" role="status">
+          {results.length} apartments
+        </p>
         {results.length ? (
           <>
             <div ref={gridRef} className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -173,7 +179,7 @@ export default function ApartmentSearch() {
                 <button
                   type="button"
                   onClick={() => setShown((s) => s + PAGE)}
-                  className="label rounded-md border border-white/40 px-10 py-3 text-[13px] uppercase tracking-[0.14em] transition-colors hover:border-seu-accent hover:bg-seu-accent"
+                  className="btn btn-lg"
                 >
                   Show more
                 </button>
@@ -188,12 +194,13 @@ export default function ApartmentSearch() {
               <path d="M34 34l24 24M58 34L34 58" strokeWidth="5" strokeLinecap="round" />
             </svg>
             <p className="mt-10 text-[20px] text-seu-muted">Nothing found with these filters</p>
-            <button type="button" onClick={clear} className="label mt-6 text-[13px] uppercase tracking-[0.14em] text-seu-accent-hi hover:underline">
+            <button type="button" onClick={clear} className="btn btn-primary mt-8">
               Clear filters
             </button>
           </div>
         )}
-      </section>
+        </Container>
+      </Section>
     </main>
   );
 }

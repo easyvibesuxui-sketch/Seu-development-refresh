@@ -48,12 +48,12 @@ export default function LightScene() {
   }, []);
 
   return (
-    <section ref={rootRef} className="relative h-[320vh]" aria-label="Homes made of light">
+    <section ref={rootRef} data-tone="dark" data-no-out className="tone-dark relative h-[320vh]" aria-label="Homes made of light">
       <div className="sticky top-0 h-[100svh] overflow-hidden">
         <div className="ls-window absolute inset-0 overflow-hidden" style={{ clipPath: ARCH }}>
           <AmbientVideo name="light-interior" className="ls-media h-full w-full object-cover" />
           <div className="sunbeams" />
-          <div className="ls-shade absolute inset-0 bg-gradient-to-t from-[#15201d]/90 via-[#15201d]/35 to-[#15201d]/10 opacity-0" />
+          <div className="ls-shade absolute inset-0 bg-gradient-to-t from-seu-ink/90 via-seu-ink/35 to-seu-ink/10 opacity-0" />
         </div>
 
         <h2 className="pointer-events-none absolute inset-0 uppercase">

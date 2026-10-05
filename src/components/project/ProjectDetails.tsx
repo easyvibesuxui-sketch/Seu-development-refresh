@@ -7,6 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import LogoMark from "@/components/brand/LogoMark";
 import { statusLabel, withBase, type Project } from "@/data/projects";
 import { benefits, bedroomText, units } from "@/data/inventory";
+import { Container, Section, SectionHeader } from "@/components/ui/Section";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -34,72 +35,67 @@ export function ProjectStats({ stats }: { stats: Stat[] }) {
   }, []);
 
   return (
-    <div ref={ref} className="mx-auto grid max-w-5xl grid-cols-2 gap-y-12 px-6 py-24 text-center md:grid-cols-4">
-      {stats.map((s) => (
-        <div key={s.label}>
-          <p className="text-[14px] text-seu-muted">{s.label}</p>
-          <span className="mx-auto my-3 block h-2 w-2 rounded-full border border-seu-muted" />
-          <p className="title-display text-[clamp(20px,1.8vw,26px)]">
-            {typeof s.value === "number" ? <span data-count={s.value}>{s.value}</span> : s.value}
-            {s.suffix}
-          </p>
+    <Section tone="dark" className="py-24">
+      <Container>
+        <div ref={ref} className="grid grid-cols-2 gap-x-8 gap-y-14 border-y border-seu-line py-14 md:grid-cols-4">
+          {stats.map((s) => (
+            <div key={s.label}>
+              <p className="field-label">{s.label}</p>
+              <p className="title-m mt-3 text-[clamp(28px,2.8vw,48px)] normal-case">
+                {typeof s.value === "number" ? <span data-count={s.value}>{s.value}</span> : s.value}
+                {s.suffix}
+              </p>
+            </div>
+          ))}
         </div>
-      ))}
-    </div>
+      </Container>
+    </Section>
   );
 }
 
 export function AboutProject({ project, address, text, award }: { project: Project; address: string; text: string; award?: string }) {
   return (
-    <section className="px-6 py-24 md:px-12">
-      <div className="flex items-start justify-between">
-        <div>
-          <h2 className="section-title" data-split>
-            About Project.
-          </h2>
-          <p className="label mt-4 flex items-center gap-2 text-[13px] uppercase tracking-[0.12em] text-seu-muted">
-            <svg width="14" height="16" viewBox="0 0 14 16" fill="none" aria-hidden>
-              <path d="M1 15V1h10l-2 3.5L11 8H1" stroke="currentColor" strokeWidth="1.2" />
-            </svg>
-            {statusLabel[project.status]} {project.date}
-          </p>
-        </div>
-        <span className="group hidden md:block">
-          <LogoMark className="w-24 overflow-visible" />
-        </span>
-      </div>
-      <div className="mt-16 grid gap-16 md:grid-cols-2">
-        <div>
-          <p className="flex items-center gap-2 text-[15px]">
-            <svg width="12" height="16" viewBox="0 0 12 16" fill="none" stroke="currentColor" strokeWidth="1.2" aria-hidden>
-              <path d="M6 15s5-5.5 5-9A5 5 0 0 0 1 6c0 3.5 5 9 5 9z" />
-              <circle cx="6" cy="6" r="1.8" />
-            </svg>
-            {address}
-          </p>
-          <a
-            href={`https://www.google.com/maps/search/?api=1&query=${project.coords?.[1]},${project.coords?.[0]}`}
-            target="_blank"
-            rel="noreferrer"
-            className="group relative mt-4 block h-56 overflow-hidden rounded-lg border border-white/40 bg-[#1c2522]"
-          >
-            <img
-              src={withBase("/images/choose-varketili.jpg")}
-              alt=""
-              className="h-full w-full object-cover opacity-40 grayscale transition duration-700 group-hover:scale-105 group-hover:opacity-60"
-            />
-            <span className="label absolute bottom-4 left-4 rounded bg-[#0e1a16]/85 px-3 py-1.5 text-[12px] uppercase tracking-[0.1em]">
-              Open in Google Maps ↗
+    <Section tone="light">
+      <Container>
+        <SectionHeader
+          eyebrow={`${statusLabel[project.status]} · ${project.date}`}
+          title="About project"
+          action={
+            <span className="group hidden md:block">
+              <LogoMark className="w-24 overflow-visible" />
             </span>
-          </a>
+          }
+        />
+        <div className="mt-20 grid gap-16 md:grid-cols-2">
+          <div>
+            <p className="lead flex items-center gap-3">
+              <svg width="12" height="16" viewBox="0 0 12 16" fill="none" stroke="currentColor" strokeWidth="1.2" aria-hidden>
+                <path d="M6 15s5-5.5 5-9A5 5 0 0 0 1 6c0 3.5 5 9 5 9z" />
+                <circle cx="6" cy="6" r="1.8" />
+              </svg>
+              {address}
+            </p>
+            <a
+              href={`https://www.google.com/maps/search/?api=1&query=${project.coords?.[1]},${project.coords?.[0]}`}
+              target="_blank"
+              rel="noreferrer"
+              className="group relative mt-6 block h-72 overflow-hidden rounded-[24px] bg-seu-ink"
+            >
+              <img
+                src={withBase("/images/choose-varketili.jpg")}
+                alt=""
+                className="h-full w-full object-cover opacity-70 transition duration-700 group-hover:scale-105 group-hover:opacity-90"
+              />
+              <span className="btn btn-glass btn-sm absolute bottom-5 left-5 text-white">Open in Google Maps ↗</span>
+            </a>
+          </div>
+          <div data-stagger>
+            <p className="lead">{text}</p>
+            {award && <p className="mt-8 border-l-2 border-seu-accent pl-6 text-[16px] leading-[1.8] text-seu-accent-hi">{award}</p>}
+          </div>
         </div>
-        <div className="md:text-right" data-stagger>
-          <p className="label text-[13px] uppercase tracking-[0.14em] text-seu-muted">About project</p>
-          <p className="mt-6 text-[16px] leading-[1.9]">{text}</p>
-          {award && <p className="mt-6 text-[16px] leading-[1.9] text-seu-accent-hi">{award}</p>}
-        </div>
-      </div>
-    </section>
+      </Container>
+    </Section>
   );
 }
 
@@ -118,15 +114,14 @@ export function Benefits() {
   const go = (d: number) => setIndex((i) => (i + d + SLIDES.length) % SLIDES.length);
 
   return (
-    <section className="grid gap-12 overflow-hidden px-6 py-24 md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] md:px-12">
+    <Section tone="dark" className="overflow-hidden">
+      <Container className="grid gap-16 md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
       <div>
-        <h2 className="title-display text-[clamp(28px,2.4vw,38px)]" data-split>
-          Benefits
-        </h2>
-        <ul className="mt-8 space-y-3 text-[16px]" data-stagger>
+        <SectionHeader eyebrow="Why SEU" title="Benefits" className="lg:grid-cols-1" />
+        <ul className="mt-12 space-y-4" data-stagger>
           {benefits.map((b) => (
-            <li key={b} className="flex items-center gap-3">
-              <span className="h-px w-4 bg-seu-accent-hi" />
+            <li key={b} className="lead flex items-center gap-4">
+              <span className="h-px w-5 shrink-0 bg-seu-accent-hi" />
               {b}
             </li>
           ))}
@@ -136,29 +131,30 @@ export function Benefits() {
         <div className="overflow-hidden">
           <div ref={trackRef} className="flex gap-[2%]">
             {SLIDES.map((src, i) => (
-              <div key={src + i} className="relative aspect-[3/4] w-[53%] shrink-0 overflow-hidden md:aspect-[4/5]">
+              <div key={src + i} className="relative aspect-[3/4] w-[53%] shrink-0 overflow-hidden rounded-[20px] md:aspect-[4/5]">
                 <img
                   src={withBase(src)}
                   alt=""
                   className={`h-full w-full object-cover transition-transform duration-[1.4s] ${i === index ? "scale-100" : "scale-110"}`}
                 />
-                <div className="absolute inset-0 bg-gradient-to-b from-[#15201d]/50 via-transparent to-[#15201d]/80" />
+                <div className="absolute inset-0 bg-gradient-to-b from-seu-ink/50 via-transparent to-seu-ink/80" />
               </div>
             ))}
           </div>
         </div>
         <div className="mt-8 flex items-center justify-between">
           <div className="flex gap-3">
-            <ArrowButton dir="prev" onClick={() => go(-1)} />
-            <ArrowButton dir="next" onClick={() => go(1)} />
+            <ArrowButton dir="prev" onClick={() => go(-1)} label="Previous image" />
+            <ArrowButton dir="next" onClick={() => go(1)} label="Next image" />
           </div>
-          <p className="title-display text-[32px] tabular-nums">
+          <p className="title-m tabular-nums" aria-live="polite">
             {String(index + 1).padStart(2, "0")}
             <span className="text-seu-muted">/{String(SLIDES.length).padStart(2, "0")}</span>
           </p>
         </div>
       </div>
-    </section>
+      </Container>
+    </Section>
   );
 }
 
@@ -169,7 +165,7 @@ export function ArrowButton({ dir, onClick, label }: { dir: "prev" | "next" | "u
       type="button"
       onClick={onClick}
       aria-label={label ?? dir}
-      className="grid h-11 w-11 place-items-center rounded-full border border-white/50 transition-colors hover:border-seu-accent-hi hover:bg-seu-accent"
+      className="btn btn-icon"
     >
       <svg width="8" height="14" viewBox="0 0 8 14" fill="none" style={{ transform: `rotate(${rotate}deg)` }} aria-hidden>
         <path d="M1 1l6 6-6 6" stroke="currentColor" strokeWidth="1.4" />
@@ -181,11 +177,11 @@ export function ArrowButton({ dir, onClick, label }: { dir: "prev" | "next" | "u
 export function VirtualTour({ videoId }: { videoId: string }) {
   const [playing, setPlaying] = useState(false);
   return (
-    <section className="py-24">
-      <h2 className="section-title px-6 md:px-12" data-split>
-        Virtual Tour.
-      </h2>
-      <div className="relative mt-14 h-[70vh] min-h-[420px] overflow-hidden" data-cursor="play" data-window>
+    <Section tone="dark">
+      <Container>
+        <SectionHeader eyebrow="Walk through" title="Virtual tour" />
+      </Container>
+      <div className="relative mx-gutter mt-20 h-[78vh] min-h-[420px] overflow-hidden rounded-[24px]" data-cursor="play" data-window>
         {playing ? (
           <iframe
             className="h-full w-full"
@@ -200,8 +196,8 @@ export function VirtualTour({ videoId }: { videoId: string }) {
               <img src={withBase("/images/sun-interior.jpg")} alt="" className="h-full w-full object-cover" />
             </div>
             <div className="sunbeams" />
-            <div className="absolute inset-0 bg-gradient-to-b from-[#15201d]/80 via-transparent to-[#15201d]/80" />
-            <span className="absolute left-1/2 top-1/2 grid h-20 w-20 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-seu-accent/90 shadow-[0_0_40px_#8b5a3c80] transition-transform duration-500 group-hover:scale-110">
+            <div className="absolute inset-0 bg-gradient-to-b from-seu-ink/80 via-transparent to-seu-ink/80" />
+            <span className="absolute left-1/2 top-1/2 grid h-24 w-24 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-white/50 bg-white/15 text-white backdrop-blur-md transition-[transform,background-color] duration-500 group-hover:scale-110 group-hover:bg-seu-accent">
               <svg width="26" height="28" viewBox="0 0 22 24" fill="none" className="ml-1" aria-hidden>
                 <path d="M3 2l17 10L3 22V2z" stroke="#fff" strokeWidth="2" strokeLinejoin="round" />
               </svg>
@@ -209,7 +205,7 @@ export function VirtualTour({ videoId }: { videoId: string }) {
           </button>
         )}
       </div>
-    </section>
+    </Section>
   );
 }
 
@@ -226,28 +222,27 @@ export function ApartmentTypes({ projectId }: { projectId: string }) {
     .filter((t): t is NonNullable<typeof t> => Boolean(t));
 
   return (
-    <section className="px-6 py-24 md:px-12">
-      <h2 className="section-title" data-split>
-        Apartment Types.
-      </h2>
-      <ul className="mt-14" data-stagger>
+    <Section tone="light">
+      <Container>
+      <SectionHeader eyebrow="Layouts" title="Apartment types" />
+      <ul className="mt-16 border-t border-seu-line" data-stagger>
         {types.map((t) => (
           <li key={t.bedrooms}>
             <Link
               href={`/search/?project=${projectId}&rooms=${t.bedrooms}`}
-              className="group grid grid-cols-[72px_1fr_auto] items-center gap-6 border-b border-white/10 py-5 transition-colors hover:bg-white/[0.03] md:grid-cols-[96px_1.2fr_1fr_1fr_auto]"
+              className="group grid grid-cols-[72px_1fr_auto] items-center gap-6 border-b border-seu-line py-6 transition-colors hover:bg-seu-field md:grid-cols-[96px_1.2fr_1fr_1fr_auto]"
             >
-              <span className="block aspect-square overflow-hidden rounded bg-seu-cream">
+              <span className="block aspect-square overflow-hidden rounded-[12px] bg-white">
                 <img src={withBase("/images/apartment-plan.png")} alt="" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
               </span>
-              <span className="label text-[17px]">{bedroomText(t.bedrooms)}</span>
+              <span className="title-m">{bedroomText(t.bedrooms)}</span>
               <span className="hidden text-[16px] md:block">
                 {t.min}–{t.max} m²
               </span>
               <span className="hidden text-[16px] text-seu-muted md:block">
                 from ${t.from.toLocaleString("en-US")} · {t.count} available
               </span>
-              <span className="grid h-11 w-11 place-items-center rounded-full border border-white/50 transition-[background-color,transform] duration-500 group-hover:translate-x-1 group-hover:bg-seu-accent">
+              <span className="btn btn-icon transition-transform group-hover:translate-x-1" aria-hidden>
                 <svg width="8" height="14" viewBox="0 0 8 14" fill="none" aria-hidden>
                   <path d="M1 1l6 6-6 6" stroke="currentColor" strokeWidth="1.4" />
                 </svg>
@@ -256,6 +251,7 @@ export function ApartmentTypes({ projectId }: { projectId: string }) {
           </li>
         ))}
       </ul>
-    </section>
+      </Container>
+    </Section>
   );
 }

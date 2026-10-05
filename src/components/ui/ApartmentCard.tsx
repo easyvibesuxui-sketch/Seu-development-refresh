@@ -3,9 +3,9 @@ import { withBase } from "@/data/projects";
 import { blockById, statusText, type Unit } from "@/data/inventory";
 
 export const statusClass: Record<Unit["status"], string> = {
-  available: "bg-[#0e8f5c]",
-  reserved: "bg-[#1690a8]",
-  sold: "bg-[#a3173f]",
+  available: "bg-[var(--seu-available)] text-white",
+  reserved: "bg-[var(--seu-reserved)] text-white",
+  sold: "bg-[var(--seu-sold)] text-white",
 };
 
 /** Apartment tile from the design: number, 3D layout, project/block chips, status and size. */
@@ -14,12 +14,12 @@ export default function ApartmentCard({ unit, className = "" }: { unit: Unit; cl
   return (
     <Link
       href={`/apartments/${unit.id}/`}
-      className={`group flex flex-col rounded-md border border-white/25 bg-[#313b38] p-5 transition-[border-color,transform] duration-500 hover:-translate-y-1 hover:border-seu-accent-hi ${className}`}
+      className={`card group ${className}`}
     >
-      <p className="title-display text-[clamp(18px,1.5vw,22px)] uppercase tracking-[0.04em]">
+      <p className="title-m text-[clamp(20px,1.6vw,26px)]">
         Apartment <span className="ml-1">{unit.number}</span>
       </p>
-      <div className="relative my-3 aspect-[36/25] overflow-hidden">
+      <div className="relative my-4 aspect-[36/25] overflow-hidden rounded-[16px] bg-[#313b38]">
         <img
           src={withBase("/images/apartment-3d.png")}
           alt={`Apartment ${unit.number} layout`}
@@ -33,14 +33,14 @@ export default function ApartmentCard({ unit, className = "" }: { unit: Unit; cl
         <Chip>Floor {unit.floor}</Chip>
       </div>
       <div className="mt-3 flex flex-wrap items-center gap-2 text-[12px]">
-        <span className={`label rounded px-3 py-0.5 tracking-[0.04em] ${statusClass[unit.status]}`}>{statusText[unit.status]}</span>
-        <span className="label flex items-center gap-1.5 rounded border border-white/60 px-2 py-0.5">
-          <BedIcon /> {unit.bedrooms === 0 ? "Studio" : unit.bedrooms}
+        <span className={`tag border-transparent ${statusClass[unit.status]}`}>{statusText[unit.status]}</span>
+        <span className="tag">
+          <BedIcon /> <span className="sr-only">Bedrooms:</span> {unit.bedrooms === 0 ? "Studio" : unit.bedrooms}
         </span>
-        <span className="label flex items-center gap-1.5 rounded border border-white/60 px-2 py-0.5">
+        <span className="tag">
           <AreaIcon /> {unit.totalArea} m²
         </span>
-        {unit.discounted && <span className="label rounded bg-seu-accent px-2 py-0.5">−5%</span>}
+        {unit.discounted && <span className="tag border-transparent bg-seu-accent text-white">−5%</span>}
       </div>
     </Link>
   );
@@ -48,7 +48,7 @@ export default function ApartmentCard({ unit, className = "" }: { unit: Unit; cl
 
 export function Chip({ children }: { children: React.ReactNode }) {
   return (
-    <span className="label rounded bg-seu-cream px-3 py-1 text-[12px] uppercase tracking-[0.06em] text-[#15201d]">{children}</span>
+    <span className="tag tag-solid">{children}</span>
   );
 }
 

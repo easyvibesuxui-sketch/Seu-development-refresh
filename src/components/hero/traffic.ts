@@ -55,10 +55,10 @@ export function createTraffic(map: MapLibreMap) {
     type: "circle",
     source: SOURCE,
     paint: {
-      "circle-color": ["match", ["get", "kind"], "head", "#ffe3b0", "#ff3b30"],
-      "circle-radius": ["interpolate", ["linear"], ["zoom"], 12, 3, 16, 9],
+      "circle-color": ["match", ["get", "kind"], "head", "#13211d", "#a8541f"],
+      "circle-radius": ["interpolate", ["linear"], ["zoom"], 12, 1.6, 16, 5],
       "circle-blur": 1,
-      "circle-opacity": 0.55,
+      "circle-opacity": 0.25,
       "circle-pitch-alignment": "map",
     },
   });
@@ -67,7 +67,7 @@ export function createTraffic(map: MapLibreMap) {
     type: "circle",
     source: SOURCE,
     paint: {
-      "circle-color": ["match", ["get", "kind"], "head", "#fffaf0", "#ff8a80"],
+      "circle-color": ["match", ["get", "kind"], "head", "#13211d", "#c2611f"],
       "circle-radius": ["interpolate", ["linear"], ["zoom"], 12, 0.8, 16, 2.4],
       "circle-pitch-alignment": "map",
     },

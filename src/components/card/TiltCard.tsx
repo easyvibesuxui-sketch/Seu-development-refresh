@@ -49,7 +49,7 @@ export default function TiltCard() {
           style={{ maskImage: `url(${withBase("/images/seu-card.png")})`, maskSize: "100% 100%", WebkitMaskImage: `url(${withBase("/images/seu-card.png")})`, WebkitMaskSize: "100% 100%" }}
         />
       </div>
-      <div className="mt-6 h-6 w-48 rounded-full bg-[#15201d]/35 blur-xl" />
+      <div className="mt-6 h-6 w-48 rounded-full bg-seu-ink/35 blur-xl" />
     </div>
   );
 }

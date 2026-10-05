@@ -4,7 +4,7 @@
  */
 export default function ScrollWords() {
   return (
-    <section className="overflow-hidden py-24 md:py-36" aria-hidden>
+    <section data-tone="dark" className="tone-dark overflow-hidden pt-section" aria-hidden>
       <p className="scroll-words" data-drift="-0.35">
         Varketili <span className="is-solid">·</span> Green Yard <span className="is-solid">·</span> Vasilisko{" "}
         <span className="is-solid">·</span> Varketili

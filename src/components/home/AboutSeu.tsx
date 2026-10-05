@@ -4,6 +4,8 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { withBase } from "@/data/projects";
+import { Container, Section, SectionHeader } from "@/components/ui/Section";
+import { ButtonLink } from "@/components/ui/Button";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -46,27 +48,25 @@ export default function AboutSeu() {
   }, []);
 
   return (
-    <section className="overflow-hidden bg-seu-cream px-6 py-44 text-[#1d1d1b] md:px-12">
-      <div className="grid items-center gap-16 md:grid-cols-2">
-        <div className="max-w-md">
-          <h2 className="section-title" data-split>
-            About SEU.
-          </h2>
-          <div className="mt-10 space-y-5 text-[15px] leading-relaxed" data-stagger>
+    <Section tone="light" className="overflow-hidden">
+      <Container className="grid items-center gap-20 md:grid-cols-2">
+        <div>
+          <SectionHeader index="07" eyebrow="Developer" title="About SEU" className="lg:grid-cols-1" />
+          <div className="mt-12 max-w-[52ch] space-y-5" data-stagger>
             {paragraphs.map((p, i) => (
-              <p key={i}>{p}</p>
+              <p key={i} className={i === 0 ? "lead" : "body-copy"}>
+                {p}
+              </p>
             ))}
-            <div>
-              <a
-                href="#contact"
-                className="mt-6 inline-block rounded bg-seu-accent px-10 py-3 text-[14px] tracking-[0.08em] text-white transition hover:brightness-110"
-              >
-                CONTACT
-              </a>
+            <div className="flex flex-wrap gap-3 pt-6">
+              <ButtonLink href="/about/" variant="primary">
+                Our story
+              </ButtonLink>
+              <ButtonLink href="#contact">Request a call</ButtonLink>
             </div>
           </div>
         </div>
-        <div ref={markRef} className="relative mx-auto aspect-[500/460] w-[min(440px,80%)]">
+        <div ref={markRef} className="relative mx-auto aspect-[500/460] w-[min(480px,80%)]">
           {SLABS.map((slab, i) => (
             <img
               key={i}
@@ -77,7 +77,7 @@ export default function AboutSeu() {
             />
           ))}
         </div>
-      </div>
-    </section>
+      </Container>
+    </Section>
   );
 }

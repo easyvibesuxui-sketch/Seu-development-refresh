@@ -46,7 +46,7 @@ export default async function PresentationPage({ params }: PageProps<"/apartment
       <section className="pres-page pres-sheet">
         <div className="grid grid-cols-[1.25fr_1fr] gap-8 px-12 pt-10">
           <img src={withBase("/images/apartment-plan.png")} alt="Apartment plan" className="w-full" />
-          <div className="border-l border-[#15201d] pl-6">
+          <div className="border-l border-seu-ink pl-6">
             <div className="flex justify-end">
               <LogoMark className="w-9" />
             </div>
@@ -64,7 +64,7 @@ export default async function PresentationPage({ params }: PageProps<"/apartment
                   <span>{r.area} m²</span>
                 </li>
               ))}
-              <li className="flex justify-between border-t border-[#15201d]/20 pt-3 font-semibold">
+              <li className="flex justify-between border-t border-seu-ink/20 pt-3 font-semibold">
                 <span>Total</span>
                 <span>{unit.totalArea} m²</span>
               </li>
@@ -86,12 +86,12 @@ export default async function PresentationPage({ params }: PageProps<"/apartment
         </div>
         <div className="grid grid-cols-2 gap-8 px-12 pt-10 text-[12px]">
           <div>
-            <p className="text-[#15201d]/70">Interested? Contact us</p>
+            <p className="text-seu-ink/70">Interested? Contact us</p>
             <p className="pres-serif mt-4 text-[11px]">+995 596 70 70 70</p>
             <p className="pres-serif mt-3 text-[11px]">info@seudevelopment.ge</p>
           </div>
           <div>
-            <p className="uppercase tracking-[0.06em] text-[#15201d]/70">Sales office address</p>
+            <p className="uppercase tracking-[0.06em] text-seu-ink/70">Sales office address</p>
             <p className="pres-serif mt-4 text-[11px]">Anna Politkovskaya 32, Tbilisi</p>
           </div>
         </div>

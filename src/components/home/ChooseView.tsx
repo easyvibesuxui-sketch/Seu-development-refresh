@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import gsap from "gsap";
 import { useRouter } from "next/navigation";
 import { withBase } from "@/data/projects";
+import { Container, Section, SectionHeader } from "@/components/ui/Section";
 
 type View = { id: string; label: string; image: string; icon: React.ReactNode };
 
@@ -78,8 +79,6 @@ const BEDROOMS = ["Studio", "1 bedroom", "2 bedrooms", "3 bedrooms", "4 bedrooms
 export default function ChooseView() {
   const [view, setView] = useState(VIEWS[0]);
   const [rooms, setRooms] = useState<string[]>([]);
-  const [discounted, setDiscounted] = useState(false);
-  const [hideReserved, setHideReserved] = useState(true);
   const stageRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
@@ -111,94 +110,80 @@ export default function ChooseView() {
   const toggleRoom = (r: string) => setRooms((cur) => (cur.includes(r) ? cur.filter((x) => x !== r) : [...cur, r]));
 
   return (
-    <section id="choose-view" className="grid min-h-[100svh] md:grid-cols-[minmax(0,46%)_1fr]" data-section-out>
-      <form
-        className="flex flex-col justify-center gap-14 px-6 py-32 md:px-12 lg:pr-16"
-        onSubmit={(e) => {
-          e.preventDefault();
-          const first = rooms.map((r) => BEDROOMS.indexOf(r)).sort()[0];
-          router.push(first === undefined ? "/search/" : `/search/?project=varketili&rooms=${Math.min(first, 3)}`);
-        }}
-        data-stagger
-      >
-        <fieldset>
-          <legend className="title-display mb-6 text-[clamp(26px,2.2vw,36px)] uppercase">Choose a view</legend>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-            {VIEWS.map((v) => (
-              <button
-                key={v.id}
-                type="button"
-                aria-pressed={view.id === v.id}
-                onClick={() => pickView(v)}
-                className="label flex h-14 items-center justify-center gap-3 border border-white/25 px-3 text-[13px] tracking-[0.04em] transition-colors duration-300 hover:border-seu-accent-hi aria-pressed:border-seu-accent aria-pressed:bg-seu-accent [&>svg]:h-5 [&>svg]:w-5 [&>svg]:shrink-0"
-              >
-                {v.icon}
-                <span className="truncate">{v.label}</span>
-              </button>
-            ))}
-          </div>
-        </fieldset>
-
-        <fieldset>
-          <legend className="title-display mb-6 text-[clamp(26px,2.2vw,36px)] uppercase">Rooms</legend>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-            {BEDROOMS.map((r) => (
-              <button
-                key={r}
-                type="button"
-                aria-pressed={rooms.includes(r)}
-                onClick={() => toggleRoom(r)}
-                className="label h-14 border border-white/25 text-[13px] tracking-[0.04em] transition-colors duration-300 hover:border-seu-accent-hi aria-pressed:border-seu-cream aria-pressed:bg-seu-cream aria-pressed:text-[#15201d]"
-              >
-                {r}
-              </button>
-            ))}
-          </div>
-        </fieldset>
-
-        <div className="space-y-4 text-[15px]">
-          <Check checked={discounted} onChange={setDiscounted} label="Discounted apartments" />
-          <Check checked={hideReserved} onChange={setHideReserved} label="Hide reserved apartments" />
-        </div>
-
+    <Section id="choose-view" tone="light" data-no-out>
+      <Container className="grid gap-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-24">
         <div>
-          <button
-            type="submit"
-            className="label inline-flex h-14 items-center gap-3 bg-seu-accent px-10 text-[13px] tracking-[0.14em] uppercase transition-colors hover:bg-seu-accent-hi"
+          <SectionHeader index="04" eyebrow="Find yours" title="Choose a view" className="lg:grid-cols-1" />
+          <p className="lead mt-10 max-w-[44ch] text-seu-muted">
+            Start from what you want to see every morning — the park, the city or the Tbilisi Sea — then pick the size.
+          </p>
+
+          {/* On phones the picture sits above the controls; on wide screens it stays pinned beside them. */}
+          <div className="relative mt-12 aspect-[4/3] overflow-hidden rounded-[20px] lg:hidden">
+            <img src={withBase(view.image)} alt={`${view.label} view render`} className="absolute inset-0 h-full w-full object-cover" />
+          </div>
+
+          <form
+            className="mt-14 flex flex-col gap-12"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const q = new URLSearchParams({ project: "varketili" });
+              const picked = rooms.map((r) => Math.min(BEDROOMS.indexOf(r), 3));
+              if (picked.length) q.set("rooms", [...new Set(picked)].sort().join(","));
+              router.push(`/search/?${q}`);
+            }}
           >
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden>
-              <circle cx="8" cy="8" r="6" stroke="#fff" strokeWidth="1.6" />
-              <path d="M12.5 12.5L17 17" stroke="#fff" strokeWidth="1.6" />
-            </svg>
-            Choose apartment
-          </button>
+            <fieldset>
+              <legend className="field-label mb-4">View</legend>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3" data-stagger>
+                {VIEWS.map((v) => (
+                  <button
+                    key={v.id}
+                    type="button"
+                    aria-pressed={view.id === v.id}
+                    onClick={() => pickView(v)}
+                    className="chip h-14 [&>svg]:h-5 [&>svg]:w-5 [&>svg]:shrink-0"
+                  >
+                    {v.icon}
+                    <span className="truncate">{v.label}</span>
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend className="field-label mb-4">Bedrooms</legend>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3" data-stagger>
+                {BEDROOMS.map((r) => (
+                  <button key={r} type="button" aria-pressed={rooms.includes(r)} onClick={() => toggleRoom(r)} className="chip h-14">
+                    {r}
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+
+            <div>
+              <button type="submit" className="btn btn-primary btn-lg">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden>
+                  <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.6" />
+                  <path d="M12.5 12.5L17 17" stroke="currentColor" strokeWidth="1.6" />
+                </svg>
+                Show apartments
+              </button>
+            </div>
+          </form>
         </div>
-      </form>
 
-      <div ref={stageRef} className="relative min-h-[60vh] overflow-hidden md:min-h-0">
-        <img src={withBase(view.image)} alt={`${view.label} view render`} className="absolute inset-0 h-full w-full object-cover" />
-        <img alt="" aria-hidden className="cv-incoming absolute inset-0 h-full w-full object-cover [clip-path:inset(0_0_0_100%)]" />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#15201d]/70 via-transparent to-transparent" />
-        <p className="label absolute bottom-10 left-10 text-[12px] tracking-[0.2em] uppercase text-seu-cream/80">
-          View · {view.label}
-        </p>
-      </div>
-    </section>
-  );
-}
-
-function Check({ checked, onChange, label }: { checked: boolean; onChange: (v: boolean) => void; label: string }) {
-  return (
-    <label className="flex cursor-pointer items-center gap-4">
-      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="peer sr-only" />
-      <span className="grid h-6 w-6 place-items-center rounded border border-white/40 transition-colors peer-checked:border-seu-accent peer-checked:bg-seu-accent peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-seu-accent-hi">
-        {checked && (
-          <svg width="12" height="10" viewBox="0 0 12 10" fill="none" aria-hidden>
-            <path d="M1 5l3.5 3.5L11 1" stroke="#fff" strokeWidth="1.8" />
-          </svg>
-        )}
-      </span>
-      {label}
-    </label>
+        <div className="hidden lg:block">
+          <div ref={stageRef} className="sticky top-28 h-[calc(100svh-9rem)] overflow-hidden rounded-[24px]">
+            <img src={withBase(view.image)} alt={`${view.label} view render`} className="absolute inset-0 h-full w-full object-cover" />
+            <img alt="" aria-hidden className="cv-incoming absolute inset-0 h-full w-full object-cover [clip-path:inset(0_0_0_100%)]" />
+            <div className="sunbeams sunbeams--soft" />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0c1613]/70 via-transparent to-transparent" />
+            <p className="eyebrow absolute bottom-8 left-8 text-white [--muted:#fff]">View · {view.label}</p>
+          </div>
+        </div>
+      </Container>
+    </Section>
   );
 }

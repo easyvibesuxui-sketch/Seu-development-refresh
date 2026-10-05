@@ -60,11 +60,16 @@ export default function AboutCompany() {
   }, []);
 
   return (
-    <section id="about" ref={rootRef} className="relative isolate h-[100svh] min-h-[640px] overflow-hidden">
-      <div className="relative z-10 flex items-start justify-between px-6 pt-32 md:px-12">
-        <h2 className="section-title" data-split>
-          About company.
-        </h2>
+    <section id="about" ref={rootRef} data-tone="light" data-no-out className="tone-light relative isolate h-[100svh] min-h-[680px] overflow-hidden">
+      <div className="relative z-10 mx-auto flex max-w-[1680px] items-start justify-between px-gutter pt-32">
+        <div>
+          <p className="eyebrow mb-6">
+            <span className="text-seu-accent-hi">01</span>Since 2014
+          </p>
+          <h2 className="section-title" data-split>
+            About company<span className="text-seu-accent-hi">.</span>
+          </h2>
+        </div>
         <span className="group mr-[6vw] hidden md:block">
           <LogoMark className="w-24 overflow-visible md:w-28" />
         </span>
@@ -80,18 +85,18 @@ export default function AboutCompany() {
             fill="none"
             aria-hidden
           >
-            <circle cx="100" cy="100" r="99" stroke="#f3efe9" strokeOpacity=".45" strokeWidth=".35" strokeDasharray={r.dash} />
-            {r.dot && <circle cx="100" cy="1" r="1.6" fill="#b8835a" />}
+            <circle cx="100" cy="100" r="99" stroke="currentColor" strokeOpacity=".5" strokeWidth=".35" strokeDasharray={r.dash} />
+            {r.dot && <circle cx="100" cy="1" r="1.8" fill="var(--seu-accent)" />}
           </svg>
         ))}
 
-        <div className="ac-video pointer-events-auto relative aspect-[16/9] w-[min(560px,72vw)] overflow-hidden rounded-xl">
+        <div className="ac-video pointer-events-auto relative aspect-[16/9] w-[min(600px,76vw)] overflow-hidden rounded-[20px] shadow-[0_30px_80px_rgb(19_33_29/0.25)]">
           <img
             src={withBase("/images/choose-varketili.jpg")}
             alt="SEU Varketili aerial render"
             className="h-full w-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#15201d]/60 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-seu-ink/60 via-transparent to-transparent" />
           {/* Centring lives on the wrapper so GSAP can scale the button freely. */}
           <div className="absolute inset-0 grid place-items-center">
             <button
@@ -99,9 +104,9 @@ export default function AboutCompany() {
               onClick={() => setPlaying(true)}
               aria-label="Play SEU Varketili video"
               data-cursor="play"
-              className="ac-play relative grid h-16 w-16 place-items-center rounded-full bg-seu-accent/90 shadow-[0_0_30px_#8b5a3c66] transition-[background-color] duration-500 hover:bg-seu-accent-hi"
+              className="ac-play relative grid h-20 w-20 place-items-center rounded-full border border-white/50 bg-white/15 backdrop-blur-md transition-[background-color] duration-500 hover:bg-seu-accent"
             >
-              <span className="absolute inset-0 animate-ping rounded-full bg-seu-accent/30" />
+              <span className="absolute inset-0 animate-ping rounded-full bg-white/25" />
               <svg width="22" height="24" viewBox="0 0 22 24" fill="none" aria-hidden className="relative ml-1">
                 <path d="M3 2l17 10L3 22V2z" stroke="#fff" strokeWidth="2" strokeLinejoin="round" />
               </svg>
@@ -110,10 +115,10 @@ export default function AboutCompany() {
         </div>
       </div>
 
-      <p className="ac-left absolute left-6 md:left-12 top-[22%] z-10 max-w-[220px] text-[15px] md:top-[42%]">
+      <p className="ac-left title-m absolute left-gutter top-[44%] z-10 hidden max-w-[260px] md:block">
         Real estate market since 2014.
       </p>
-      <p className="ac-right absolute bottom-[12%] right-6 md:right-12 z-10 max-w-[340px] text-right text-[15px] leading-relaxed md:bottom-auto md:top-[38%]">
+      <p className="ac-right body-copy absolute bottom-[10%] right-gutter z-10 max-w-[360px] text-right md:bottom-auto md:top-[40%]">
         The company&apos;s team, consisting of experienced professionals, cares about continuous development,
         adheres to high construction standards and uses innovative technologies.
       </p>
@@ -135,12 +140,8 @@ export default function AboutCompany() {
               allowFullScreen
             />
           </div>
-          <button
-            type="button"
-            className="absolute right-6 top-6 text-sm tracking-[0.1em]"
-            onClick={() => setPlaying(false)}
-          >
-            CLOSE ✕
+          <button type="button" className="btn btn-glass absolute right-6 top-6" onClick={() => setPlaying(false)} autoFocus>
+            Close
           </button>
         </div>
       )}

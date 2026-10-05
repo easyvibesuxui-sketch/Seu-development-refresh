@@ -189,7 +189,7 @@ export default function HeroMap() {
             "circle-color": seuColor,
             "circle-radius": ["interpolate", ["linear"], ["zoom"], 11, 14, 16, 80],
             "circle-blur": 1,
-            "circle-opacity": 0.22,
+            "circle-opacity": 0.28,
             "circle-pitch-alignment": "map",
           },
         });
@@ -198,7 +198,7 @@ export default function HeroMap() {
           type: "fill-extrusion",
           source: "seu-towers",
           paint: {
-            "fill-extrusion-color": "#b8835a",
+            "fill-extrusion-color": "#c2652a",
             "fill-extrusion-height": ["get", "height"],
             "fill-extrusion-opacity": 0.92,
             "fill-extrusion-vertical-gradient": true,
@@ -273,7 +273,9 @@ export default function HeroMap() {
   return (
     <section
       ref={rootRef}
-      className={styles.root}
+      className={`${styles.root} vars-light`}
+      data-tone="light"
+      data-no-out
       data-mode={mode}
       data-landed={landed}
       data-active={active.id}
@@ -317,19 +319,18 @@ export default function HeroMap() {
               />
             ))}
           </div>
-          <a
-            href="#all-projects"
+          <button
+            type="button"
             className={styles.allLink}
             aria-pressed={mode === "overview"}
-            onClick={(e) => {
-              e.preventDefault();
+            onClick={() => {
               if (mode === "overview") goToProject(active);
               else showAllProjects();
             }}
           >
             <span>{mode === "overview" ? `Back to ${active.name}` : "All projects"}</span>
             <ArrowIcon />
-          </a>
+          </button>
         </div>
       </div>
 

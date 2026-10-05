@@ -2,87 +2,98 @@
 
 import { useState } from "react";
 import Reveal from "@/components/ui/Reveal";
+import { Container, Section, SectionHeader } from "@/components/ui/Section";
 
 const fields = [
-  { name: "name", label: "Name", type: "text", required: false },
-  { name: "phone", label: "Phone *", type: "tel", required: true },
-  { name: "email", label: "Email", type: "email", required: false },
+  { name: "name", label: "Name", type: "text", required: false, autoComplete: "name" },
+  { name: "phone", label: "Phone", type: "tel", required: true, autoComplete: "tel" },
+  { name: "email", label: "Email", type: "email", required: false, autoComplete: "email" },
 ];
 
 export default function ContactSection({ split = false }: { split?: boolean }) {
   const [sent, setSent] = useState(false);
 
   return (
-    <section id="contact" className="grid gap-20 px-6 py-48 md:grid-cols-2 md:px-12">
-      <div>
-        <h2 className="title-display text-[clamp(30px,2.6vw,42px)]" data-split>
-          Requests Call.
-        </h2>
-        {sent ? (
-          <p className="mt-10 text-lg text-seu-accent-hi">Thank you! A sales manager will contact you shortly.</p>
-        ) : (
-          <form
-            className="mt-10 max-w-md space-y-8"
-            onSubmit={(e) => {
-              e.preventDefault();
-              setSent(true);
-            }}
-          >
-            {fields.map((f, i) => (
-              <Reveal key={f.name} delay={i * 80}>
-                <input
-                  name={f.name}
-                  type={f.type}
-                  required={f.required}
-                  placeholder={f.label}
-                  aria-label={f.label}
-                  className="h-11 w-full rounded-md border border-white/60 bg-white/15 px-3 text-[14px] outline-none transition placeholder:text-white/80 focus:border-seu-accent focus:bg-white/20"
-                />
+    <Section id="contact" tone="dark">
+      <Container className="grid gap-20 lg:grid-cols-2 lg:gap-28">
+        <div>
+          <SectionHeader index={split ? undefined : "08"} eyebrow="Talk to sales" title="Request a call" className="lg:grid-cols-1" />
+          {sent ? (
+            <p role="status" className="lead mt-12 text-seu-accent-hi">
+              Thank you! A sales manager will call you shortly.
+            </p>
+          ) : (
+            <form
+              className="mt-12 max-w-lg space-y-6"
+              onSubmit={(e) => {
+                e.preventDefault();
+                setSent(true);
+              }}
+            >
+              {fields.map((f, i) => (
+                <Reveal key={f.name} delay={i * 80}>
+                  <label className="block">
+                    <span className="field-label">
+                      {f.label}
+                      {f.required && <span className="text-seu-accent-hi"> *</span>}
+                    </span>
+                    <input name={f.name} type={f.type} required={f.required} autoComplete={f.autoComplete} className="field" />
+                  </label>
+                </Reveal>
+              ))}
+              <Reveal delay={260}>
+                <button type="submit" className="btn btn-primary btn-lg mt-4">
+                  Request a call
+                </button>
               </Reveal>
-            ))}
-            <Reveal delay={260}>
-              <button
-                type="submit"
-                className="rounded-md bg-seu-accent px-10 py-3 text-[14px] tracking-[0.08em] transition hover:brightness-110"
-              >
-                CONTACT
-              </button>
-            </Reveal>
-          </form>
-        )}
-      </div>
+            </form>
+          )}
+        </div>
 
-      <div className={split ? "md:pt-40" : ""}>
-        <h2 className="title-display text-[clamp(30px,2.6vw,42px)]" data-split>
-          Contact.
-        </h2>
-        <Reveal delay={120} className="mt-10 rounded-lg bg-[#13241e] p-5">
-          <div className="flex flex-wrap gap-x-10 gap-y-2 text-[14px]">
-            <a href="mailto:info@seudevelopment.ge" className="hover:text-seu-accent-hi">
-              ✉ Info@Seudevelopment.ge
+        <div className={split ? "lg:pt-40" : ""}>
+          <p className="eyebrow">Visit us</p>
+          <Reveal delay={120} className="mt-8 overflow-hidden rounded-[24px] border border-seu-line bg-seu-surface">
+            <a
+              href="https://www.google.com/maps/search/?api=1&query=41.7217,44.7019"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Open the office location in Google Maps (opens in a new tab)"
+              className="group relative block h-64 overflow-hidden bg-seu-ink"
+            >
+              <MapSketch />
+              <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-full text-seu-accent-hi transition-transform group-hover:-translate-y-[120%]">
+                <svg width="22" height="30" viewBox="0 0 18 26" fill="none" aria-hidden>
+                  <path d="M9 25s8-9.5 8-15A8 8 0 0 0 1 10c0 5.5 8 15 8 15z" stroke="currentColor" strokeWidth="1.6" />
+                  <circle cx="9" cy="10" r="3" stroke="currentColor" strokeWidth="1.6" />
+                </svg>
+              </span>
             </a>
-            <a href="tel:+995596707070" className="text-seu-muted hover:text-seu-accent-hi">
-              ☏ +995 596 70 70 70
-            </a>
-          </div>
-          <a
-            href="https://www.google.com/maps/search/?api=1&query=41.7217,44.7019"
-            target="_blank"
-            rel="noreferrer"
-            className="group relative mt-5 block h-56 overflow-hidden rounded-lg border border-white/40 bg-[#262a28]"
-          >
-            <MapSketch />
-            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-full text-seu-accent-hi transition-transform group-hover:-translate-y-[120%]">
-              <svg width="18" height="26" viewBox="0 0 18 26" fill="none" aria-hidden>
-                <path d="M9 25s8-9.5 8-15A8 8 0 0 0 1 10c0 5.5 8 15 8 15z" stroke="currentColor" strokeWidth="1.6" />
-                <circle cx="9" cy="10" r="3" stroke="currentColor" strokeWidth="1.6" />
-              </svg>
-            </span>
-          </a>
-          <p className="mt-5 text-[14px]">⌖ Tbilisi, A. Politkovskaya St. 32</p>
-        </Reveal>
-      </div>
-    </section>
+            <dl className="grid gap-6 p-8 sm:grid-cols-2">
+              <div>
+                <dt className="field-label">Office</dt>
+                <dd className="lead">Tbilisi, A. Politkovskaya St. 32</dd>
+              </div>
+              <div>
+                <dt className="field-label">Phone</dt>
+                <dd>
+                  <a href="tel:+995596707070" className="lead hover:text-seu-accent-hi">
+                    +995 596 70 70 70
+                  </a>
+                </dd>
+              </div>
+              <div className="sm:col-span-2">
+                <dt className="field-label">Email</dt>
+                <dd>
+                  <a href="mailto:info@seudevelopment.ge" className="lead hover:text-seu-accent-hi">
+                    info@seudevelopment.ge
+                  </a>
+                </dd>
+              </div>
+            </dl>
+          </Reveal>
+        </div>
+      </Container>
+    </Section>
   );
 }
 

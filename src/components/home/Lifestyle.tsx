@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { distanceKm, highlights, projects, withBase } from "@/data/projects";
 import AmbientVideo from "@/components/ui/AmbientVideo";
+import { Container, Section } from "@/components/ui/Section";
 
 const varketili = projects.find((p) => p.id === "varketili");
 const near = (id: string) => {
@@ -37,79 +38,85 @@ const TOPICS = [
 
 export default function Lifestyle() {
   const [active, setActive] = useState(TOPICS[0].id);
-  const topic = TOPICS.find((t) => t.id === active) ?? TOPICS[0];
 
   return (
-    <section className="pb-48" data-section-out>
-      {/* Sunlit courtyard film behind the heading; it melts into the page at both edges. */}
-      <div className="relative grid h-[92svh] min-h-[560px] place-items-center overflow-hidden">
+    <Section tone="light" flush className="pb-section">
+      {/* Sunlit courtyard film; the heading sits on it and the band melts into the paper below. */}
+      <div className="relative grid h-[92svh] min-h-[560px] place-items-center overflow-hidden text-white">
         <div className="absolute inset-0" data-zoom>
           <AmbientVideo name="courtyard-sun" className="h-full w-full object-cover" />
         </div>
         <div className="sunbeams" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgb(21_32_29/0.45),transparent_70%)]" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#16201d] via-transparent via-30% to-[#16201d]" />
-        <h2 className="relative px-6 text-center text-[clamp(44px,7vw,120px)] leading-[0.92]" data-split>
-          <span className="title-display uppercase" style={{ fontWeight: 600 }}>
-            A new way
-          </span>{" "}
-          <span className="title-display uppercase" style={{ fontWeight: 200 }}>
-            of living
-          </span>
-        </h2>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgb(12_22_19/0.45),transparent_70%)]" />
+        <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-b from-transparent to-[#f6f1e8]" />
+        <div className="relative px-gutter text-center">
+          <p className="eyebrow justify-center text-white [--muted:#fff]">
+            <span className="text-[#f2b27e]">05</span>Neighbourhood
+          </p>
+          <h2 className="mt-8 text-[clamp(48px,8vw,140px)] leading-[0.9]" data-split>
+            <span className="title-display uppercase" style={{ fontWeight: 600 }}>
+              A new way
+            </span>{" "}
+            <span className="title-display uppercase" style={{ fontWeight: 200 }}>
+              of living
+            </span>
+          </h2>
+        </div>
       </div>
 
-      <div className="relative -mt-16 grid gap-8 px-6 md:px-12 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-        <div className="relative aspect-[4/3] overflow-hidden lg:aspect-auto lg:min-h-[640px]">
-          {TOPICS.map((t) => (
-            <img
-              key={t.id}
-              src={withBase(t.image)}
-              alt=""
-              aria-hidden={t.id !== active}
-              className={`absolute inset-0 h-full w-full object-cover transition-[opacity,transform] duration-[1.2s] ease-[cubic-bezier(0.2,0.8,0.2,1)] ${
-                t.id === active ? "scale-100 opacity-100" : "scale-105 opacity-0"
-              }`}
-            />
-          ))}
-          <div className="absolute inset-0 bg-gradient-to-b from-[#15201d]/75 via-transparent to-[#15201d]/40" />
-          <p key={topic.id} className="lifestyle-copy absolute left-8 right-8 top-8 max-w-xl text-[17px] leading-relaxed md:left-12 md:top-12">
-            {topic.text}
-          </p>
-        </div>
-
-        <div className="flex flex-col">
-          <ul className="border-t border-white/20">
-            {TOPICS.map((t) => (
-              <li key={t.id} className="border-b border-white/20">
+      <Container className="mt-24 grid gap-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:gap-24">
+        <div className="lg:sticky lg:top-28 lg:self-start">
+          <ul className="border-t border-seu-line">
+            {TOPICS.map((t, i) => (
+              <li key={t.id} className="border-b border-seu-line">
                 <button
                   type="button"
                   aria-expanded={t.id === active}
+                  aria-controls={`topic-${t.id}`}
                   onClick={() => setActive(t.id)}
                   onMouseEnter={() => setActive(t.id)}
-                  className="title-display group flex w-full items-center justify-between py-6 text-left text-[clamp(22px,2vw,32px)] uppercase text-seu-cream/45 transition-colors duration-500 aria-expanded:text-seu-cream"
+                  className="group flex w-full items-center justify-between gap-6 py-7 text-left"
                 >
-                  {t.title}
-                  <span className="h-px w-8 bg-current transition-[width] duration-500 group-aria-expanded:w-14 group-aria-expanded:bg-seu-accent-hi" />
+                  <span className="flex items-baseline gap-5">
+                    <span className="label text-[12px] text-seu-accent-hi">{String(i + 1).padStart(2, "0")}</span>
+                    <span className="title-m text-seu-muted transition-colors duration-500 group-aria-expanded:text-seu-fg">{t.title}</span>
+                  </span>
+                  <span className="h-px w-8 bg-current text-seu-muted transition-[width,color] duration-500 group-aria-expanded:w-14 group-aria-expanded:text-seu-accent-hi" />
                 </button>
+                <div id={`topic-${t.id}`} hidden={t.id !== active} className="body-copy pb-8 pr-10">
+                  {t.text}
+                </div>
               </li>
             ))}
           </ul>
-          <div className="relative mt-8 min-h-[280px] flex-1 overflow-hidden">
+        </div>
+
+        <div className="grid gap-6 sm:grid-cols-[1.6fr_1fr]">
+          <div className="relative aspect-[4/5] overflow-hidden rounded-[24px] sm:aspect-auto sm:min-h-[620px]">
+            {TOPICS.map((t) => (
+              <img
+                key={t.id}
+                src={withBase(t.image)}
+                alt=""
+                className={`absolute inset-0 h-full w-full object-cover transition-[opacity,transform] duration-[1.2s] ease-[cubic-bezier(0.2,0.8,0.2,1)] ${
+                  t.id === active ? "scale-100 opacity-100" : "scale-105 opacity-0"
+                }`}
+              />
+            ))}
+          </div>
+          <div className="relative hidden overflow-hidden rounded-[24px] sm:mt-24 sm:block">
             {TOPICS.map((t) => (
               <img
                 key={t.id}
                 src={withBase(t.side)}
                 alt=""
                 aria-hidden
-                className={`absolute inset-0 h-full w-full object-cover grayscale transition-[opacity,filter] duration-1000 hover:grayscale-0 ${
-                  t.id === active ? "opacity-100" : "opacity-0"
-                }`}
+                className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${t.id === active ? "opacity-100" : "opacity-0"}`}
               />
             ))}
           </div>
         </div>
-      </div>
-    </section>
+      </Container>
+    </Section>
   );
 }

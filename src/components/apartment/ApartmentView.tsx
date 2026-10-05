@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { withBase } from "@/data/projects";
-import { roomText, units, type Unit } from "@/data/inventory";
+import { roomText, statusText, units, type Unit } from "@/data/inventory";
+import { Container, Section, SectionHeader } from "@/components/ui/Section";
 import ApartmentCard from "@/components/ui/ApartmentCard";
 import BackLink from "@/components/ui/BackLink";
 import RequestCallModal from "@/components/ui/RequestCallModal";
@@ -26,21 +27,22 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
   }, [tab]);
 
   return (
-    <main className="pt-28">
-      <section className="grid gap-12 px-6 md:px-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+    <main>
+      <section data-tone="dark" className="tone-dark mx-auto grid max-w-[1680px] gap-16 px-gutter pb-section pt-40 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
         <div>
           <BackLink href={`/projects/varketili/${unit.block}/`} />
           <div className="mt-10 flex items-baseline gap-10">
             <p className="text-[18px] text-seu-muted">
-              Block <span className="title-display ml-2 text-[34px] text-seu-fg">{unit.block.slice(1)}</span>
+              Block <span className="title-m ml-2 text-[40px] text-seu-fg">{unit.block.slice(1)}</span>
             </p>
             <p className="text-[18px] text-seu-muted">
-              Floor <span className="title-display ml-2 text-[34px] tracking-[0.1em] text-seu-fg">{unit.floor}</span>
+              Floor <span className="title-m ml-2 text-[40px] text-seu-fg">{unit.floor}</span>
             </p>
           </div>
-          <p className="mt-6 text-[20px] text-seu-muted">
-            Apartment N <span className="title-display ml-2 text-[clamp(44px,4vw,60px)] text-seu-fg">{unit.number}</span>
-          </p>
+          <p className="eyebrow mt-10">SEU Varketili · {statusText[unit.status]}</p>
+          <h1 className="page-title mt-4 text-[clamp(52px,6vw,104px)]">
+            Apartment {unit.number}<span className="text-seu-accent-hi">.</span>
+          </h1>
 
           <dl className="mt-8 grid grid-cols-2 gap-y-6 sm:grid-cols-4" data-stagger>
             {[
@@ -50,17 +52,17 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
               ["Bedrooms", unit.bedrooms === 0 ? "Studio" : unit.bedrooms],
             ].map(([k, v]) => (
               <div key={k as string}>
-                <dt className="text-[14px] text-seu-muted">{k}</dt>
-                <dd className="title-display mt-1 text-[22px]">{v}</dd>
+                <dt className="field-label">{k}</dt>
+                <dd className="title-m normal-case">{v}</dd>
               </div>
             ))}
           </dl>
-          <div className="mt-8 h-px bg-gradient-to-r from-white/40 via-white/40 to-transparent" />
+          <div className="mt-10 h-px bg-seu-line" />
 
           <div className="mt-8 flex flex-wrap items-end gap-8">
             <div>
-              <p className="text-[14px] text-seu-muted">Price</p>
-              <p className="title-display text-[30px]">
+              <p className="field-label">Price</p>
+              <p className="title-m text-[clamp(32px,3vw,44px)] normal-case">
                 ${unit.price.toLocaleString("en-US")}
                 <span className="ml-3 text-[15px] text-seu-muted">${unit.pricePerM2}/m²</span>
               </p>
@@ -69,16 +71,16 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
               type="button"
               onClick={() => setAsking(true)}
               disabled={unit.status === "sold"}
-              className="label rounded-md bg-seu-accent px-10 py-4 text-[14px] uppercase tracking-[0.14em] transition-colors hover:bg-seu-accent-hi disabled:cursor-not-allowed disabled:opacity-40"
+              className="btn btn-primary btn-lg"
             >
-              {unit.status === "sold" ? "Sold" : "Request call"}
+              {unit.status === "sold" ? "Sold" : "Request a call"}
             </button>
           </div>
 
-          <h2 className="title-display mt-14 text-[24px]">Details</h2>
+          <h2 className="eyebrow mt-16">Room by room</h2>
           <ul className="mt-6 grid grid-cols-2 gap-x-8 gap-y-5 text-[15px] sm:grid-cols-3" data-stagger>
             {unit.rooms.map((r, i) => (
-              <li key={i} className="flex items-center justify-between gap-3 border-b border-white/10 pb-2">
+              <li key={i} className="flex items-center justify-between gap-3 border-b border-seu-line pb-3">
                 <span className="text-seu-muted">{roomText[r.kind]}</span>
                 <span className="label">{r.area} m²</span>
               </li>
@@ -88,12 +90,12 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
 
         <div>
           <div className="flex items-center justify-between">
-            <p className="text-[14px] text-seu-muted">Floor plan</p>
+            <p className="eyebrow">Floor plan</p>
             <a
               href={withBase(`/apartments/${unit.id}/presentation/`)}
               target="_blank"
               rel="noreferrer"
-              className="label inline-flex items-center gap-2 rounded-md border border-seu-accent px-4 py-2 text-[12px] uppercase tracking-[0.12em] transition-colors hover:bg-seu-accent"
+              className="btn btn-sm"
             >
               <svg width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" strokeWidth="1.2" aria-hidden>
                 <path d="M2 1h7l4 4v10H2zM9 1v4h4M4.5 9h5M4.5 12h5" />
@@ -101,8 +103,8 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
               See presentation
             </a>
           </div>
-          <div ref={stageRef} className="relative mt-4 aspect-[4/3.3] overflow-hidden rounded-md bg-seu-cream">
-            <div className="absolute left-4 top-4 z-10 flex gap-2" role="tablist">
+          <div ref={stageRef} className="relative mt-4 aspect-[4/3.3] overflow-hidden rounded-[24px] bg-seu-paper">
+            <div className="vars-light absolute left-4 top-4 z-10 flex gap-2" role="tablist" aria-label="Layout view">
               {(["3D", "2D", "Plan"] as Tab[]).map((t) => (
                 <button
                   key={t}
@@ -110,7 +112,7 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
                   role="tab"
                   aria-selected={tab === t}
                   onClick={() => setTab(t)}
-                  className="label rounded-md border border-[#15201d]/25 px-4 py-1.5 text-[13px] text-[#15201d] transition-colors aria-selected:border-seu-accent aria-selected:bg-seu-accent aria-selected:text-white"
+                  className="chip min-h-10 rounded-full px-4"
                 >
                   {t}
                 </button>
@@ -136,16 +138,16 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
 
       <Benefits />
 
-      <section className="overflow-hidden px-6 py-24 md:px-12">
-        <h2 className="section-title" data-split>
-          Similar Apartments.
-        </h2>
-        <div className="-mx-6 mt-14 flex snap-x scroll-px-6 gap-6 overflow-x-auto px-6 pb-6 md:-mx-12 md:scroll-px-12 md:px-12" data-cursor="drag">
+      <Section tone="light" className="overflow-hidden">
+        <Container>
+        <SectionHeader eyebrow="Same size, other floors" title="Similar apartments" />
+        </Container>
+        <div className="mt-16 flex snap-x scroll-px-gutter gap-6 overflow-x-auto px-gutter pb-6" data-cursor="drag" tabIndex={0} aria-label="Similar apartments, scroll horizontally">
           {similar.map((u) => (
             <ApartmentCard key={u.id} unit={u} className="w-[300px] shrink-0 snap-start" />
           ))}
         </div>
-      </section>
+      </Section>
 
       <RequestCallModal unit={unit} open={asking} onClose={() => setAsking(false)} />
     </main>
@@ -154,7 +156,7 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
 
 function Compass() {
   return (
-    <div className="compass absolute right-5 top-4 z-10 text-[#15201d]" aria-label="North arrow">
+    <div className="compass absolute right-5 top-4 z-10 text-seu-ink" role="img" aria-label="North arrow">
       <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
         <circle cx="28" cy="28" r="15" stroke="currentColor" strokeOpacity=".4" />
         <path d="M28 16l4 12-4 12-4-12z" fill="#8b5a3c" />

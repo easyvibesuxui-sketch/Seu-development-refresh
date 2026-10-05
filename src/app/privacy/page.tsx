@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import PageHero from "@/components/ui/PageHero";
+import { Container, Section } from "@/components/ui/Section";
 
 export const metadata: Metadata = { title: "Privacy policy" };
 
@@ -39,26 +41,23 @@ const SECTIONS = [
 export default function PrivacyPage() {
   return (
     <main>
-      <section className="px-6 pb-16 pt-40 md:px-12">
-        <h1 className="title-display text-[clamp(44px,5.4vw,84px)] uppercase leading-none" data-split>
-          Privacy policy
-        </h1>
-        <p className="mt-16 text-[18px] text-seu-cream/80">Last updated · 2026</p>
-      </section>
-      <section className="bg-seu-cream px-6 py-24 text-[#1d1d1b] md:px-12">
-        <div className="mx-auto max-w-4xl space-y-16">
-          {SECTIONS.map((s, i) => (
-            <div key={i} data-stagger>
-              {s.title && <h2 className="title-display mb-6 text-[clamp(24px,2.2vw,32px)]">{s.title}</h2>}
-              {s.body.map((p) => (
-                <p key={p.slice(0, 24)} className="mb-4 text-[17px] leading-[1.75]">
-                  {p}
-                </p>
-              ))}
-            </div>
-          ))}
-        </div>
-      </section>
+      <PageHero eyebrow="Last updated · 2026" title="Privacy policy" intro="How SEU Development collects, uses and protects the information you share with us." />
+      <Section tone="light">
+        <Container>
+          <div className="mx-auto max-w-[68ch] space-y-16">
+            {SECTIONS.map((s, i) => (
+              <div key={i} data-stagger>
+                {s.title && <h2 className="title-m mb-6">{s.title}</h2>}
+                {s.body.map((p) => (
+                  <p key={p.slice(0, 24)} className="mb-4 text-[17px] leading-[1.8]">
+                    {p}
+                  </p>
+                ))}
+              </div>
+            ))}
+          </div>
+        </Container>
+      </Section>
     </main>
   );
 }

@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { withBase } from "@/data/projects";
 import { isExternal, news, newsBySlug } from "@/data/news";
 import NewsCard from "@/components/news/NewsCard";
 import VideoBlock from "@/components/news/VideoBlock";
+import BackLink from "@/components/ui/BackLink";
+import { ButtonLink } from "@/components/ui/Button";
+import { Container, Section, SectionHeader } from "@/components/ui/Section";
 
 export function generateStaticParams() {
   return news.map((n) => ({ slug: n.slug }));
@@ -32,59 +34,65 @@ export default async function NewsPostPage({ params }: PageProps<"/news/[slug]">
 
   return (
     <main>
-      <section className="relative h-[78vh] min-h-[520px] overflow-hidden">
+      <section data-tone="dark" data-no-out className="tone-dark relative h-[86svh] min-h-[560px] overflow-hidden">
         <div className="absolute inset-0" data-zoom>
           <img src={src(item.image)} alt="" className="h-full w-full object-cover" />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-b from-[#15201d]/90 via-[#15201d]/30 to-[#15201d]/80" />
-        <div className="relative z-10 px-6 pt-36 md:px-12">
-          <Link href="/news/" className="label text-[13px] uppercase tracking-[0.16em] text-seu-muted hover:text-seu-accent-hi">
-            ← News
-          </Link>
-          <h1 className="title-display mt-6 max-w-4xl text-[clamp(38px,4.6vw,72px)] leading-[1.05]" data-split>
-            {item.title}
-          </h1>
-          <div className="mt-6 flex gap-3">
-            <span className="label rounded bg-seu-cream px-3 py-1 text-[12px] uppercase text-[#15201d]">{item.minutes} min read</span>
-            <span className="label rounded bg-seu-cream px-3 py-1 text-[12px] text-[#15201d]">{item.date}</span>
+        <div className="absolute inset-0 bg-gradient-to-b from-seu-ink/85 via-seu-ink/30 to-seu-bg" />
+        <div className="relative z-10 mx-auto flex h-full max-w-[1680px] flex-col justify-between px-gutter pb-16 pt-40">
+          <div>
+            <BackLink href="/news/" label="All news" />
+          </div>
+          <div>
+            <div className="flex flex-wrap gap-3">
+              <span className="tag tag-solid">{item.minutes} min read</span>
+              <span className="tag tag-solid">{item.date}</span>
+            </div>
+            <h1 className="section-title mt-8 max-w-6xl text-[clamp(40px,5.4vw,96px)]" data-split>
+              {item.title}
+            </h1>
+            <p className="lead mt-8 max-w-3xl text-seu-muted">{item.excerpt}</p>
           </div>
         </div>
-        <p className="absolute bottom-8 left-6 z-10 text-[18px] md:left-12">{item.excerpt}</p>
       </section>
 
-      <article className="bg-seu-cream px-6 py-24 text-[#1d1d1b] md:px-12">
-        <div className="mx-auto max-w-4xl space-y-6 text-[17px] leading-[1.75]" data-stagger>
-          {BODY.map((p) => (
-            <p key={p.slice(0, 20)}>{p}</p>
-          ))}
-        </div>
-        <div className="mx-auto my-20 max-w-3xl">
-          <VideoBlock videoId={item.videoId ?? "6dCWXfB7nvc"} poster={src(item.videoId ? item.image : "/images/choose-varketili.jpg")} />
-        </div>
-        <div className="mx-auto max-w-4xl space-y-6 text-[17px] leading-[1.75]" data-stagger>
-          {BODY.slice(0, 2).map((p) => (
-            <p key={p.slice(0, 20)}>{p}</p>
-          ))}
-        </div>
-        <div className="mx-auto mt-20 grid max-w-6xl gap-4 sm:grid-cols-3" data-stagger>
-          {["/images/choose-varketili.jpg", "/images/varketili-panorama.jpg", "/images/upcoming-2.jpg"].map((g) => (
-            <div key={g} className="group aspect-square overflow-hidden rounded-md">
-              <img src={withBase(g)} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-[1.2s] group-hover:scale-110" />
-            </div>
-          ))}
-        </div>
-      </article>
+      <Section as="article" tone="light">
+        <Container>
+          <div className="mx-auto max-w-[68ch] space-y-6 text-[18px] leading-[1.8]" data-stagger>
+            {BODY.map((p, i) => (
+              <p key={p.slice(0, 20)} className={i === 0 ? "lead text-[22px]" : ""}>
+                {p}
+              </p>
+            ))}
+          </div>
+          <div className="mx-auto my-24 max-w-5xl">
+            <VideoBlock videoId={item.videoId ?? "6dCWXfB7nvc"} poster={src(item.videoId ? item.image : "/images/choose-varketili.jpg")} />
+          </div>
+          <div className="mx-auto max-w-[68ch] space-y-6 text-[18px] leading-[1.8]" data-stagger>
+            {BODY.slice(0, 2).map((p) => (
+              <p key={p.slice(0, 20)}>{p}</p>
+            ))}
+          </div>
+          <div className="mx-auto mt-24 grid max-w-6xl gap-4 sm:grid-cols-3" data-stagger>
+            {["/images/choose-varketili.jpg", "/images/varketili-panorama.jpg", "/images/upcoming-2.jpg"].map((g) => (
+              <div key={g} className="group aspect-square overflow-hidden rounded-[20px]">
+                <img src={withBase(g)} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-[1.2s] group-hover:scale-110" />
+              </div>
+            ))}
+          </div>
+        </Container>
+      </Section>
 
-      <section className="px-6 py-32 md:px-12">
-        <h2 className="section-title" data-split>
-          More news
-        </h2>
-        <div className="mt-14 grid gap-8 md:grid-cols-12">
-          {more.map((m, i) => (
-            <NewsCard key={m.slug} item={m} wide={i === 0} />
-          ))}
-        </div>
-      </section>
+      <Section tone="dark">
+        <Container>
+          <SectionHeader eyebrow="Keep reading" title="More news" action={<ButtonLink href="/news/">All news</ButtonLink>} />
+          <div className="mt-16 grid gap-8 md:grid-cols-12">
+            {more.map((m, i) => (
+              <NewsCard key={m.slug} item={m} wide={i === 0} />
+            ))}
+          </div>
+        </Container>
+      </Section>
     </main>
   );
 }

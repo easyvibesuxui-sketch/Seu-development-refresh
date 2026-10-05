@@ -34,7 +34,7 @@ export default function BlockPicker() {
   }, []);
 
   return (
-    <section className="relative h-[100svh] min-h-[680px] overflow-hidden">
+    <section data-tone="dark" className="tone-dark relative h-[100svh] min-h-[680px] overflow-hidden">
       <div ref={scrollerRef} className="absolute inset-0 overflow-x-auto overflow-y-hidden lg:overflow-hidden" data-cursor="drag">
         {/* The render keeps its aspect; the shapes share its coordinate box. */}
         <div className="absolute bottom-0 left-0 aspect-[1460/580] w-[230vw] lg:left-1/2 lg:w-[max(100%,calc(72svh*1460/580))] lg:-translate-x-1/2">
@@ -86,12 +86,12 @@ export default function BlockPicker() {
                   className="block-pin absolute left-1/2 -translate-x-1/2"
                   style={{ bottom: "calc(100% + 10px)", animationDelay: `${0.6 + i * 0.12}s` }}
                 >
-                  <span className="label grid h-9 w-9 place-items-center rounded-full rounded-br-none bg-[#132420] text-[13px] ring-1 ring-white/50 [transform:rotate(45deg)] transition-colors group-hover:bg-seu-accent">
+                  <span className="label grid h-9 w-9 place-items-center rounded-full rounded-br-none bg-seu-surface text-[13px] ring-1 ring-white/50 [transform:rotate(45deg)] transition-colors group-hover:bg-seu-accent">
                     <span className="[transform:rotate(-45deg)]">{b.id.slice(1)}</span>
                   </span>
                 </span>
                 {hover === b.id && (
-                  <span className="label absolute bottom-[calc(100%+58px)] left-1/2 w-max -translate-x-1/2 rounded-md bg-[#0e1a16]/90 px-3 py-2 text-[12px] tracking-[0.06em] ring-1 ring-white/20">
+                  <span className="label absolute bottom-[calc(100%+58px)] left-1/2 w-max -translate-x-1/2 rounded-md bg-seu-ink/90 px-3 py-2 text-[12px] tracking-[0.06em] ring-1 ring-white/20">
                     {b.name} · {b.floors} floors · {availableIn(b)} available
                   </span>
                 )}
@@ -100,25 +100,20 @@ export default function BlockPicker() {
           })}
         </div>
       </div>
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#15201d]/85 via-transparent via-40% to-[#15201d]" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-seu-ink/85 via-transparent via-40% to-seu-bg" />
 
-      <div className="relative z-10 px-6 pt-28 md:px-12">
-        <BackLink href="/projects/" />
-        <h1 className="title-display mt-10 text-[clamp(44px,6vw,92px)] uppercase leading-none" data-split>
-          SEU Varketili
+      <div className="relative z-10 mx-auto max-w-[1680px] px-gutter pt-36">
+        <BackLink href="/projects/" label="All projects" />
+        <p className="eyebrow mt-12">Visual search · Choose a block</p>
+        <h1 className="page-title mt-6" data-split>
+          SEU Varketili<span className="text-seu-accent-hi">.</span>
         </h1>
-        <p className="label mt-8 text-[15px] uppercase tracking-[0.14em]">Choose block</p>
-        <button
-          type="button"
-          aria-pressed={sun}
-          onClick={() => setSun(!sun)}
-          className="label mt-6 inline-flex items-center gap-2 rounded-md bg-seu-cream px-4 py-2 text-[13px] text-[#15201d] transition-colors aria-pressed:bg-seu-accent aria-pressed:text-white"
-        >
-          <SunIcon /> {sun ? "Hide sun directions" : "See sun directions"}
+        <button type="button" aria-pressed={sun} onClick={() => setSun(!sun)} className="btn btn-glass mt-8 aria-pressed:bg-seu-accent">
+          <SunIcon /> {sun ? "Hide sun path" : "Show sun path"}
         </button>
       </div>
 
-      <FilterPanel className="absolute right-6 top-36 z-10 hidden md:right-12 lg:block" />
+      <FilterPanel className="absolute right-gutter top-36 z-10 hidden lg:block" />
     </section>
   );
 }

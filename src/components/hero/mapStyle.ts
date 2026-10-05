@@ -2,25 +2,25 @@ import type { ExpressionSpecification, StyleSpecification } from "maplibre-gl";
 import type { MappedProject } from "@/data/projects";
 
 /*
- * Palette follows the ERA reference: warm stone and cream buildings with the odd glass or
- * brick accent, lush greens, a deep navy river with a lit embankment, all sitting on a
- * ground that is the page background so the city reads as one surface with the site.
+ * Daylight model, in the spirit of the ERA 3D map: a pale stone ground, white massing models
+ * shaded only by the light, saturated greens, a deep blue river and crisp white streets.
+ * SEU projects are the only coloured buildings, in the cognac accent.
  */
 export const palette = {
-  bg: "#15201d",
-  land: "#15201d",
-  park: "#2c5233",
-  wood: "#264a2d",
-  water: "#0b2d47",
-  shore: "#8fb4c9",
-  roadMinor: "#232d29",
-  roadMajor: "#2e3a35",
-  roadHighway: "#3a4741",
-  streetGlow: "#f5c98a",
-  seu: "#b8835a",
+  bg: "#ebe8e1",
+  land: "#e6e3dc",
+  park: "#b9d79a",
+  wood: "#9cc77f",
+  water: "#1f5f8b",
+  shore: "#ffffff",
+  roadMinor: "#f7f6f2",
+  roadMajor: "#ffffff",
+  roadHighway: "#ffffff",
+  streetGlow: "#d9d4ca",
+  seu: "#a8541f",
 };
 
-const buildingTones = ["#efe7da", "#e2d6c3", "#d6cab6", "#f4efe6", "#cbbfac", "#e9dccb", "#ddd3c6"];
+const buildingTones = ["#ffffff", "#fbfaf7", "#f6f4ef", "#fdfcf9", "#f2f0ea", "#faf8f4", "#f4f2ed"];
 
 /** Deterministic per-building tone: OSM ids when present, height otherwise. */
 const toneIndex: ExpressionSpecification = [
@@ -33,7 +33,7 @@ const buildingColor: ExpressionSpecification = [
   "case",
   // Tall buildings get the glass / brick accents seen in the design render.
   [">", ["coalesce", ["get", "render_height"], 0], 45],
-  ["match", ["%", toneIndex, 3], 0, "#8fa9b8", 1, "#b4785b", "#d9cdb9"],
+  ["match", ["%", toneIndex, 3], 0, "#f1f3f4", 1, "#eef0ef", "#f7f6f2"],
   ["match", toneIndex, 0, buildingTones[0], 1, buildingTones[1], 2, buildingTones[2], 3, buildingTones[3], 4, buildingTones[4], 5, buildingTones[5], buildingTones[6]],
 ];
 
@@ -45,11 +45,11 @@ export function createMapStyle(): StyleSpecification {
     sources: {
       openmaptiles: { type: "vector", url: "https://tiles.openfreemap.org/planet" },
     },
-    light: { anchor: "viewport", color: "#fff6ea", intensity: 0.42, position: [1.3, 200, 35] },
+    light: { anchor: "viewport", color: "#ffffff", intensity: 0.55, position: [1.4, 210, 40] },
     sky: {
-      "sky-color": palette.bg,
-      "horizon-color": palette.bg,
-      "fog-color": palette.bg,
+      "sky-color": "#f6f1e8",
+      "horizon-color": "#f1ece3",
+      "fog-color": "#efebe4",
       "sky-horizon-blend": 1,
       "horizon-fog-blend": 0.8,
       "fog-ground-blend": 0.4,
@@ -93,7 +93,7 @@ export function createMapStyle(): StyleSpecification {
         "source-layer": "water",
         paint: {
           "line-color": palette.shore,
-          "line-opacity": 0.35,
+          "line-opacity": 0.6,
           "line-width": ["interpolate", ["linear"], ["zoom"], 11, 0.6, 16, 2.4],
           "line-blur": 1.2,
         },
@@ -104,6 +104,20 @@ export function createMapStyle(): StyleSpecification {
         source: "openmaptiles",
         "source-layer": "waterway",
         paint: { "line-color": palette.water, "line-width": ["interpolate", ["linear"], ["zoom"], 11, 1.5, 16, 8] },
+      },
+      {
+        // Soft shadow casing so the white arteries lift off the ground.
+        id: "roads-glow",
+        type: "line",
+        source: "openmaptiles",
+        "source-layer": "transportation",
+        filter: majorRoads,
+        paint: {
+          "line-color": palette.streetGlow,
+          "line-opacity": 0.55,
+          "line-width": ["interpolate", ["exponential", 1.6], ["zoom"], 10, 1.6, 17, 20],
+          "line-blur": ["interpolate", ["linear"], ["zoom"], 10, 1, 17, 6],
+        },
       },
       {
         id: "roads-minor",
@@ -136,20 +150,6 @@ export function createMapStyle(): StyleSpecification {
         paint: {
           "line-color": palette.roadHighway,
           "line-width": ["interpolate", ["exponential", 1.6], ["zoom"], 9, 1, 17, 18],
-        },
-      },
-      {
-        // Warm wash of street lighting along the arteries.
-        id: "roads-glow",
-        type: "line",
-        source: "openmaptiles",
-        "source-layer": "transportation",
-        filter: majorRoads,
-        paint: {
-          "line-color": palette.streetGlow,
-          "line-opacity": 0.12,
-          "line-width": ["interpolate", ["exponential", 1.6], ["zoom"], 10, 2, 17, 34],
-          "line-blur": ["interpolate", ["linear"], ["zoom"], 10, 2, 17, 18],
         },
       },
       {

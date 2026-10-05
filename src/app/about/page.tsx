@@ -3,6 +3,7 @@ import { withBase } from "@/data/projects";
 import Partners from "@/components/home/Partners";
 import ContactSection from "@/components/home/ContactSection";
 import Hiring from "@/components/about/Hiring";
+import { Container, Section, SectionHeader } from "@/components/ui/Section";
 
 export const metadata: Metadata = { title: "About" };
 
@@ -26,79 +27,70 @@ const TEAM = Array.from({ length: 4 }, (_, i) => ({ id: i, name: "Kate Arveladze
 export default function AboutPage() {
   return (
     <main>
-      <section className="relative h-[100svh] min-h-[640px] overflow-hidden">
+      <section data-tone="dark" data-no-out className="tone-dark relative h-[100svh] min-h-[680px] overflow-hidden">
         <div className="absolute inset-0" data-zoom>
           <img src={withBase("/images/office.jpg")} alt="SEU Development office" className="h-full w-full object-cover" />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-b from-[#15201d]/80 via-[#15201d]/10 to-[#15201d]" />
-        <div className="relative z-10 px-6 pt-40 md:px-12">
-          <p className="title-display text-[clamp(26px,2.4vw,36px)]" data-split>
-            The company&apos;s team
-          </p>
-          <h1 className="title-display mt-2 text-[clamp(40px,4.4vw,68px)] italic" data-split>
-            SEU Development
-          </h1>
-        </div>
-        <nav className="absolute inset-x-6 bottom-16 z-10 flex flex-wrap justify-center gap-4 md:gap-8" aria-label="About sections" data-stagger>
-          {CHIPS.map((c) => (
-            <a key={c.href} href={c.href} className="group label flex items-stretch text-[12px] uppercase tracking-[0.16em]">
-              <span className="-skew-x-[20deg] border border-seu-cream px-3 py-1.5">
-                <span className="inline-block skew-x-[20deg]">Our</span>
-              </span>
-              <span className="-ml-px -skew-x-[20deg] bg-seu-cream px-5 py-1.5 text-[#15201d] transition-colors group-hover:bg-seu-accent group-hover:text-white">
-                <span className="inline-block skew-x-[20deg]">{c.label}</span>
-              </span>
-            </a>
-          ))}
-        </nav>
-      </section>
-
-      <section id="mission" className="mx-auto max-w-3xl px-6 py-40 text-center">
-        <h2 className="section-title" data-split>
-          Our Mission
-        </h2>
-        <div className="mt-12 space-y-6 text-[17px] leading-[1.75] text-seu-cream/80" data-stagger>
-          {MISSION.map((p) => (
-            <p key={p.slice(0, 20)}>{p}</p>
-          ))}
+        <div className="sunbeams sunbeams--soft" />
+        <div className="absolute inset-0 bg-gradient-to-b from-seu-ink/80 via-seu-ink/10 to-seu-bg" />
+        <div className="relative z-10 mx-auto flex h-full max-w-[1680px] flex-col justify-between px-gutter pb-16 pt-44">
+          <div>
+            <p className="eyebrow mb-8">The company&apos;s team</p>
+            <h1 className="page-title" data-split>
+              SEU Development<span className="text-seu-accent-hi">.</span>
+            </h1>
+          </div>
+          <nav className="flex flex-wrap gap-3" aria-label="About sections" data-stagger>
+            {CHIPS.map((c) => (
+              <a key={c.href} href={c.href} className="btn btn-glass">
+                Our {c.label.toLowerCase()}
+              </a>
+            ))}
+          </nav>
         </div>
       </section>
 
-      <section id="team" className="relative overflow-hidden py-32">
-        <div className="absolute inset-0 opacity-35" data-parallax="0.1">
-          <img src={withBase("/images/office.jpg")} alt="" className="h-full w-full object-cover" />
-        </div>
-        <div className="absolute inset-0 bg-gradient-to-b from-[#15201d] via-[#15201d]/40 to-[#15201d]" />
-        <div className="relative grid gap-12 px-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] md:px-12">
+      <Section id="mission" tone="light">
+        <Container>
+          <SectionHeader index="01" eyebrow="What drives us" title="Our mission" />
+          <div className="mt-20 grid gap-10 md:grid-cols-2" data-stagger>
+            {MISSION.map((p, i) => (
+              <p key={p.slice(0, 20)} className={i === 0 ? "lead" : "body-copy"}>
+                {p}
+              </p>
+            ))}
+          </div>
+        </Container>
+      </Section>
+
+      <Section id="team" tone="dark" className="overflow-hidden">
+        <Container className="grid gap-16 md:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)]">
           <div className="flex flex-col">
-            <h2 className="section-title uppercase" data-split>
-              Our Team.
-            </h2>
-            <p className="title-display mt-6 text-[24px] italic">Meet our leaders</p>
-            <p className="mt-auto max-w-sm pt-12 text-[15px] leading-relaxed text-seu-cream/80">
+            <SectionHeader index="02" eyebrow="Meet our leaders" title="Our team" className="lg:grid-cols-1" />
+            <p className="body-copy mt-auto max-w-sm pt-12">
               Successfully completed projects by SEU Development include the old and new buildings of the Georgian National University,
               which house modern educational and exhibition facilities, as well as a business center in the suburbs of Tbilisi.
             </p>
           </div>
-          <div className="-mr-6 flex snap-x gap-6 overflow-x-auto pb-4 pr-6 md:-mr-12 md:pr-12" data-cursor="drag">
+          <div className="-mr-gutter flex snap-x gap-6 overflow-x-auto pb-4 pr-gutter" data-cursor="drag" tabIndex={0} aria-label="Team, scroll horizontally">
             {TEAM.map((m) => (
-              <figure key={m.id} className="group w-[260px] shrink-0 snap-start overflow-hidden rounded-md border border-white/30 bg-[#15201d]">
+              <figure key={m.id} className="card group w-[280px] shrink-0 snap-start overflow-hidden p-0">
                 <div className="overflow-hidden">
                   <img src={withBase(m.photo)} alt={m.name} className="aspect-[3/4] w-full object-cover grayscale transition duration-700 group-hover:scale-105 group-hover:grayscale-0" />
                 </div>
-                <figcaption className="py-4 text-center">
-                  <p className="label text-[15px] uppercase tracking-[0.06em]">{m.name}</p>
-                  <p className="mt-1 text-[12px] uppercase tracking-[0.1em] text-seu-muted">{m.role}</p>
+                <figcaption className="p-5">
+                  <p className="title-m text-[22px]">{m.name}</p>
+                  <p className="field-label mb-0 mt-2">{m.role}</p>
                 </figcaption>
               </figure>
             ))}
           </div>
-        </div>
-      </section>
+        </Container>
+      </Section>
 
       <Hiring />
 
-      <div id="partners" className="pt-40">
+      <div id="partners">
         <Partners variant="grid" subtitle="80+ partners trust us" />
       </div>
       <ContactSection />

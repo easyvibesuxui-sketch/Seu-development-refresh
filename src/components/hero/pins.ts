@@ -39,7 +39,7 @@ export function createProjectPin(project: MappedProject, onClick: () => void) {
   el.innerHTML = `
     <span class="${styles.ground}"><span class="${styles.pulse}"></span></span>
     <span class="${styles.body}">
-      ${drop(`drop-${project.id}`, ongoing ? "#c99268" : "#f3efe9", ongoing ? "#5a3823" : "#9c968a")}
+      ${drop(`drop-${project.id}`, ongoing ? "#d0773b" : "#2c4a41", ongoing ? "#6e3613" : "#0c1613")}
       <img class="${styles.logo}" src="${withBase("/brand/logo-wire.svg")}" alt="" />
     </span>
     <span class="${styles.label}">
@@ -62,7 +62,7 @@ export function createHighlightPin(highlight: Highlight, distance: number) {
   el.innerHTML = `
     <span class="${styles.ground}"></span>
     <span class="${styles.body}">
-      ${drop(`drop-${highlight.id}`, "#ffffff", "#b8b1a2")}
+      ${drop(`drop-${highlight.id}`, "#3a7fb0", "#1b4f72")}
       <svg class="${styles.icon}" viewBox="0 0 24 24" aria-hidden="true">${icons[highlight.kind]}</svg>
     </span>
     <span class="${styles.label}">

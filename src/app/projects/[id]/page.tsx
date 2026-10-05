@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { projects, withBase } from "@/data/projects";
+import { projects, statusLabel, withBase } from "@/data/projects";
 import { units, varketiliBlocks } from "@/data/inventory";
 import BlockPicker from "@/components/project/BlockPicker";
 import { AboutProject, ApartmentTypes, Benefits, ProjectStats, VirtualTour } from "@/components/project/ProjectDetails";
@@ -46,16 +46,25 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[id]"
       {isVarketili ? (
         <BlockPicker />
       ) : (
-        <section className="relative h-[90svh] min-h-[560px] overflow-hidden">
+        <section data-tone="dark" className="tone-dark relative h-[92svh] min-h-[600px] overflow-hidden">
           <div className="absolute inset-0" data-zoom>
             <img src={withBase(project.image)} alt={`${project.name} render`} style={{ objectPosition: project.imagePosition }} className="h-full w-full object-cover" />
           </div>
-          <div className="absolute inset-0 bg-gradient-to-b from-[#15201d]/85 via-transparent to-[#15201d]" />
-          <div className="relative z-10 px-6 pt-28 md:px-12">
-            <BackLink href="/projects/" />
-            <h1 className="title-display mt-10 text-[clamp(44px,6vw,92px)] uppercase leading-none" data-split>
-              {project.name}
-            </h1>
+          <div className="sunbeams sunbeams--soft" />
+          <div className="absolute inset-0 bg-gradient-to-b from-seu-ink/80 via-transparent to-seu-bg" />
+          <div className="relative z-10 mx-auto flex h-full max-w-[1680px] flex-col justify-between px-gutter pb-16 pt-40">
+            <div>
+              <BackLink href="/projects/" label="All projects" />
+            </div>
+            <div>
+              <p className="eyebrow mb-6">
+                {statusLabel[project.status]} · {project.date}
+              </p>
+              <h1 className="page-title" data-split>
+                {project.name}
+                <span className="text-seu-accent-hi">.</span>
+              </h1>
+            </div>
           </div>
         </section>
       )}
