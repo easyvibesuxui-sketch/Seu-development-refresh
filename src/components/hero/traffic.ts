@@ -1,59 +1,99 @@
 import type { GeoJSONSource, Map as MapLibreMap } from "maplibre-gl";
 
 /*
- * Cars as tiny faceted gems driving along the real road network around the camera, as in
- * the ERA model. Roads come from the loaded vector tiles; cars are points pushed to a GeoJSON
- * source at ~30 fps and drawn as an upright diamond icon (facing the camera, never flattened)
- * over a soft contact shadow, each with its own slow shimmer.
+ * Cars as points of light on the real road network around the camera, like precious stones
+ * catching the sun: a small round stone with a bright core, a faint prismatic play in its
+ * centre and a soft halo, and now and then a four-ray glint on one of them. Roads come from
+ * the loaded vector tiles; cars are points pushed to a GeoJSON source at ~30 fps and drawn
+ * upright (facing the camera) over a soft contact shadow.
  */
 
 type Road = { coords: [number, number][]; cumulative: number[]; length: number };
-type Car = { road: Road; at: number; speed: number; forward: boolean; phase: number };
+type Car = { road: Road; at: number; speed: number; forward: boolean; phase: number; glint: number };
 
 const SOURCE = "traffic";
 const ROAD_CLASSES = ["motorway", "trunk", "primary", "secondary", "tertiary"];
 const MAX_CARS = 820;
-const GEM = "car-gem";
+const STONE = "car-stone";
+const GLINT = "car-glint";
+// Share of cars that ever glint, and how rarely: each glinting car flashes for ~0.3 s once
+// every 7–15 s, so only a handful sparkle across the whole map at any moment.
+const GLINT_SHARE = 0.22;
 
-/** Faceted diamond drawn once on a canvas: light top facets, cooler lower facets, fine outline. */
-function gemImage(size = 40) {
+/**
+ * Round stone: a bright white point with a faint spectral play in its heart, a soft halo of
+ * light and, instead of an outline, a soft shade beneath so it still reads on white roads.
+ */
+function stoneImage(size = 48) {
   const c = document.createElement("canvas");
   c.width = c.height = size;
   const g = c.getContext("2d")!;
   const m = size / 2;
-  const w = size * 0.3;
-  const h = size * 0.42;
-  const top: [number, number] = [m, m - h];
-  const bottom: [number, number] = [m, m + h];
-  const left: [number, number] = [m - w, m];
-  const right: [number, number] = [m + w, m];
-  const face = (pts: [number, number][], fill: string) => {
+  const r = size * 0.17;
+  const disc = (x: number, y: number, radius: number, fill: string | CanvasGradient) => {
     g.beginPath();
-    g.moveTo(...pts[0]);
-    pts.slice(1).forEach((p) => g.lineTo(...p));
-    g.closePath();
+    g.arc(x, y, radius, 0, Math.PI * 2);
     g.fillStyle = fill;
     g.fill();
   };
-  // Four facets around a bright centre, like a cut stone.
-  face([top, right, [m, m]], "#ffffff");
-  face([top, left, [m, m]], "#eef2f4");
-  face([bottom, right, [m, m]], "#c9d3d8");
-  face([bottom, left, [m, m]], "#dfe6ea");
-  g.beginPath();
-  g.moveTo(...top);
-  g.lineTo(...right);
-  g.lineTo(...bottom);
-  g.lineTo(...left);
-  g.closePath();
-  g.lineWidth = size * 0.035;
-  g.strokeStyle = "rgba(19,33,29,0.55)";
-  g.stroke();
-  // Specular glint.
-  g.fillStyle = "rgba(255,255,255,0.95)";
-  g.beginPath();
-  g.arc(m - w * 0.28, m - h * 0.38, size * 0.05, 0, Math.PI * 2);
-  g.fill();
+  const radial = (x: number, y: number, r0: number, r1: number, stops: [number, string][]) => {
+    const grad = g.createRadialGradient(x, y, r0, x, y, r1);
+    stops.forEach(([at, col]) => grad.addColorStop(at, col));
+    return grad;
+  };
+
+  // Shade under the stone, a touch below it.
+  disc(m, m + r * 0.35, r * 1.7, radial(m, m + r * 0.35, r * 0.7, r * 1.7, [[0, "rgba(19,33,29,0.3)"], [1, "rgba(19,33,29,0)"]]));
+  // Halo of light around it.
+  disc(m, m, m, radial(m, m, r, m, [[0, "rgba(255,255,255,0.75)"], [0.35, "rgba(255,253,246,0.25)"], [1, "rgba(255,255,255,0)"]]));
+  // The stone.
+  disc(m, m, r, radial(m - r * 0.3, m - r * 0.35, 0, r * 1.05, [[0, "#ffffff"], [0.7, "#f6f8fb"], [1, "#dde5ee"]]));
+  // Spectral play in its heart, washed toward white at the very centre.
+  if ("createConicGradient" in g) {
+    const prism = g.createConicGradient(-Math.PI / 4, m, m);
+    ["#ff9fbd", "#ffd98a", "#a6f0cb", "#94d3ff", "#c9a8ff", "#ff9fbd"].forEach((col, i, all) =>
+      prism.addColorStop(i / (all.length - 1), col),
+    );
+    g.save();
+    g.globalAlpha = 0.6;
+    disc(m, m, r * 0.66, prism);
+    g.restore();
+  }
+  disc(m, m, r * 0.62, radial(m, m, 0, r * 0.62, [[0, "rgba(255,255,255,1)"], [0.3, "rgba(255,255,255,0.8)"], [1, "rgba(255,255,255,0)"]]));
+  return g.getImageData(0, 0, size, size);
+}
+
+/** Four-ray glint: long vertical and horizontal rays, short diagonals, a soft bloom. */
+function glintImage(size = 64) {
+  const c = document.createElement("canvas");
+  c.width = c.height = size;
+  const g = c.getContext("2d")!;
+  const m = size / 2;
+  const bloom = g.createRadialGradient(m, m, 0, m, m, size * 0.18);
+  bloom.addColorStop(0, "rgba(255,255,255,0.95)");
+  bloom.addColorStop(1, "rgba(255,255,255,0)");
+  g.fillStyle = bloom;
+  g.fillRect(0, 0, size, size);
+  const ray = (angle: number, length: number, width: number) => {
+    g.save();
+    g.translate(m, m);
+    g.rotate(angle);
+    const grad = g.createLinearGradient(0, -length, 0, length);
+    grad.addColorStop(0, "rgba(255,255,255,0)");
+    grad.addColorStop(0.5, "rgba(255,255,255,1)");
+    grad.addColorStop(1, "rgba(255,255,255,0)");
+    g.beginPath();
+    g.moveTo(0, -length);
+    g.quadraticCurveTo(width, 0, 0, length);
+    g.quadraticCurveTo(-width, 0, 0, -length);
+    g.fillStyle = grad;
+    g.fill();
+    g.restore();
+  };
+  ray(0, m * 0.96, size * 0.05);
+  ray(Math.PI / 2, m * 0.72, size * 0.045);
+  ray(Math.PI / 4, m * 0.32, size * 0.03);
+  ray(-Math.PI / 4, m * 0.32, size * 0.03);
   return g.getImageData(0, 0, size, size);
 }
 const FRAME_MS = 33;
@@ -94,7 +134,8 @@ export function createTraffic(map: MapLibreMap) {
   let running = false;
 
   map.addSource(SOURCE, { type: "geojson", data: { type: "FeatureCollection", features: [] } });
-  if (!map.hasImage(GEM)) map.addImage(GEM, gemImage(), { pixelRatio: 2 });
+  if (!map.hasImage(STONE)) map.addImage(STONE, stoneImage(), { pixelRatio: 2 });
+  if (!map.hasImage(GLINT)) map.addImage(GLINT, glintImage(), { pixelRatio: 2 });
   map.addLayer({
     // Contact shadow on the road surface.
     id: "traffic-shadow",
@@ -110,19 +151,42 @@ export function createTraffic(map: MapLibreMap) {
     },
   });
   map.addLayer({
-    id: "traffic-gems",
+    id: "traffic-stones",
     type: "symbol",
     source: SOURCE,
     layout: {
-      "icon-image": GEM,
-      "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.32, 14, 0.55, 16, 0.95],
+      "icon-image": STONE,
+      "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.36, 14, 0.6, 16, 1],
       "icon-allow-overlap": true,
       "icon-ignore-placement": true,
       "icon-pitch-alignment": "viewport",
       "icon-rotation-alignment": "viewport",
-      "icon-anchor": "bottom",
     },
     paint: { "icon-opacity": ["get", "tw"] },
+  });
+  map.addLayer({
+    id: "traffic-glints",
+    type: "symbol",
+    source: SOURCE,
+    filter: [">", ["get", "gl"], 0.03],
+    layout: {
+      "icon-image": GLINT,
+      // The glint opens up as it flashes.
+      "icon-size": [
+        "interpolate",
+        ["linear"],
+        ["zoom"],
+        12,
+        ["*", 0.5, ["get", "gl"]],
+        16,
+        ["*", 1.1, ["get", "gl"]],
+      ],
+      "icon-allow-overlap": true,
+      "icon-ignore-placement": true,
+      "icon-pitch-alignment": "viewport",
+      "icon-rotation-alignment": "viewport",
+    },
+    paint: { "icon-opacity": ["get", "gl"] },
   });
 
   const collectRoads = () => {
@@ -154,6 +218,8 @@ export function createTraffic(map: MapLibreMap) {
           speed: 7 + Math.random() * 6,
           forward: Math.random() > 0.5,
           phase: Math.random() * Math.PI * 2,
+          // Angular speed of the glint cycle (0 = never glints).
+          glint: Math.random() < GLINT_SHARE ? (Math.PI * 2) / (7000 + Math.random() * 8000) : 0,
         });
       }
     }
@@ -180,8 +246,11 @@ export function createTraffic(map: MapLibreMap) {
       if (car.at < 0) car.at = car.road.length;
       return {
         type: "Feature",
-        // A slow shimmer per car, so the stream of gems sparkles.
-        properties: { tw: 0.72 + 0.28 * Math.sin(now * 0.004 + car.phase) },
+        properties: {
+          // Each stone breathes a little; a few flash a glint now and then (a sharp peak of a slow wave).
+          tw: 0.86 + 0.14 * Math.sin(now * 0.003 + car.phase),
+          gl: car.glint ? Math.max(0, Math.sin(now * car.glint + car.phase)) ** 48 : 0,
+        },
         geometry: { type: "Point", coordinates: pointAt(car.road, car.at) },
       };
     });

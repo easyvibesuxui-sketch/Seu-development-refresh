@@ -11,8 +11,11 @@ const ROOMS = [
   { value: 3, label: "3+" },
 ];
 
-/** Quick apartment finder on glass; every value is carried over to the search page. */
-export default function FilterPanel({ className = "" }: { className?: string }) {
+/**
+ * Quick apartment finder on clear glass; every value is carried over to the search page.
+ * `tone` matches the scene behind it: light over the daytime map, dark over a shaded render.
+ */
+export default function FilterPanel({ className = "", tone = "light" }: { className?: string; tone?: "light" | "dark" }) {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [rooms, setRooms] = useState<number[]>([]);
@@ -24,7 +27,7 @@ export default function FilterPanel({ className = "" }: { className?: string }) 
   return (
     <form
       aria-labelledby={`${id}-title`}
-      className={`vars-light glass w-[320px] rounded-[24px] p-6 text-seu-fg ${className}`}
+      className={`glass glass-clear ${tone === "dark" ? "glass-dark" : "vars-light"} w-[320px] rounded-[24px] p-6 ${className}`}
       onSubmit={(e) => {
         e.preventDefault();
         const q = new URLSearchParams({ project: "varketili" });

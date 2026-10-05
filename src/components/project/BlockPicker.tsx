@@ -113,7 +113,7 @@ export default function BlockPicker() {
         </button>
       </div>
 
-      <FilterPanel className="absolute right-gutter top-36 z-10 hidden lg:block" />
+      <FilterPanel tone="dark" className="absolute right-gutter top-36 z-10 hidden lg:block" />
     </section>
   );
 }

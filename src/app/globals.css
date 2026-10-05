@@ -81,6 +81,44 @@
   --muted: #3f4a45;
 }
 
+/* Clear glass (see .glass-clear below): its roles sit outside the layers so they win over
+   the tone blocks on the same element. */
+.glass.glass-clear {
+  --fg: #13211d;
+  --glass-bg: linear-gradient(155deg, rgb(255 255 255 / 0.46) 0%, rgb(255 255 255 / 0.2) 48%, rgb(250 246 238 / 0.34) 100%);
+  --glass-border: rgb(255 255 255 / 0.35);
+  --glass-hi: rgb(255 255 255 / 0.9);
+  --glass-rim: rgb(255 255 255 / 0.95);
+  --glass-sheen: rgb(255 255 255 / 0.5);
+  --muted: #27312d;
+  --accent-ink: #6e3613;
+  --field: rgb(255 255 255 / 0.5);
+  --line-strong: rgb(19 33 29 / 0.4);
+}
+
+.glass.glass-clear.glass-dark {
+  --fg: #fff;
+  --glass-bg: linear-gradient(155deg, rgb(28 46 40 / 0.5) 0%, rgb(10 18 16 / 0.4) 50%, rgb(20 34 30 / 0.55) 100%);
+  --glass-border: rgb(255 255 255 / 0.16);
+  --glass-hi: rgb(255 255 255 / 0.35);
+  --glass-rim: rgb(255 255 255 / 0.55);
+  --glass-sheen: rgb(255 255 255 / 0.12);
+  --muted: #e3e8e5;
+  --accent-ink: #f0b287;
+  --field: rgb(255 255 255 / 0.1);
+  --line-strong: rgb(255 255 255 / 0.45);
+}
+
+/* People who ask for less transparency or more contrast get a solid pane. */
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .glass.glass-clear {
+    --glass-bg: rgb(255 255 255 / 0.96);
+  }
+  .glass.glass-clear.glass-dark {
+    --glass-bg: rgb(12 22 19 / 0.96);
+  }
+}
+
 .tone-light {
   background: var(--seu-paper);
   color: var(--fg);
@@ -448,6 +486,66 @@ body::before {
     --glass-border: rgb(255 255 255 / 0.14);
     --glass-hi: rgb(255 255 255 / 0.14);
     --glass-shadow: 0 24px 60px rgb(0 0 0 / 0.3);
+  }
+
+  /* Clear glass for panels floating over the map or a render: thin enough to see the scene
+     move behind it (blurred, saturated, lifted), with a specular rim and a sheen that sell the
+     thickness. Text inside steps up to near-ink so it keeps 4.5:1 over water or shade too. */
+  .glass-clear {
+    position: relative;
+    isolation: isolate;
+    color: var(--fg);
+    box-shadow:
+      inset 0 1px 0 var(--glass-hi),
+      inset 0 -20px 40px -24px rgb(255 255 255 / 0.5),
+      0 32px 70px -24px rgb(19 33 29 / 0.38),
+      0 2px 8px rgb(19 33 29 / 0.08);
+    -webkit-backdrop-filter: blur(14px) saturate(1.9) brightness(1.06);
+    backdrop-filter: blur(14px) saturate(1.9) brightness(1.06);
+  }
+
+  .glass-clear.glass-dark {
+    box-shadow:
+      inset 0 1px 0 var(--glass-hi),
+      inset 0 -20px 40px -24px rgb(255 255 255 / 0.12),
+      0 32px 70px -24px rgb(0 0 0 / 0.55);
+    -webkit-backdrop-filter: blur(18px) saturate(1.7) brightness(0.9);
+    backdrop-filter: blur(18px) saturate(1.7) brightness(0.9);
+  }
+
+  /* Specular rim: light catches the top-left and bottom-right edges, as on a cut pane. */
+  .glass-clear::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1.5px;
+    background: linear-gradient(
+      135deg,
+      var(--glass-rim),
+      transparent 32%,
+      transparent 62%,
+      color-mix(in srgb, var(--glass-rim) 70%, transparent)
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box exclude,
+      linear-gradient(#000 0 0);
+    pointer-events: none;
+  }
+
+  /* Soft sheen across the upper corner, under the content. */
+  .glass-clear::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: radial-gradient(110% 55% at 0% 0%, var(--glass-sheen), transparent 65%);
+    pointer-events: none;
   }
 
   .card {

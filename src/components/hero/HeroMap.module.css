@@ -68,14 +68,17 @@
   color: inherit;
 }
 
-/* Darken the bottom of the hero so the captions read like in the design. */
+/* Lift the bottom of the hero toward paper: strongly under the captions (bottom left), only a
+   thin band elsewhere, so the glass finder on the right still has the city behind it. */
 .root::after {
   content: "";
   position: absolute;
   inset: auto 0 0 0;
   height: 42%;
   pointer-events: none;
-  background: linear-gradient(to bottom, transparent, rgb(246 241 232 / 0.86) 70%, var(--seu-paper));
+  background:
+    linear-gradient(to bottom, transparent 62%, var(--seu-paper)),
+    radial-gradient(ellipse 62% 120% at 0% 100%, rgb(246 241 232 / 0.92) 35%, transparent 75%);
 }
 
 /* ---------- Pins ---------- */
@@ -563,6 +566,10 @@
     display: none;
   }
 
+  /* No finder here: the captions span the width, so the fade does too. */
+  .root::after {
+    background: linear-gradient(to bottom, transparent, rgb(246 241 232 / 0.86) 70%, var(--seu-paper));
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
