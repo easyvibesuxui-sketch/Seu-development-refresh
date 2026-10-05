@@ -1438,3 +1438,78 @@ body:has(.presentation) .cursor {
 
 
 
+
+/* ---------- Entrance gate: two halves, the one under the pointer widens ---------- */
+.gate-pane {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+  transition: flex-grow 0.9s var(--ease-in-out);
+}
+
+.gate-pane--site {
+  box-shadow: inset 1px 0 0 rgb(255 255 255 / 0.14);
+}
+
+@media (hover: hover) and (min-width: 768px) {
+  .gate:not([data-entering]) .gate-pane:hover,
+  .gate:not([data-entering]) .gate-pane:focus-within {
+    flex-grow: 1.5;
+  }
+}
+
+.gate-copy {
+  transition: opacity 0.4s var(--ease-out);
+}
+
+/* Map credits stay readable and clickable above the link that covers the half. */
+.gate-pane .maplibregl-ctrl-bottom-right {
+  z-index: 20;
+}
+
+/* Entering: the website's half takes the whole screen before the home page loads. */
+.gate[data-entering] .gate-pane--site {
+  flex-grow: 1000;
+}
+
+.gate[data-entering] .gate-copy {
+  opacity: 0;
+}
+
+/* Shade over the map, carried by the copy itself: whatever the pane's height, the text
+   sits on ≥0.85 ink and the shade fades out above it. */
+.gate-shade {
+  background: linear-gradient(to top, rgb(14 26 22 / 0.6), rgb(14 26 22 / 0) 45%);
+}
+
+.gate-copy--shaded::before {
+  content: "";
+  position: absolute;
+  inset: -45% 0 0;
+  z-index: -1;
+  background: linear-gradient(to top, rgb(14 26 22 / 0.95) 0%, rgb(14 26 22 / 0.86) 62%, rgb(14 26 22 / 0) 100%);
+}
+
+.gate-glow {
+  position: absolute;
+  inset: -20%;
+  background: radial-gradient(38% 34% at 50% 42%, rgb(227 154 98 / 0.22), transparent 70%);
+  animation: gate-glow 9s ease-in-out infinite alternate;
+}
+
+@keyframes gate-glow {
+  to {
+    transform: translate(6%, -4%) scale(1.15);
+    opacity: 0.7;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gate-pane,
+  .gate-copy {
+    transition: none;
+  }
+  .gate-glow {
+    animation: none;
+  }
+}

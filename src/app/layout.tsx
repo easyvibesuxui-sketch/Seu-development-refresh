@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import "@fontsource-variable/urbanist";
 import "@fontsource-variable/sofia-sans-semi-condensed";
 import "./globals.css";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
 import ScrollFX from "@/components/motion/ScrollFX";
 import Cursor from "@/components/motion/Cursor";
 
@@ -16,11 +14,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className="h-full antialiased">
       <body className="min-h-full">
-        <Header />
-        <div id="main" tabIndex={-1} className="outline-none">
-          {children}
-        </div>
-        <Footer />
+        {children}
         <ScrollFX />
         <Cursor />
       </body>

@@ -100,7 +100,7 @@ export default function Header() {
             }`}
             aria-label="Main"
           >
-            <Link href="/" className="group mr-2 flex items-center gap-2.5 pr-2" aria-label="SEU Development home">
+            <Link href="/home/" className="group mr-2 flex items-center gap-2.5 pr-2" aria-label="SEU Development home">
               <LogoMark className="h-8 w-auto overflow-visible" />
               <span className="hidden flex-col leading-none sm:flex">
                 <span className="label text-[12px] tracking-[0.3em]">SEU</span>
