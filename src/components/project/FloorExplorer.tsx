@@ -5,21 +5,43 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import gsap from "gsap";
 import { withBase } from "@/data/projects";
-import { blockById, statusText, unitsOn, varketiliBlocks, type Unit } from "@/data/inventory";
+import { bedroomText, blockById, statusText, unitsOn, varketiliBlocks, type Unit } from "@/data/inventory";
 import ApartmentCard from "@/components/ui/ApartmentCard";
 import BackLink from "@/components/ui/BackLink";
 import { ArrowButton } from "./ProjectDetails";
 
-// Floor plate: four flats on the north side facing Hualing, three on the south facing the Tbilisi Sea.
-const SLOT_POS = [
-  { x: 0, y: 0 },
-  { x: 1, y: 0 },
-  { x: 2, y: 0 },
-  { x: 3, y: 0 },
-  { x: 0.5, y: 1 },
-  { x: 1.5, y: 1 },
-  { x: 2.5, y: 1 },
+/*
+ * Typical floor (Kling / Gemini 3 Pro drawing in the site palette): four flats on the north
+ * facade facing Hualing, three on the south facing the Tbilisi Sea, a corridor and core
+ * between. Outlines per slot measured on public/images/floor-plan.jpg, in percent.
+ */
+const PLAN = "/images/floor-plan.jpg";
+const PLAN_RATIO = 2400 / 1200;
+const UNIT_SHAPES: number[][][] = [
+  [[2.3, 5], [13.9, 5], [13.9, 44.5], [2.3, 44.5]],
+  [[14.4, 5], [31.8, 5], [31.8, 44.5], [14.4, 44.5]],
+  [[32.4, 5], [60.7, 5], [60.7, 44.5], [32.4, 44.5]],
+  [[61.2, 5], [95.7, 5], [95.7, 49.6], [61.2, 49.6]],
+  [[2.3, 55.5], [27.6, 55.5], [27.6, 92], [2.3, 92]],
+  [[28, 55.5], [44.5, 55.5], [44.5, 92], [28, 92]],
+  [[61.2, 50.4], [95.7, 50.4], [95.7, 92], [61.2, 92]],
 ];
+const centre = (pts: number[][]) => [pts.reduce((a, p) => a + p[0], 0) / pts.length, pts.reduce((a, p) => a + p[1], 0) / pts.length];
+
+/*
+ * Site plan of SEU Varketili (Kling, from the aerial render): block footprints in percent of
+ * public/images/site-plan.jpg; neighbouring buildings stay unlinked.
+ */
+const SITE = "/images/site-plan.jpg";
+const SITE_RATIO = 1440 / 777;
+const site = (pts: number[][]) => pts.map(([x, y]) => [x / 0.9, (y - 15) / 0.65]);
+const FOOTPRINTS: Record<string, number[][]> = {
+  v2: site([[3.8, 25], [9.8, 21.8], [14.8, 39.5], [11.2, 45], [7.4, 42.4], [9.2, 37.5], [5.4, 27.5]]),
+  v3: site([[26.6, 39.5], [30.2, 37.5], [33.5, 39.5], [36, 40.5], [39.5, 40.5], [41.5, 42.5], [39, 51], [35.5, 49.5], [33.5, 47.5], [30, 44.5], [26, 43]]),
+  v4: site([[46.7, 41], [52.5, 44.5], [49.5, 55], [43.5, 52]]),
+  v6: site([[52, 50.5], [57, 51.5], [62, 49], [66, 50.5], [62, 58], [59.5, 56.5], [52, 53.5]]),
+  v7: site([[69.5, 51.5], [76, 53], [85, 58], [81.5, 70.5], [75.5, 75.5], [66.5, 72], [68, 64]]),
+};
 
 const statusFill: Record<Unit["status"], string> = {
   available: "var(--seu-available)",
@@ -41,6 +63,7 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
   const [floor, setFloor] = useState(Math.min(8, block.floors));
   const [view, setView] = useState<"plan" | "grid">("plan");
   const [hover, setHover] = useState<string | null>(null);
+  const [hoverBlock, setHoverBlock] = useState<string | null>(null);
   const [sun, setSun] = useState(false);
   const planRef = useRef<HTMLDivElement>(null);
   const numberRef = useRef<HTMLSpanElement>(null);
@@ -93,7 +116,7 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
         </button>
       </div>
 
-      <div className="mt-10 grid gap-10 lg:grid-cols-[160px_minmax(0,1fr)_220px]">
+      <div className="mt-10 grid gap-10 lg:grid-cols-[160px_minmax(0,1fr)_300px]">
         <aside aria-label="Block and floor" className="flex flex-row items-center justify-between gap-6 lg:flex-col lg:items-start lg:justify-start">
           <div>
             <p className="eyebrow mb-4">SEU Varketili</p>
@@ -116,11 +139,27 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
         <div className="relative min-h-[420px] overflow-hidden">
           <div ref={planRef}>
             {view === "plan" ? (
-              <div className="relative mx-auto w-full max-w-[760px]">
+              <div className="relative mx-auto w-full max-w-[980px]">
                 <p className="label mb-2 text-center text-[11px] uppercase tracking-[0.2em] text-seu-muted">North · Hualing</p>
-                <div className="relative grid grid-cols-4 grid-rows-2 gap-[2px]">
+                <div className="relative" style={{ aspectRatio: `${PLAN_RATIO}` }}>
+                  <img src={withBase(PLAN)} alt={`Typical floor plan of ${block.name}`} className="h-full w-full rounded-[16px]" />
+                  <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
+                    {floorUnits.map((u) => (
+                      <polygon
+                        key={u.id}
+                        points={UNIT_SHAPES[u.slot].map((pt) => pt.join(",")).join(" ")}
+                        fill={statusFill[u.status]}
+                        fillOpacity={hover === u.id ? 0.55 : 0.22}
+                        stroke={hover === u.id ? "#f6f1e8" : "none"}
+                        strokeWidth={1.5}
+                        vectorEffect="non-scaling-stroke"
+                        style={{ transition: "fill-opacity .3s" }}
+                      />
+                    ))}
+                  </svg>
                   {floorUnits.map((u) => {
-                    const pos = SLOT_POS[u.slot];
+                    const [cx, cy] = centre(UNIT_SHAPES[u.slot]);
+                    const on = hover === u.id;
                     return (
                       <Link
                         key={u.id}
@@ -130,27 +169,36 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
                         onMouseLeave={() => setHover(null)}
                         onFocus={() => setHover(u.id)}
                         onBlur={() => setHover(null)}
-                        className="group relative aspect-square"
-                        style={{ gridColumn: `${Math.floor(pos.x) + 1} / span 1`, gridRow: pos.y + 1, transform: pos.x % 1 ? "translateX(50%)" : undefined }}
-                        aria-label={`Apartment ${u.number}, ${statusText[u.status]}, ${u.totalArea} m²`}
+                        className="absolute"
+                        style={{
+                          left: `${UNIT_SHAPES[u.slot][0][0]}%`,
+                          top: `${UNIT_SHAPES[u.slot][0][1]}%`,
+                          width: `${UNIT_SHAPES[u.slot][1][0] - UNIT_SHAPES[u.slot][0][0]}%`,
+                          height: `${UNIT_SHAPES[u.slot][2][1] - UNIT_SHAPES[u.slot][0][1]}%`,
+                        }}
+                        aria-label={`Apartment ${u.number}, ${bedroomText(u.bedrooms)}, ${u.totalArea} m², ${statusText[u.status]}`}
                       >
-                        <img src={withBase("/images/apartment-plan-light.png")} alt="" className="h-full w-full object-contain opacity-80" />
                         <span
-                          className="absolute inset-[6%] rounded-sm transition-opacity duration-300"
-                          style={{ background: statusFill[u.status], opacity: hover === u.id ? 0.45 : 0.12 }}
-                        />
-                        <span
-                          className={`label absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full px-4 py-1.5 text-[13px] shadow-lg transition-[opacity,transform] duration-300 ${
-                            hover === u.id ? "scale-100 opacity-100" : "scale-75 opacity-0"
-                          }`}
-                          style={{ background: statusFill[u.status] }}
+                          className="absolute grid place-items-center rounded-full text-center shadow-[0_10px_30px_rgb(0_0_0/0.35)] transition-transform duration-300"
+                          style={{
+                            left: `${((cx - UNIT_SHAPES[u.slot][0][0]) / (UNIT_SHAPES[u.slot][1][0] - UNIT_SHAPES[u.slot][0][0])) * 100}%`,
+                            top: `${((cy - UNIT_SHAPES[u.slot][0][1]) / (UNIT_SHAPES[u.slot][2][1] - UNIT_SHAPES[u.slot][0][1])) * 100}%`,
+                            width: "clamp(34px, 5.4vw, 64px)",
+                            height: "clamp(34px, 5.4vw, 64px)",
+                            background: u.status === "available" ? "#f6f1e8" : statusFill[u.status],
+                            color: u.status === "available" ? "#13211d" : "#fff",
+                            transform: `translate(-50%, -50%) scale(${on ? 1.12 : 1})`,
+                          }}
                         >
-                          {statusText[u.status]}
+                          <span className="leading-tight">
+                            <span className="label block text-[11px] font-semibold md:text-[14px]">{u.number}</span>
+                            <span className="hidden text-[11px] md:block">{u.bedrooms === 0 ? "Studio" : `${u.bedrooms} bd`}</span>
+                          </span>
                         </span>
-                        <span className="label absolute left-1.5 top-1.5 rounded-full bg-seu-ink/85 px-2 py-0.5 text-[11px] text-white">{u.number}</span>
-                        {hover === u.id && (
-                          <span className="label absolute bottom-2 left-1/2 w-max -translate-x-1/2 rounded bg-seu-ink/90 px-2 py-1 text-[11px]">
-                            {u.totalArea} m² · {u.bedrooms === 0 ? "Studio" : `${u.bedrooms} bd`}
+                        {on && (
+                          <span className="label absolute bottom-3 left-1/2 w-max -translate-x-1/2 rounded-full bg-seu-ink/90 px-3 py-1.5 text-[12px] text-white ring-1 ring-white/20">
+                            {u.totalArea} m² · {statusText[u.status]}
+                            {u.status !== "sold" && ` · $${u.price.toLocaleString("en-US")}`}
                           </span>
                         )}
                       </Link>
@@ -185,23 +233,46 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
           </div>
         </div>
 
-        <aside aria-label="Legend and blocks" className="lg:pt-48">
-          <p className="title-display text-right text-[22px] tracking-[0.08em]">Blocks</p>
-          <div className="relative mt-3 aspect-[5/4] border-l border-t border-white/40">
-            {varketiliBlocks.map((b) => (
-              <Link
-                key={b.id}
-                href={`/projects/varketili/${b.id}/`}
-                className={`label absolute grid place-items-center border text-[11px] uppercase transition-colors ${
-                  b.id === blockId ? "border-seu-cream bg-seu-cream text-seu-ink" : "border-white/50 hover:border-seu-accent-hi hover:text-seu-accent-hi"
-                }`}
-                style={{ left: `${b.plan.x}%`, top: `${b.plan.y}%`, width: `${b.plan.w}%`, height: `${b.plan.h}%` }}
-              >
-                {b.id.toUpperCase()}
-              </Link>
-            ))}
-          </div>
-          <p className="mt-4 text-right text-[13px] text-seu-muted">
+        <aside aria-label="Blocks" className="lg:pt-24">
+          <p className="title-display text-[22px] tracking-[0.08em]">Blocks</p>
+          <nav aria-label="Choose a block" className="relative mt-3 overflow-hidden rounded-[16px] ring-1 ring-white/15" style={{ aspectRatio: `${SITE_RATIO}` }}>
+            <img src={withBase(SITE)} alt="" className="h-full w-full" />
+            <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
+              {varketiliBlocks.map((b) => (
+                <polygon
+                  key={b.id}
+                  points={FOOTPRINTS[b.id].map((pt) => pt.join(",")).join(" ")}
+                  fill={b.id === blockId ? "#e39a62" : "#f6f1e8"}
+                  fillOpacity={b.id === blockId ? 0.55 : hoverBlock === b.id ? 0.3 : 0.08}
+                  stroke={b.id === blockId ? "#ffd2ad" : "#e39a62"}
+                  strokeWidth={1.2}
+                  vectorEffect="non-scaling-stroke"
+                  style={{ transition: "fill-opacity .25s" }}
+                />
+              ))}
+            </svg>
+            {varketiliBlocks.map((b) => {
+              const [cx, cy] = centre(FOOTPRINTS[b.id]);
+              const here = b.id === blockId;
+              return (
+                <Link
+                  key={b.id}
+                  href={`/projects/varketili/${b.id}/`}
+                  aria-current={here ? "page" : undefined}
+                  aria-label={`${b.name}${here ? " (this block)" : ""}`}
+                  onMouseEnter={() => setHoverBlock(b.id)}
+                  onMouseLeave={() => setHoverBlock(null)}
+                  className={`label absolute grid h-8 w-8 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full text-[12px] ring-1 transition-colors ${
+                    here ? "bg-seu-accent text-white ring-white/70" : "bg-seu-ink/85 text-white ring-white/40 hover:bg-seu-accent"
+                  }`}
+                  style={{ left: `${cx}%`, top: `${cy}%` }}
+                >
+                  {b.id.slice(1)}
+                </Link>
+              );
+            })}
+          </nav>
+          <p className="mt-4 text-[13px] text-seu-muted">
             {block.floors} floors · {block.status === "delivered" ? `Delivered ${block.delivery}` : `Delivery ${block.delivery}`}
           </p>
         </aside>

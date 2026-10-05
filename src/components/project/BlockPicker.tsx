@@ -19,10 +19,9 @@ const RATIO = 5504 / 3072;
  * its storey lines slope like the render's. Storeys count down from the roof: the top band
  * is the block's highest floor.
  */
-type Part = { xl: number; xr: number; top: number; pitch: number; h?: number; s?: number; pin?: number };
+type Part = { xl: number; xr: number; top: number; pitch: number; h?: number; s?: number };
 const FACADES: Record<string, Part[]> = {
-  // Block 2's pin sits toward its far edge, clear of the page title.
-  v2: [{ xl: 2.4, xr: 12.4, top: 34.8, pitch: 3.6, h: 70.3, s: 0.831, pin: 10 }],
+  v2: [{ xl: 2.4, xr: 12.4, top: 34.8, pitch: 3.6, h: 70.3, s: 0.831 }],
   v3: [{ xl: 18.6, xr: 30.9, top: 47.6, pitch: 3.95 }],
   v4: [{ xl: 34.6, xr: 45.4, top: 44.3, pitch: 4.05 }],
   v6: [{ xl: 48.4, xr: 59.5, top: 51, pitch: 4.15 }],
@@ -30,6 +29,18 @@ const FACADES: Record<string, Part[]> = {
     { xl: 63.9, xr: 82.4, top: 43.4, pitch: 4.4 },
     { xl: 85, xr: 99.2, top: 36.6, pitch: 4.4 },
   ],
+};
+
+/**
+ * Where each block's pin stands: the highest point of its roof (parapet or stair core), in
+ * percent of the image. Block 2's sits toward its far edge, clear of the page title.
+ */
+const PINS: Record<string, { x: number; y: number }> = {
+  v2: { x: 9, y: 37.7 },
+  v3: { x: 24.7, y: 47.3 },
+  v4: { x: 40, y: 43.9 },
+  v6: { x: 54, y: 50.2 },
+  v7: { x: 73, y: 43.1 },
 };
 
 /** y of a storey line (given at the left edge) at x, following the facade's perspective. */
@@ -95,7 +106,8 @@ export default function BlockPicker() {
                       e.preventDefault();
                       router.push(floorHref(b, floor));
                     }}
-                    className="cursor-pointer"
+                    // Mouse-only shortcut (keyboard goes through the pins): no focus ring on click.
+                    className="cursor-pointer outline-none"
                   >
                     {FACADES[b.id].map((p, k) => (
                       <polygon
@@ -116,18 +128,22 @@ export default function BlockPicker() {
           </svg>
 
           {varketiliBlocks.map((b, i) => {
-            const p = FACADES[b.id][0];
-            const x = p.pin ?? (p.xl + p.xr) / 2;
+            const pin = PINS[b.id];
+            // A badge on a hairline stem, its foot dot resting on the roof.
             return (
               <Link
                 key={b.id}
                 href={`/projects/varketili/${b.id}/`}
                 aria-label={`${b.name}, ${b.floors} floors: choose a floor`}
-                className="block-pin group absolute -translate-x-1/2"
-                style={{ left: `${x}%`, top: `calc(${lineAt(p, p.top, x)}% - 52px)`, animationDelay: `${0.6 + i * 0.12}s` }}
+                className="group absolute -translate-x-1/2 -translate-y-full"
+                style={{ left: `${pin.x}%`, top: `${pin.y}%` }}
               >
-                <span className="label grid h-9 w-9 place-items-center rounded-full rounded-br-none bg-seu-ink/85 text-[13px] text-white ring-1 ring-white/60 backdrop-blur [transform:rotate(45deg)] transition-colors group-hover:bg-seu-accent group-focus-visible:bg-seu-accent">
-                  <span className="[transform:rotate(-45deg)]">{b.id.slice(1)}</span>
+                <span className="block-pin flex flex-col items-center" style={{ animationDelay: `${0.6 + i * 0.12}s` }}>
+                  <span className="label grid h-10 w-10 place-items-center rounded-full bg-seu-ink/85 text-[14px] text-white ring-1 ring-white/60 backdrop-blur transition-colors group-hover:bg-seu-accent group-focus-visible:bg-seu-accent">
+                    {b.id.slice(1)}
+                  </span>
+                  <span className="h-7 w-px bg-white/80" />
+                  <span className="-mb-[3px] h-1.5 w-1.5 rounded-full bg-white shadow-[0_0_0_3px_rgb(255_255_255/0.25)]" />
                 </span>
               </Link>
             );
@@ -171,7 +187,9 @@ function FloorCard({ block, floor }: Hover) {
   const right = p.xr;
   const y = lineAt(p, p.top + (block.floors - floor + 0.5) * p.pitch, right);
   const flip = right > 66;
-  const free = unitsOn(block.id, floor).filter((u) => u.status === "available");
+  const all = unitsOn(block.id, floor);
+  const total = all.length;
+  const free = all.filter((u) => u.status === "available");
   const types = [...new Set(free.map((u) => u.bedrooms))].sort((a, b) => a - b);
 
   return (
@@ -200,17 +218,25 @@ function FloorCard({ block, floor }: Hover) {
       {floor === 1 ? (
         <p className="mt-3 text-[14px]">Lobby and retail</p>
       ) : types.length ? (
-        <ul className="mt-3 space-y-2 text-[14px]">
-          {types.map((t) => {
-            const of = free.filter((u) => u.bedrooms === t);
-            return (
-              <li key={t} className="flex justify-between gap-4">
-                <span className="font-semibold">{bedroomText(t)}</span>
-                <span className="text-seu-muted">from ${Math.min(...of.map((u) => u.price)).toLocaleString("en-US")}</span>
-              </li>
-            );
-          })}
-        </ul>
+        <>
+          <p className="mt-3 text-[14px]">
+            <span className="font-semibold">{free.length}</span> of {total} flats available
+          </p>
+          <ul className="mt-3 space-y-2 text-[14px]">
+            {types.map((t) => {
+              const of = free.filter((u) => u.bedrooms === t);
+              return (
+                <li key={t} className="grid grid-cols-[1fr_auto_auto] items-baseline gap-3">
+                  <span className="font-semibold">{bedroomText(t)}</span>
+                  <span className="rounded-full px-2 py-0.5 text-[12px] font-semibold text-white" style={{ background: "var(--seu-available)" }}>
+                    {of.length} free
+                  </span>
+                  <span className="text-right text-seu-muted">from ${Math.min(...of.map((u) => u.price)).toLocaleString("en-US")}</span>
+                </li>
+              );
+            })}
+          </ul>
+        </>
       ) : (
         <p className="mt-3 text-[14px] text-seu-muted">No flats available on this floor</p>
       )}
