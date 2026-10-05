@@ -3,7 +3,6 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import LightTrails from "@/components/motion/LightTrails";
 import AmbientVideo from "@/components/ui/AmbientVideo";
 import { withBase } from "@/data/projects";
 
@@ -44,8 +43,6 @@ export default function LightScene() {
       });
       tl.fromTo(".ls-wall", { scale: 1 }, { scale: throughScale, duration: 1, ease: "power2.in" }, 0)
         .fromTo(".ls-media", { scale: 1.3 }, { scale: 1, duration: 1 }, 0)
-        // The whirl of light around the window opens out and fades as we pass through.
-        .to(".ls-trails", { scale: 2.2, opacity: 0, duration: 0.4, ease: "power2.in" }, 0)
         .to(".ls-top", { [mobile ? "yPercent" : "xPercent"]: mobile ? -120 : -60, opacity: 0, duration: 0.3, ease: "power2.in" }, 0)
         .to(".ls-bottom", { [mobile ? "yPercent" : "xPercent"]: mobile ? 120 : 60, opacity: 0, duration: 0.3, ease: "power2.in" }, 0)
         .to(".ls-wall", { opacity: 0, duration: 0.1 }, 0.74)
@@ -80,8 +77,6 @@ export default function LightScene() {
         >
           <img src={withBase("/images/arch-frame.webp")} alt="" className="h-full w-full" draggable={false} />
         </div>
-
-        <LightTrails preset="swirl" className="ls-trails absolute inset-0 h-full w-full" cy={0.52} />
 
         <h2 className="pointer-events-none absolute inset-0 uppercase">
           <span className="ls-top absolute left-1/2 top-[5%] -translate-x-1/2 text-center md:left-[17%] md:top-1/2 md:-translate-y-1/2">

@@ -1,7 +1,5 @@
 import Link from "next/link";
-import LogoLines from "@/components/brand/LogoLines";
 import LogoMark from "@/components/brand/LogoMark";
-import LightTrails from "@/components/motion/LightTrails";
 
 const nav = [
   { label: "Projects", href: "/projects/" },
@@ -20,8 +18,6 @@ const socials = [
 export default function Footer() {
   return (
     <footer data-tone="dark" className="tone-dark relative overflow-hidden border-t border-seu-line bg-seu-ink">
-      <LogoLines x={0.9} size={0.72} />
-      <LightTrails preset="orbit" seed={11} className="absolute inset-x-0 bottom-0 h-[70%] w-full" cx={0.34} cy={0.7} />
       <div className="relative mx-auto grid max-w-[1680px] gap-16 px-gutter pb-12 pt-24 md:grid-cols-[1.2fr_1fr_1fr]">
         <div>
           <p className="eyebrow">Get in touch</p>
