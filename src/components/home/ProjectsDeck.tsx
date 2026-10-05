@@ -24,14 +24,11 @@ export default function ProjectsDeck() {
       cards.forEach((card, i) => {
         const next = cards[i + 1];
         if (!next) return;
-        gsap.to(card.querySelector(".deck-inner"), {
-          scale: 0.92,
-          yPercent: -3,
-          filter: "brightness(0.6)",
-          borderRadius: 28,
-          ease: "none",
-          scrollTrigger: { trigger: next, start: "top bottom", end: "top top", scrub: true },
-        });
+        // Soft hand-over: the covered card eases back a little and a light shade settles on
+        // it (an overlay's opacity, not a filter, so it stays smooth and never goes black).
+        const st = { trigger: next, start: "top bottom", end: "top top", scrub: 0.6 };
+        gsap.to(card.querySelector(".deck-inner"), { scale: 0.94, yPercent: -2, ease: "power1.in", scrollTrigger: st });
+        gsap.to(card.querySelector(".deck-shade"), { opacity: 0.35, ease: "power1.in", scrollTrigger: st });
       });
       gsap.utils.toArray<HTMLElement>(".deck-media").forEach((media) => {
         gsap.fromTo(media, { yPercent: -8 }, {
@@ -60,27 +57,31 @@ export default function ProjectsDeck() {
         {projects.map((p, i) => [
           // A spacer after each card lets it rest on screen before the next one slides over.
           i > 0 && <div key={`${p.id}-rest`} aria-hidden className="h-[45svh]" />,
-          <article key={p.id} className="deck-card sticky top-0 h-[100svh] overflow-hidden" aria-labelledby={`deck-${p.id}`}>
-            <div className="deck-inner relative h-full origin-top overflow-hidden bg-seu-ink will-change-transform">
+          <article key={p.id} className="deck-card sticky top-0 h-[100svh] p-2 md:p-3" aria-labelledby={`deck-${p.id}`}>
+            <div className="deck-inner relative h-full origin-top overflow-hidden rounded-[20px] bg-seu-ink ring-1 ring-white/10 will-change-transform md:rounded-[28px]">
               <div className="deck-media absolute -inset-y-[8%] inset-x-0">
-                <img
-                  src={withBase(p.image)}
-                  alt={`${p.name} render`}
-                  loading={i === 0 ? "eager" : "lazy"}
-                  style={{ objectPosition: p.imagePosition }}
-                  className="h-full w-full object-cover"
-                />
+                {/* "Living" still: a slow drift of the camera, a passing cloud shadow and a light sweep. */}
+                <div className="living h-full w-full">
+                  <img
+                    src={withBase(p.image)}
+                    alt={`${p.name} render`}
+                    loading={i < 2 ? "eager" : "lazy"}
+                    style={{ objectPosition: p.imagePosition, animationDelay: `${-i * 4}s` }}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
               </div>
               <div className="sunbeams sunbeams--soft" />
-              <div className="absolute inset-0 bg-gradient-to-b from-[#0c1613]/55 via-transparent via-40% to-[#0c1613]/90" />
+              <div className="absolute inset-0 bg-gradient-to-b from-[#0c1613]/60 via-transparent via-40% to-[#0c1613]/90" />
+              <div className="deck-shade pointer-events-none absolute inset-0 z-10 bg-[#0c1613] opacity-0" />
 
-              <div className="relative mx-auto flex h-full max-w-[1680px] flex-col justify-between px-gutter pb-14 pt-32">
+              <div className="relative flex h-full flex-col justify-between px-[clamp(20px,3.5vw,56px)] pb-[clamp(24px,5vh,56px)] pt-28">
                 <p className="eyebrow text-seu-fg">
                   <span className="text-seu-accent-hi">{String(i + 1).padStart(2, "0")}</span>
                   {statusLabel[p.status]} · {p.date}
                 </p>
                 <div className="grid items-end gap-10 lg:grid-cols-[1.4fr_1fr]">
-                  <h3 id={`deck-${p.id}`} className="page-title">
+                  <h3 id={`deck-${p.id}`} className="page-title text-[clamp(44px,6.4vw,120px)]">
                     {p.name}
                   </h3>
                   <div className="flex flex-col items-start gap-8 lg:items-end">

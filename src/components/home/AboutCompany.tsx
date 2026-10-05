@@ -12,9 +12,9 @@ const VIDEO_ID = "6dCWXfB7nvc";
 
 // Rings rise from below the fold one after another, largest first, and settle on the centre.
 const RINGS = [
-  { size: "min(92vmin, 980px)", dash: "4 9", dot: true },
-  { size: "min(72vmin, 760px)", dash: "3 8", dot: false },
-  { size: "min(54vmin, 560px)", dash: "2 7", dot: true },
+  { size: "min(80vmin, 860px)", dash: "4 9", dot: true },
+  { size: "min(62vmin, 660px)", dash: "3 8", dot: false },
+  { size: "min(46vmin, 480px)", dash: "2 7", dot: true },
 ];
 
 export default function AboutCompany() {
@@ -75,7 +75,7 @@ export default function AboutCompany() {
         </span>
       </div>
 
-      <div className="ac-stage pointer-events-none absolute inset-0 grid place-items-center">
+      <div className="ac-stage pointer-events-none absolute inset-0 grid place-items-center pt-[24vh] md:pt-[18vh]">
         {RINGS.map((r, i) => (
           <svg
             key={i}
@@ -90,7 +90,7 @@ export default function AboutCompany() {
           </svg>
         ))}
 
-        <div className="ac-video pointer-events-auto relative aspect-[16/9] w-[min(600px,76vw)] overflow-hidden rounded-[20px] shadow-[0_30px_80px_rgb(19_33_29/0.25)]">
+        <div className="ac-video pointer-events-auto relative aspect-[16/9] w-[min(540px,80vw)] overflow-hidden rounded-[20px] shadow-[0_30px_80px_rgb(19_33_29/0.25)]">
           <img
             src={withBase("/images/choose-varketili.jpg")}
             alt="SEU Varketili aerial render"
@@ -115,13 +115,18 @@ export default function AboutCompany() {
         </div>
       </div>
 
-      <p className="ac-left title-m absolute left-gutter top-[44%] z-10 hidden max-w-[260px] md:block">
-        Real estate market since 2014.
-      </p>
-      <p className="ac-right body-copy absolute bottom-[10%] right-gutter z-10 max-w-[360px] text-right md:bottom-auto md:top-[40%]">
-        The company&apos;s team, consisting of experienced professionals, cares about continuous development,
-        adheres to high construction standards and uses innovative technologies.
-      </p>
+      {/* Side notes share the header's container so their edges line up with the title. */}
+      <div className="pointer-events-none absolute inset-0 z-10 mx-auto max-w-[1680px] px-gutter">
+        <div className="relative h-full">
+          <p className="ac-left title-m absolute left-0 top-[56%] hidden max-w-[240px] lg:block">
+            Real estate market since 2014.
+          </p>
+          <p className="ac-right body-copy absolute bottom-[8%] right-0 max-w-[340px] text-right lg:bottom-auto lg:top-[52%]">
+            The company&apos;s team, consisting of experienced professionals, cares about continuous development,
+            adheres to high construction standards and uses innovative technologies.
+          </p>
+        </div>
+      </div>
 
       {playing && (
         <div

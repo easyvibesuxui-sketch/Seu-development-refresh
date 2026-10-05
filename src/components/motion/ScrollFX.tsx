@@ -17,7 +17,7 @@ gsap.registerPlugin(ScrollTrigger, SplitText);
  *   data-stagger          direct children rise in sequence on enter
  *   data-window           clip opens from a rounded inset window to full bleed on enter
  *   data-drift="-0.3"     row slides sideways by that share of its width across the viewport
- *   [data-tone] sections  lag and dim as they leave, so the next slides over (desktop;
+ *   [data-tone] sections  lag slightly as they leave, so the next slides over (desktop;
  *                         data-no-out opts a pinned or sticky section out)
  * Lenis provides the inertial scroll (one instance for the whole visit); the attribute
  * effects are rebuilt on every route change.
@@ -131,7 +131,7 @@ export default function ScrollFX() {
         );
       });
 
-      // Leaving sections fall behind: each toned section lags and darkens as it scrolls away,
+      // Leaving sections fall behind: each toned section lags a little as it scrolls away,
       // so the next one (painted later, on a solid ground) slides up over it. Sections that pin
       // or hold sticky stages opt out with data-no-out. Desktop pointers only.
       mm.add("(min-width: 1024px) and (pointer: fine)", () => {
@@ -141,12 +141,11 @@ export default function ScrollFX() {
           el.dataset.out = "";
           gsap.fromTo(
             el,
-            { y: 0, "--out": 0 },
+            { y: 0 },
             {
-              y: () => window.innerHeight * 0.3,
-              "--out": 1,
+              y: () => window.innerHeight * 0.1,
               ease: "none",
-              scrollTrigger: { trigger: el, start: "bottom bottom", end: "bottom top", scrub: true },
+              scrollTrigger: { trigger: el, start: "bottom bottom", end: "bottom top", scrub: 0.6 },
             },
           );
         });

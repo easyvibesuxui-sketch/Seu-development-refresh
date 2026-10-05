@@ -794,6 +794,77 @@ body:has(.presentation) .cursor {
   }
 }
 
+/* "Living" still image: slow camera drift, a cloud shadow crossing and a light sweep. */
+.living {
+  position: relative;
+  overflow: hidden;
+}
+
+.living > img {
+  animation: living-drift 22s ease-in-out infinite alternate;
+  transform-origin: 60% 40%;
+}
+
+.living::before,
+.living::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+.living::before {
+  inset: -20%;
+  background:
+    radial-gradient(28% 22% at 30% 40%, rgb(12 22 19 / 0.28), transparent 70%),
+    radial-gradient(22% 18% at 70% 60%, rgb(12 22 19 / 0.2), transparent 70%);
+  animation: living-cloud 28s linear infinite;
+}
+
+.living::after {
+  inset: 0;
+  background: linear-gradient(105deg, transparent 35%, rgb(255 222 180 / 0.16) 48%, transparent 60%);
+  background-size: 250% 100%;
+  mix-blend-mode: screen;
+  animation: living-sweep 11s ease-in-out infinite;
+}
+
+@keyframes living-drift {
+  from {
+    transform: scale(1.06) translate3d(-1%, 0.5%, 0);
+  }
+  to {
+    transform: scale(1.14) translate3d(1.5%, -1%, 0);
+  }
+}
+
+@keyframes living-cloud {
+  from {
+    transform: translate3d(-25%, 0, 0);
+  }
+  to {
+    transform: translate3d(25%, 4%, 0);
+  }
+}
+
+@keyframes living-sweep {
+  0%,
+  15% {
+    background-position: 120% 0;
+  }
+  70%,
+  100% {
+    background-position: -40% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .living > img,
+  .living::before,
+  .living::after {
+    animation: none;
+  }
+}
+
 @keyframes kenburns {
   from {
     transform: scale(1.04) translate(0, 0);
@@ -935,13 +1006,4 @@ body:has(.presentation) .cursor {
   }
 }
 
-/* Shade laid over a section as it scrolls away (driven by --out from ScrollFX). */
-[data-out]::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 5;
-  pointer-events: none;
-  background: #0c1613;
-  opacity: calc(var(--out, 0) * 0.45);
-}
+
