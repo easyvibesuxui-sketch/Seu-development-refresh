@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import LogoMark from "@/components/brand/LogoMark";
 import Icon from "@/components/ui/Icon";
-import AssistantVideo from "./AssistantVideo";
+import AmbientVideo from "@/components/ui/AmbientVideo";
 
 type Lang = "ka" | "en";
 
@@ -37,7 +37,7 @@ export default function AssistantPlaceholder() {
 
   return (
     <main lang={lang} className="tone-dark fixed inset-0 overflow-hidden bg-seu-ink text-white">
-      <AssistantVideo />
+      <AmbientVideo name="assistant-loop" className="absolute inset-0 h-full w-full object-cover" />
       <div className="gate-shade--side pointer-events-none absolute inset-0" aria-hidden />
 
       <header className="absolute inset-x-0 top-0 z-10 flex items-center justify-between p-6 md:p-10">

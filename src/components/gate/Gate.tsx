@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import LogoMark from "@/components/brand/LogoMark";
-import AssistantVideo from "@/components/assistant/AssistantVideo";
+import AmbientVideo from "@/components/ui/AmbientVideo";
 import Icon from "@/components/ui/Icon";
 
 const GateMap = dynamic(() => import("./GateMap"), { ssr: false });
@@ -40,7 +40,7 @@ export default function Gate() {
       </div>
 
       <div className="gate-pane gate-pane--assistant relative isolate overflow-hidden bg-seu-bg">
-        <AssistantVideo />
+        <AmbientVideo name="assistant-loop" className="absolute inset-0 h-full w-full object-cover" />
         <div className="gate-shade pointer-events-none absolute inset-0" aria-hidden />
         <Link href="/assistant/" onClick={enter("assistant", "/assistant/")} className="group absolute inset-0 z-10 outline-none" aria-labelledby="gate-assistant">
           <div className="gate-copy gate-copy--shaded absolute inset-x-0 bottom-0 z-10 isolate p-8 pb-14 md:p-14">
