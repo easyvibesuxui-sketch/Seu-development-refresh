@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import AssistantPlaceholder from "@/components/assistant/AssistantPlaceholder";
+import AssistantExperience from "@/components/assistant/AssistantExperience";
 
 export const metadata: Metadata = { title: "Virtual assistant" };
 
-// The assistant's own room, outside the website's header and footer. A placeholder for now.
+// The assistant's showroom, outside the website's header and footer.
 export default function AssistantPage() {
-  return <AssistantPlaceholder />;
+  return <AssistantExperience />;
 }

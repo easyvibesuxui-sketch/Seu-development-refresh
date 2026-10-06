@@ -45,7 +45,7 @@ export default function Gate() {
         <Link href="/assistant/" onClick={enter("assistant", "/assistant/")} className="group absolute inset-0 z-10 outline-none" aria-labelledby="gate-assistant">
           <div className="gate-copy gate-copy--shaded absolute inset-x-0 bottom-0 z-10 isolate p-8 pb-14 md:p-14">
             <span className="tag gap-2 border-white/30 bg-seu-ink/70 text-white backdrop-blur">
-              <span className="h-2 w-2 animate-pulse rounded-full bg-seu-accent-hi" /> Coming soon
+              <span className="h-2 w-2 animate-pulse rounded-full bg-seu-accent-hi" /> Preview
             </span>
             <h2 id="gate-assistant" className="page-title mt-6 text-[clamp(40px,5vw,88px)]">
               Virtual

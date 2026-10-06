@@ -7,10 +7,11 @@ import { mappedProjects, withBase } from "@/data/projects";
 import { createMapStyle, projectTowers, seuColor } from "@/components/hero/mapStyle";
 
 /**
- * The website's half of the gate: the same day map as the home hero, slowly orbiting
- * SEU Varketili. It is a picture, not a control: the whole half is the link.
+ * The day map of the home hero, slowly orbiting one project (SEU Varketili unless told
+ * otherwise). It is a picture, not a control: on the gate the whole half is the link, and the
+ * assistant shows it after zooming into a model.
  */
-export default function GateMap({ className = "" }: { className?: string }) {
+export default function GateMap({ className = "", project = "varketili", zoom = 15.3 }: { className?: string; project?: string; zoom?: number }) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -18,7 +19,7 @@ export default function GateMap({ className = "" }: { className?: string }) {
     let frame = 0;
     let cancelled = false;
     const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const site = mappedProjects[0];
+    const site = mappedProjects.find((p) => p.id === project) ?? mappedProjects[0];
 
     (async () => {
       const maplibre = await import("maplibre-gl");
@@ -28,7 +29,7 @@ export default function GateMap({ className = "" }: { className?: string }) {
         container: ref.current,
         style: createMapStyle(),
         center: site.coords,
-        zoom: 15.3,
+        zoom,
         pitch: 62,
         bearing: -30,
         interactive: false,
@@ -72,7 +73,7 @@ export default function GateMap({ className = "" }: { className?: string }) {
       cancelAnimationFrame(frame);
       map?.remove();
     };
-  }, []);
+  }, [project, zoom]);
 
   return <div ref={ref} className={className} style={{ position: "absolute", inset: 0 }} />;
 }
