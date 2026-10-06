@@ -329,7 +329,6 @@ export default function HeroMap() {
             }}
           >
             <span>{mode === "overview" ? `Back to ${active.name}` : "All projects"}</span>
-            <ArrowIcon />
           </button>
         </div>
       </div>
@@ -349,14 +348,6 @@ function FlagIcon() {
   return (
     <svg width="14" height="16" viewBox="0 0 14 16" fill="none" aria-hidden>
       <path d="M1 15V1h10l-2 3.5L11 8H1" stroke="currentColor" strokeWidth="1.2" />
-    </svg>
-  );
-}
-
-function ArrowIcon() {
-  return (
-    <svg width="18" height="10" viewBox="0 0 18 10" fill="none" aria-hidden>
-      <path d="M0 5h16M12 1l4 4-4 4" stroke="currentColor" strokeWidth="1.2" />
     </svg>
   );
 }
