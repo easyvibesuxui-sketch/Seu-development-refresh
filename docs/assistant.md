@@ -32,7 +32,13 @@ Critical: Mariam is one person in every frame.
   regenerated with the original prompt from the corrected door still to the corrected showroom
   still (the door view's vitrines were redrawn the same way, with the showroom as reference),
   because a flat patch cannot follow the moving camera; her face was checked frame by frame.
-- **Voice:** one fixed voice for both languages, recorded separately (TTS) and laid over the
+- **Voice:** one voice, ElevenLabs preset "Sienna" through Higgsfield (`text2speech_v2`,
+  variant `elevenlabs`), laid over the clips; the clips themselves carry no audio. Each line of
+  `LINES` is one file, `public/assistant/voice/<line>-<lang>.mp3`, listed with its source URL in
+  `src/data/voice.json`; the deploy fetches them (`scripts/fetch-voice.mjs`) because the voice
+  CDN is not reachable from the authoring container. A line without a file stays silent and the
+  subtitles carry it. Prices are spoken in words in the recording ("ორმოცდახუთი ათას ექვსასი
+  დოლარიდან"), so a price change in the inventory needs that line re-recorded.
   clips; the clips are generated without audio.
 
 ## Scenes (stage 1)

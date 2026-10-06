@@ -4,7 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { withBase } from "@/data/projects";
 import { blockById, unitsOn, varketiliBlocks } from "@/data/inventory";
-import { ASSISTANT_NAME, FACADES, facadeFloors, facadeLabel, LINES, MAQUETTE, MODELS, REPLIES, UI, type Lang, type Line, type Model, type Reply } from "@/data/assistant";
+import VOICE from "@/data/voice.json";
+import { ASSISTANT_NAME, FACADES, facadeFloors, facadeLabel, lineId, LINES, MAQUETTE, MODELS, REPLIES, UI, type Lang, type Line, type Model, type Reply } from "@/data/assistant";
 import LogoMark from "@/components/brand/LogoMark";
 import Icon from "@/components/ui/Icon";
 import Select from "@/components/ui/Select";
@@ -37,6 +38,10 @@ export default function AssistantExperience() {
   const [formBlock, setFormBlock] = useState("v7");
   const [formFloor, setFormFloor] = useState("8");
   const [box, setBox] = useState({ w: 0, h: 0, left: 0, top: 0 });
+  const [soundOn, setSoundOn] = useState(true);
+  const [speaking, setSpeaking] = useState(false);
+  const [said, setSaid] = useState(0);
+  const voice = useRef<HTMLAudioElement | null>(null);
   const still = useRef(false);
   const t = (l: Line) => l[lang];
 
@@ -69,7 +74,51 @@ export default function AssistantExperience() {
 
   const say = useCallback((text: Line) => {
     setLine(text);
+    setSaid((n) => n + 1);
     setMessages((m) => [...m, { from: "mariam", text }]);
+  }, []);
+
+  // Mariam's voice: each line plays its recording once, in the chosen language; lines not yet
+  // recorded stay silent and the subtitles carry them. Nothing plays before the visitor walks in.
+  const quiet = scene === "door" || scene === "entry";
+  useEffect(() => {
+    const a = voice.current;
+    if (!a) return;
+    a.pause();
+    const id = lineId(line);
+    const key = id && `${id}-${lang}`;
+    // Pausing fires the element's "pause" event, which clears the speaking marker.
+    if (!soundOn || quiet || !key || !(key in VOICE)) return;
+    a.src = withBase(`/assistant/voice/${key}.mp3`);
+    a.play().catch(() => setSpeaking(false));
+    // `line` is read here but `said` decides when a line is spoken (the same line can be said twice).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [said, lang, soundOn, quiet]);
+  useEffect(() => () => voice.current?.pause(), []);
+
+  const toggleSound = () => {
+    setSoundOn((on) => {
+      try {
+        localStorage.setItem("seu-voice", on ? "off" : "on");
+      } catch {}
+      return !on;
+    });
+  };
+
+  /** Run `next` once Mariam has finished the line she is saying, or after `fallback` ms if she is silent. */
+  const afterSpeech = useCallback((next: () => void, fallback: number) => {
+    window.setTimeout(() => {
+      const a = voice.current;
+      if (a && !a.paused && !a.ended) {
+        const done = () => {
+          a.removeEventListener("ended", done);
+          a.removeEventListener("pause", done);
+          window.setTimeout(next, 400);
+        };
+        a.addEventListener("ended", done);
+        a.addEventListener("pause", done);
+      } else window.setTimeout(next, Math.max(0, fallback - 150));
+    }, 150);
   }, []);
 
   const goToModel = useCallback(
@@ -104,15 +153,34 @@ export default function AssistantExperience() {
       say(LINES.showroom);
     } else if (reply === "buy") {
       say(LINES.buy);
-      window.setTimeout(() => goToModel(varketili), still.current ? 0 : 2200);
+      afterSpeech(() => goToModel(varketili), still.current ? 0 : 2200);
     } else if (reply === "prices") say(LINES.prices);
     else if (reply === "visit") say(LINES.visit);
     else if (reply === "varketili") goToModel(varketili);
   };
 
   const enter = () => {
+    // Browsers allow sound only after a click: this click opens Mariam's audio for the visit.
+    if (!voice.current) {
+      try {
+        if (localStorage.getItem("seu-voice") === "off") setSoundOn(false);
+      } catch {}
+      const a = new Audio();
+      a.preload = "auto";
+      a.addEventListener("playing", () => setSpeaking(true));
+      a.addEventListener("pause", () => setSpeaking(false));
+      a.addEventListener("ended", () => setSpeaking(false));
+      a.muted = true;
+      a.src = withBase("/assistant/voice/greet-ka.mp3");
+      a.play()
+        .then(() => a.pause())
+        .catch(() => {})
+        .finally(() => (a.muted = false));
+      voice.current = a;
+    }
     setMessages([{ from: "mariam", text: LINES.greet }]);
     setLine(LINES.greet);
+    setSaid((n) => n + 1);
     setScene(still.current ? "showroom" : "entry");
   };
 
@@ -261,12 +329,17 @@ export default function AssistantExperience() {
           <LogoMark className="h-8 w-auto overflow-visible" />
           <span className="label text-[12px] tracking-[0.3em]">SEU</span>
         </span>
-        <div className="segmented ctl-sm border-white/40 bg-seu-ink/50 backdrop-blur" role="group" aria-label="Language / ენა">
-          {(["ka", "en"] as const).map((l) => (
-            <button key={l} type="button" lang={l} aria-pressed={lang === l} onClick={() => setLang(l)} className="text-white">
-              {l === "ka" ? "ქარ" : "EN"}
-            </button>
-          ))}
+        <div className="flex items-center gap-2">
+          <button type="button" aria-pressed={soundOn} aria-label={t(UI.sound)} title={t(UI.sound)} onClick={toggleSound} className="btn btn-glass btn-sm w-10 px-0">
+            <Icon name={soundOn ? "volume" : "mute"} size={18} />
+          </button>
+          <div className="segmented ctl-sm border-white/40 bg-seu-ink/50 backdrop-blur" role="group" aria-label="Language / ენა">
+            {(["ka", "en"] as const).map((l) => (
+              <button key={l} type="button" lang={l} aria-pressed={lang === l} onClick={() => setLang(l)} className="text-white">
+                {l === "ka" ? "ქარ" : "EN"}
+              </button>
+            ))}
+          </div>
         </div>
       </header>
 
@@ -292,7 +365,14 @@ export default function AssistantExperience() {
           <div className="flex items-start gap-4">
             <img src={withBase("/media/assistant-loop.jpg")} alt="" className="h-12 w-12 shrink-0 rounded-full object-cover ring-2 ring-white/30" />
             <div className="min-w-0">
-              <p className="label text-[12px] uppercase tracking-[0.16em] text-white/80">{t(ASSISTANT_NAME)}</p>
+              <p className="label flex items-center gap-2 text-[12px] uppercase tracking-[0.16em] text-white/80">
+                {t(ASSISTANT_NAME)}
+                <span className="speaking" data-on={speaking || undefined} aria-hidden>
+                  <span />
+                  <span />
+                  <span />
+                </span>
+              </p>
               <p className="mt-1 text-[14px] leading-relaxed text-white md:text-[15px]">{t(line)}</p>
             </div>
           </div>

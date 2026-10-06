@@ -208,6 +208,9 @@ export const LINES = {
   },
 } satisfies Record<string, Line>;
 
+export type LineId = keyof typeof LINES;
+export const lineId = (line: Line) => (Object.keys(LINES) as LineId[]).find((k) => LINES[k] === line);
+
 export type Reply = { id: "projects" | "buy" | "prices" | "visit" | "varketili"; label: Line };
 
 export const REPLIES: Reply[] = [
@@ -219,7 +222,7 @@ export const REPLIES: Reply[] = [
 
 export const UI = {
   enter: { ka: "შესვლა", en: "Come in" },
-  enterHint: { ka: "ხმა ჩაირთვება, როცა მზად იქნება", en: "Sound will play once it is recorded" },
+  sound: { ka: "მარიამის ხმა", en: "Mariam's voice" },
   skip: { ka: "გამოტოვება", en: "Skip" },
   back: { ka: "უკან", en: "Back" },
   toShowroom: { ka: "შოურუმში დაბრუნება", en: "Back to the showroom" },

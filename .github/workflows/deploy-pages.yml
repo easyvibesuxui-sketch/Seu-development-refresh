@@ -29,6 +29,8 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Fetch the assistant's voice lines
+        run: node scripts/fetch-voice.mjs
       - name: Build static site
         run: npm run build
         env:
