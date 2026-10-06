@@ -130,6 +130,22 @@ export default function AssistantExperience() {
   const inShowroom = scene === "greet" || scene === "showroom" || scene === "zoom" || scene === "finished";
   const zoomed = scene === "zoom" || scene === "finished";
   const zoomOrigin = model ? `${model.at.x}% ${model.at.y}%` : "50% 50%";
+  // The zoom also brings the model toward the middle of the screen (higher on phones, above the
+  // dialogue), never so far that the frame's edge comes into view.
+  const zoom = (() => {
+    if (!model || typeof window === "undefined") return { scale: 2.8, shift: "" };
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const phone = vw < 768;
+    const k = phone ? 2 : 2.8;
+    const ox = (model.at.x / 100) * box.w;
+    const oy = (model.at.y / 100) * box.h;
+    const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
+    const dx = clamp(vw * 0.5 - (box.left + ox), vw - box.left - ox - k * (box.w - ox), k * ox - box.left - ox);
+    const dy = clamp(vh * (phone ? 0.3 : 0.42) - (box.top + oy), vh - box.top - oy - k * (box.h - oy), k * oy - box.top - oy);
+    return { scale: k, shift: `translate(${dx}px, ${dy}px) ` };
+  })();
+
   const hoverBlock = hover ? blockById(hover.block) : null;
   const hoverFlats = hover ? unitsOn(hover.block, hover.floor) : [];
   const formFloors = Array.from({ length: (blockById(formBlock)?.floors ?? 12) - 1 }, (_, i) => String(i + 2));
@@ -153,7 +169,7 @@ export default function AssistantExperience() {
           style={{
             ...frame,
             transformOrigin: zoomOrigin,
-            transform: zoomed ? "scale(2.8)" : "scale(1)",
+            transform: zoomed ? `${zoom.shift}scale(${zoom.scale})` : "scale(1)",
             transition: still.current ? "none" : "transform 1.8s cubic-bezier(0.7, 0, 0.2, 1), left 0.8s ease",
           }}
         >

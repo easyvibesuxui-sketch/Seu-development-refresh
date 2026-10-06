@@ -31,7 +31,7 @@ export const MODELS: Model[] = [
     project: "green-yard",
     name: { ka: "SEU Green Yard", en: "SEU Green Yard" },
     note: { ka: "დასრულებული · ჯიქიას ქუჩა", en: "Finished · Jikia Street" },
-    at: { x: 13, y: 57 },
+    at: { x: 14, y: 47 },
     href: "/projects/green-yard/",
   },
   {
