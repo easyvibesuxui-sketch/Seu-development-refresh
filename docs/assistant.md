@@ -26,9 +26,10 @@ Critical: Mariam is one person in every frame.
   regenerated, never used.
 - **Changing the set, not her:** the Green Yard vitrine (two 19-storey towers) was redrawn with
   `gemini-3-pro-image` on the showroom still, then only the vitrine was composited back onto the
-  original, so Mariam's pixels never changed. The same patch was tracked into `entry` and
-  `greet` frame by frame (SIFT homography, person segmentation keeps her in front), instead of
-  regenerating clips of her.
+  original, so Mariam's pixels never changed. The same patch was tracked into `greet` frame by
+  frame (SIFT homography, person segmentation keeps her in front). The walk-in (`entry`) was
+  regenerated with the original prompt, door first frame and the new still as tail frame,
+  because a flat patch cannot follow the moving camera; her face was checked frame by frame.
 - **Voice:** one fixed voice for both languages, recorded separately (TTS) and laid over the
   clips; the clips are generated without audio.
 
