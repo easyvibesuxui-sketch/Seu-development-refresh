@@ -1216,6 +1216,14 @@ body:has(.presentation) .cursor {
     display: none;
   }
 
+  body:has(.presentation) {
+    background: #fff;
+  }
+
+  .pres-page:last-child {
+    break-after: auto;
+  }
+
   .pres-page {
     box-shadow: none;
     break-after: page;

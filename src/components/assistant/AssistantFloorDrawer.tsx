@@ -7,6 +7,7 @@ import { PLAN, PLAN_RATIO, UNIT_SHAPES, centre } from "@/data/floorplan";
 import { ROOM, STATUS, UI, VIEW, type Lang } from "@/data/assistant";
 import Sheet from "@/components/ui/Sheet";
 import Icon, { type IconName } from "@/components/ui/Icon";
+import Compass from "@/components/apartment/Compass";
 
 const fill: Record<Unit["status"], string> = {
   available: "var(--seu-available)",
@@ -29,7 +30,7 @@ const usd = (n: number) => `$${n.toLocaleString("en-US")}`;
 
 /**
  * The assistant's own floor drawer: the plan of the chosen floor, then an apartment's profile
- * and a call request, all without leaving the showroom. Sold flats stay visible but closed.
+ * with its PDF and a call request, all without leaving the showroom. Sold flats stay visible but closed.
  */
 export default function AssistantFloorDrawer({
   pick,
@@ -45,6 +46,7 @@ export default function AssistantFloorDrawer({
   const [unit, setUnit] = useState<Unit | null>(null);
   const [calling, setCalling] = useState(false);
   const [sent, setSent] = useState(false);
+  const [view, setView] = useState<"3D" | "2D" | "plan">("3D");
   const t = (l: { ka: string; en: string }) => l[lang];
 
   // A new floor starts on its plan.
@@ -64,6 +66,7 @@ export default function AssistantFloorDrawer({
     setUnit(u);
     setCalling(false);
     setSent(false);
+    setView("3D");
     onUnit?.(u);
   };
 
@@ -167,12 +170,44 @@ export default function AssistantFloorDrawer({
           <button type="button" onClick={() => setUnit(null)} className="btn btn-sm">
             <Icon name="arrow" size={14} className="rotate-180" /> {t(UI.backToFloor)}
           </button>
-          <div className="mt-5 rounded-[18px] bg-seu-paper p-4">
-            <img src={withBase("/images/apartment-3d.webp")} alt={`${t(UI.apartment)} ${unit.number}`} className="mx-auto w-[88%] drop-shadow-[0_24px_30px_rgb(19_33_29/0.25)]" />
+          <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-[14px] text-seu-muted">
+            <span className="flex items-center gap-2">
+              <Icon name="block" size={18} className="text-seu-accent-hi" /> {t(UI.block)} <span className="title-m text-[20px] text-seu-fg">{unit.block.slice(1)}</span>
+            </span>
+            <span className="flex items-center gap-2">
+              <Icon name="floor" size={18} className="text-seu-accent-hi" /> {t(UI.floor)} <span className="title-m text-[20px] text-seu-fg">{unit.floor}</span>
+            </span>
+            <span className="flex items-center gap-2">
+              <Icon name="clock" size={18} className="text-seu-accent-hi" /> {t(UI.delivery)}: <span className="text-seu-fg">{block?.status === "delivered" ? t(UI.delivered) : block?.delivery}</span>
+            </span>
           </div>
-          <p className="label mt-5 flex items-center gap-2 text-[12px] uppercase tracking-[0.14em]">
-            <span className="h-2 w-2 rounded-full" style={{ background: fill[unit.status] }} /> {t(STATUS[unit.status])}
-          </p>
+          <div className="relative mt-5 aspect-[4/3.3] overflow-hidden rounded-[18px] bg-seu-paper">
+            <div className="vars-light absolute left-3 top-3 z-10 flex gap-2" role="tablist" aria-label={t(UI.layout)}>
+              {(["3D", "2D", "plan"] as const).map((v) => (
+                <button key={v} type="button" role="tab" aria-selected={view === v} onClick={() => setView(v)} className="chip ctl-sm rounded-full px-4">
+                  {v === "plan" ? t(UI.planTab) : v}
+                </button>
+              ))}
+            </div>
+            <Compass label={t(UI.north)} className="absolute right-3 top-2 z-10" />
+            <div className="absolute inset-0 grid place-items-center p-10 pt-14">
+              {view === "3D" ? (
+                <img src={withBase("/images/apartment-3d.webp")} alt={`${t(UI.apartment)} ${unit.number}, 3D`} className="max-h-full w-[92%] object-contain drop-shadow-[0_24px_30px_rgb(19_33_29/0.25)]" />
+              ) : (
+                <img
+                  src={withBase("/images/apartment-plan.png")}
+                  alt={`${t(UI.apartment)} ${unit.number}, ${t(UI.floorPlan)}`}
+                  className={`max-h-full w-[75%] object-contain ${view === "2D" ? "[filter:sepia(.35)_saturate(1.4)_hue-rotate(-12deg)]" : ""}`}
+                />
+              )}
+            </div>
+          </div>
+          <div className="mt-5 flex flex-wrap items-center gap-3">
+            <p className="label flex items-center gap-2 text-[12px] uppercase tracking-[0.14em]">
+              <span className="h-2 w-2 rounded-full" style={{ background: fill[unit.status] }} /> {t(STATUS[unit.status])}
+            </p>
+            {unit.discounted && <span className="tag border-seu-accent-hi py-1 text-seu-accent-hi">{t(UI.discount)}</span>}
+          </div>
           <dl className="mt-5 grid grid-cols-2 gap-5 sm:grid-cols-4">
             {(
               [
@@ -200,19 +235,23 @@ export default function AssistantFloorDrawer({
               </li>
             ))}
           </ul>
-          <div className="mt-6 flex items-end justify-between gap-4 border-t border-seu-line pt-5">
-            <div>
-              <p className="field-label">{t(UI.price)}</p>
-              <p className="title-m text-[28px] normal-case">
-                {usd(unit.price)}
-                <span className="ml-2 text-[14px] text-seu-muted">${unit.pricePerM2}/m²</span>
-              </p>
+          <div className="mt-6 border-t border-seu-line pt-5">
+            <p className="field-label">{t(UI.price)}</p>
+            <p className="title-m text-[28px] normal-case">
+              {usd(unit.price)}
+              <span className="ml-2 text-[14px] text-seu-muted">${unit.pricePerM2}/m²</span>
+            </p>
+            <div className="mt-4 flex flex-wrap gap-3">
+              {!calling && !sent && (
+                <button type="button" onClick={() => setCalling(true)} className="btn btn-primary">
+                  <Icon name="phone" size={16} /> {t(UI.send)}
+                </button>
+              )}
+              <a href={withBase(`/assistant/presentation/?id=${unit.id}&lang=${lang}`)} target="_blank" rel="noreferrer" className="btn">
+                <Icon name="file" size={16} /> {t(UI.pdf)} <span aria-hidden>↗</span>
+                <span className="sr-only">{t(UI.newTab)}</span>
+              </a>
             </div>
-            {!calling && !sent && (
-              <button type="button" onClick={() => setCalling(true)} className="btn btn-primary">
-                <Icon name="phone" size={16} /> {t(UI.send)}
-              </button>
-            )}
           </div>
           {calling && !sent && (
             <form
@@ -243,6 +282,13 @@ export default function AssistantFloorDrawer({
               {t(UI.thanks)}
             </p>
           )}
+          <h3 className="field-label mt-8">{t(UI.onFloor)}</h3>
+          <div className="relative" style={{ aspectRatio: `${PLAN_RATIO}` }}>
+            <img src={withBase(PLAN)} alt={`${t(UI.floorPlan)}: ${t(UI.apartment)} ${unit.number}`} className="h-full w-full rounded-[14px]" />
+            <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
+              <polygon points={UNIT_SHAPES[unit.slot].map((p) => p.join(",")).join(" ")} fill="#e07a3a" fillOpacity={0.55} stroke="#fff" strokeWidth={1.5} vectorEffect="non-scaling-stroke" />
+            </svg>
+          </div>
           <h3 className="field-label mt-8">{t(UI.rooms)}</h3>
           <ul className="grid grid-cols-2 gap-x-6 gap-y-3 text-[14px]">
             {unit.rooms.map((r, i) => (

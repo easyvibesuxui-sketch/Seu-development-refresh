@@ -252,4 +252,13 @@ export const UI = {
   chatSoon: { ka: "თავისუფალი კითხვები მალე. ჯერ აირჩიეთ:", en: "Free questions are coming soon. For now, choose:" },
   models: { ka: "მაკეტები", en: "Models" },
   call: { ka: "ზარის მოთხოვნა", en: "Request a call" },
+  pdf: { ka: "PDF პრეზენტაცია", en: "PDF presentation" },
+  newTab: { ka: "(იხსნება ახალ ჩანართში)", en: "(opens in a new tab)" },
+  layout: { ka: "განლაგების ხედი", en: "Layout view" },
+  planTab: { ka: "გეგმა", en: "Plan" },
+  north: { ka: "ჩრდილოეთის ისარი", en: "North arrow" },
+  onFloor: { ka: "ბინა სართულზე", en: "Where it is on the floor" },
+  delivery: { ka: "ჩაბარება", en: "Delivery" },
+  delivered: { ka: "ჩაბარებულია", en: "Delivered" },
+  discount: { ka: "ფასდაკლება", en: "Discount" },
 } satisfies Record<string, Line>;
