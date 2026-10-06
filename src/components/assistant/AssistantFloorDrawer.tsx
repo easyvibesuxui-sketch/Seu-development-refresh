@@ -150,7 +150,7 @@ export default function AssistantFloorDrawer({
               return (
                 <li key={u.id}>
                   {sold ? (
-                    <div className="flex items-center gap-4 py-3 opacity-60">{row}</div>
+                    <div className="flex items-center gap-4 py-3 text-seu-muted">{row}</div>
                   ) : (
                     <button type="button" onClick={() => open(u)} className="flex w-full items-center gap-4 py-3 text-left transition-colors hover:bg-white/5">
                       {row}
