@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "@fontsource-variable/urbanist";
 import "@fontsource-variable/sofia-sans-semi-condensed";
+import "@fontsource-variable/noto-sans-georgian";
 import "./globals.css";
 import ScrollFX from "@/components/motion/ScrollFX";
 import Cursor from "@/components/motion/Cursor";

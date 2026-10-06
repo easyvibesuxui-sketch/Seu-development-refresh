@@ -163,8 +163,8 @@
   --color-seu-accent-lo: var(--seu-accent-lo);
   --spacing-gutter: var(--gutter);
   --spacing-section: var(--section-y);
-  --font-sans: "Urbanist Variable", "BPG Rioni Contrast", system-ui, sans-serif;
-  --font-display: "Sofia Sans Semi Condensed Variable", "BPG Rioni Contrast", "Helvetica Neue", sans-serif;
+  --font-sans: "Urbanist Variable", "Noto Sans Georgian Variable", "BPG Rioni Contrast", system-ui, sans-serif;
+  --font-display: "Sofia Sans Semi Condensed Variable", "Noto Sans Georgian Variable", "BPG Rioni Contrast", "Helvetica Neue", sans-serif;
 }
 
 html {
@@ -1467,8 +1467,9 @@ body:has(.presentation) .cursor {
   z-index: 20;
 }
 
-/* Entering: the website's half takes the whole screen before the home page loads. */
-.gate[data-entering] .gate-pane--site {
+/* Entering: the chosen half takes the whole screen before its page loads. */
+.gate[data-entering="site"] .gate-pane--site,
+.gate[data-entering="assistant"] .gate-pane--assistant {
   flex-grow: 1000;
 }
 
@@ -1490,17 +1491,18 @@ body:has(.presentation) .cursor {
   background: linear-gradient(to top, rgb(14 26 22 / 0.95) 0%, rgb(14 26 22 / 0.86) 62%, rgb(14 26 22 / 0) 100%);
 }
 
-.gate-glow {
-  position: absolute;
-  inset: -20%;
-  background: radial-gradient(38% 34% at 50% 42%, rgb(227 154 98 / 0.22), transparent 70%);
-  animation: gate-glow 9s ease-in-out infinite alternate;
+/* Assistant room: copy bottom-left over a bright clip, header controls along the top. */
+.gate-shade--side {
+  background:
+    linear-gradient(to bottom, rgb(14 26 22 / 0.55), rgb(14 26 22 / 0) 22%),
+    linear-gradient(to top, rgb(14 26 22 / 0.94) 0%, rgb(14 26 22 / 0.8) 38%, rgb(14 26 22 / 0) 75%);
 }
 
-@keyframes gate-glow {
-  to {
-    transform: translate(6%, -4%) scale(1.15);
-    opacity: 0.7;
+@media (min-width: 768px) {
+  .gate-shade--side {
+    background:
+      linear-gradient(to bottom, rgb(14 26 22 / 0.55), rgb(14 26 22 / 0) 22%),
+      linear-gradient(to right, rgb(14 26 22 / 0.9) 0%, rgb(14 26 22 / 0.72) 38%, rgb(14 26 22 / 0) 62%);
   }
 }
 
@@ -1508,8 +1510,5 @@ body:has(.presentation) .cursor {
   .gate-pane,
   .gate-copy {
     transition: none;
-  }
-  .gate-glow {
-    animation: none;
   }
 }
