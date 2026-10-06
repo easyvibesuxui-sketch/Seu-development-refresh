@@ -1,8 +1,9 @@
 # Virtual assistant
 
 The left half of the gate leads to `/assistant/`: a walk into the SEU sales showroom, where the
-consultant Mariam greets the visitor, shows the scale models and hands over to the website's
-visual search. Stage 1 runs entirely on GitHub Pages; the free-text AI chat (stage 2) needs a
+consultant Mariam greets the visitor and shows the scale models; on the Varketili model the
+visitor picks a floor, and its plan and apartments open in a drawer. The assistant never
+hands over to the website: the only way out is back to the gate. Stage 1 runs entirely on GitHub Pages; the free-text AI chat (stage 2) needs a
 small server (Cloudflare Worker + Anthropic API) and is designed in but not switched on.
 
 ## The consultant must never change
@@ -35,10 +36,16 @@ Critical: Mariam is one person in every frame.
 | greet     | `assistant/greet.(webm/mp4)` on the showroom     | Quick replies, click a model                |
 | showroom  | `assistant/showroom.jpg` with model hotspots     | Click a model, quick replies, chat panel    |
 | zoom      | showroom zooms into the model (→ close-up)       | —                                           |
-| project   | live 3D map of the project (`GateMap`)           | Visual search / project page, back          |
+| block     | `assistant/maquette-varketili.jpg`, floor bands  | Point at a floor, or pick block + floor     |
+| finished  | showroom zoomed on Green Yard / Vasilisko        | Show me Varketili, back to the showroom     |
+| drawer    | `AssistantFloorDrawer`: floor plan → apartment   | Open a flat, request a call (inline form)   |
+
+The floor bands come from `FACADES` in `src/data/assistant.ts`: the front face of each built
+block on the close-up, in percent of the frame, split evenly by the block's floor count. A new
+close-up means re-measuring them.
 
 All buttons, hotspots and (later) AI answers dispatch the same actions
-(`goToProject`, `say`, `openSearch`…), so the chat and the clicks always play the same way.
+(`goToModel`, `openFloor`, `say`…), so the chat and the clicks always play the same way.
 
 ## Stage 2: AI chat
 

@@ -1,4 +1,4 @@
-import { units } from "./inventory";
+import { units, type RoomKind, type UnitStatus, type ViewId } from "./inventory";
 
 /*
  * The virtual assistant's script and stage. One consultant, Mariam, in one showroom: every
@@ -53,6 +53,46 @@ export const MODELS: Model[] = [
   },
 ];
 
+/**
+ * The Varketili model close-up (`maquette-varketili.jpg`): the front face of each built block,
+ * in percent of the frame, split into floor bands by the block's floor count.
+ */
+export const MAQUETTE = "/assistant/maquette-varketili.jpg";
+export const MAQUETTE_RATIO = 5504 / 3072;
+export const FACADES: { block: string; x: [number, number]; y: [number, number] }[] = [
+  { block: "v2", x: [22.1, 28.8], y: [37.5, 65] },
+  { block: "v3", x: [28.9, 37.2], y: [36.8, 71] },
+  { block: "v4", x: [37.5, 46], y: [42.2, 73.7] },
+  { block: "v6", x: [49.1, 59.6], y: [39.8, 76.8] },
+  { block: "v7", x: [61.5, 71.8], y: [39.1, 80] },
+];
+
+export const STATUS: Record<UnitStatus, Line> = {
+  available: { ka: "თავისუფალი", en: "Available" },
+  reserved: { ka: "დაჯავშნილი", en: "Reserved" },
+  sold: { ka: "გაყიდული", en: "Sold" },
+};
+
+export const ROOM: Record<RoomKind, Line> = {
+  living: { ka: "მისაღები", en: "Living room" },
+  kitchen: { ka: "სამზარეულო", en: "Kitchen" },
+  bedroom: { ka: "საძინებელი", en: "Bedroom" },
+  bathroom: { ka: "სააბაზანო", en: "Bathroom" },
+  wc: { ka: "სველი წერტილი", en: "WC" },
+  hall: { ka: "დერეფანი", en: "Hall" },
+  balcony: { ka: "აივანი", en: "Balcony" },
+  storage: { ka: "სათავსო", en: "Storage" },
+};
+
+export const VIEW: Record<ViewId, Line> = {
+  park: { ka: "ჰუალინგის პარკი", en: "Hualing Park" },
+  city: { ka: "ქალაქი", en: "City" },
+  sea: { ka: "თბილისის ზღვა", en: "Tbilisi Sea" },
+  mountains: { ka: "მთები", en: "Mountains" },
+  courtyard: { ka: "ეზო", en: "Courtyard" },
+  panorama: { ka: "პანორამა", en: "Panorama" },
+};
+
 const fromPrice = Math.min(...units.filter((u) => u.status !== "sold").map((u) => u.price));
 const usd = (n: number) => `$${n.toLocaleString("en-US")}`;
 
@@ -70,12 +110,16 @@ export const LINES = {
     en: `We have apartments at SEU Varketili, from studios to three bedrooms, from ${usd(fromPrice)}. Let me show you on the model.`,
   },
   varketili: {
-    ka: "SEU ვარკეთილი თბილისის ზღვასთან ახლოსაა. რომელი კორპუსი და რომელი სართული გაინტერესებთ? აირჩიეთ ვიზუალურ ძებნაში: სართულზე მიიტანეთ და დააჭირეთ.",
-    en: "SEU Varketili sits close to the Tbilisi Sea. Which block and which floor interest you? Choose in the visual search: point at a floor and click it.",
+    ka: "SEU ვარკეთილი თბილისის ზღვასთან ახლოსაა. რომელი კორპუსი და რომელი სართული გაინტერესებთ? მიიტანეთ სართულზე და დააჭირეთ, გაჩვენებთ გეგმას.",
+    en: "SEU Varketili sits close to the Tbilisi Sea. Which block and which floor interest you? Point at a floor on the model and click it, and I'll show you the plan.",
+  },
+  floor: {
+    ka: "აი, ამ სართულის გეგმა. თავისუფალ ბინაზე დააჭირეთ და დეტალებს გაჩვენებთ.",
+    en: "Here is the plan of this floor. Click an available apartment and I'll show you the details.",
   },
   finished: {
-    ka: "ეს პროექტი უკვე დასრულებული და დასახლებულია. გაჩვენებთ, როგორ გამოიყურება ახლა.",
-    en: "This project is finished and lived in. Let me show you how it looks today.",
+    ka: "ეს პროექტი უკვე დასრულებული და დასახლებულია. ახლა ბინები SEU ვარკეთილშია, გაჩვენოთ?",
+    en: "This project is finished and lived in. Apartments are available now at SEU Varketili. Shall I show you?",
   },
   prices: {
     ka: `ვარკეთილში ბინების ფასი ${usd(fromPrice)}-დან იწყება, დაახლოებით $1,000-დან კვადრატულ მეტრზე. ზუსტ ფასს თითოეული ბინის გვერდზე ნახავთ.`,
@@ -101,10 +145,32 @@ export const UI = {
   enterHint: { ka: "ხმა ჩაირთვება, როცა მზად იქნება", en: "Sound will play once it is recorded" },
   skip: { ka: "გამოტოვება", en: "Skip" },
   back: { ka: "უკან", en: "Back" },
-  site: { ka: "საიტზე გადასვლა", en: "Go to the website" },
   toShowroom: { ka: "შოურუმში დაბრუნება", en: "Back to the showroom" },
-  openSearch: { ka: "ვიზუალური ძებნა", en: "Open the visual search" },
-  openProject: { ka: "პროექტის გვერდი", en: "Open the project page" },
+  showVarketili: { ka: "ვარკეთილის ჩვენება", en: "Show me Varketili" },
+  block: { ka: "კორპუსი", en: "Block" },
+  floor: { ka: "სართული", en: "Floor" },
+  pickFloor: { ka: "სართულის არჩევა", en: "Choose a floor" },
+  showPlan: { ka: "გეგმის ჩვენება", en: "Show the plan" },
+  available: { ka: "თავისუფალი", en: "available" },
+  of: { ka: "-დან", en: "of" },
+  from: { ka: "დან", en: "from" },
+  apartment: { ka: "ბინა", en: "Apartment" },
+  apartments: { ka: "ბინები", en: "Apartments" },
+  floorPlan: { ka: "სართულის გეგმა", en: "Floor plan" },
+  backToFloor: { ka: "სართულზე დაბრუნება", en: "Back to the floor" },
+  total: { ka: "საერთო ფართი", en: "Total size" },
+  living: { ka: "საცხოვრებელი", en: "Main size" },
+  open: { ka: "აივანი", en: "Open space" },
+  bedrooms: { ka: "საძინებელი", en: "Bedrooms" },
+  studio: { ka: "სტუდიო", en: "Studio" },
+  price: { ka: "ფასი", en: "Price" },
+  rooms: { ka: "ოთახები", en: "Room by room" },
+  views: { ka: "ხედები", en: "Views" },
+  name: { ka: "სახელი", en: "Name" },
+  phone: { ka: "ტელეფონი", en: "Phone" },
+  send: { ka: "გადმორეკვის თხოვნა", en: "Request a call" },
+  thanks: { ka: "მადლობა! მალე დაგირეკავთ.", en: "Thank you! We will call you shortly." },
+  sampleNote: { ka: "გეგმები და ფასები საილუსტრაციოა.", en: "Plans and prices are illustrative." },
   chat: { ka: "კითხვა მარიამს", en: "Ask Mariam" },
   chatSoon: { ka: "თავისუფალი კითხვები მალე. ჯერ აირჩიეთ:", en: "Free questions are coming soon. For now, choose:" },
   models: { ka: "მაკეტები", en: "Models" },
