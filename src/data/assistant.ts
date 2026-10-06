@@ -48,7 +48,7 @@ export const MODELS: Model[] = [
     project: "vasilisko",
     name: { ka: "SEU ვასილისკო", en: "SEU Vasilisko" },
     note: { ka: "დასრულებული · საბურთალო", en: "Finished · Saburtalo" },
-    at: { x: 87.5, y: 54 },
+    at: { x: 87, y: 47 },
     href: "/projects/vasilisko/",
   },
 ];

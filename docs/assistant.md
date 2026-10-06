@@ -24,7 +24,8 @@ Critical: Mariam is one person in every frame.
   same frame as first and last frame where the clip must loop or hand over.
 - **Check every clip** against the references before it ships; anything that drifts is
   regenerated, never used.
-- **Changing the set, not her:** the Green Yard vitrine (two 19-storey towers) was redrawn with
+- **Changing the set, not her:** the Green Yard vitrine (two 19-storey towers) and the Vasilisko
+  vitrine (12 storeys; four surplus storeys cut out of the generated model) were redrawn with
   `gemini-3-pro-image` on the showroom still, then only the vitrine was composited back onto the
   original, so Mariam's pixels never changed. The same patch was tracked into `greet` frame by
   frame (SIFT homography, person segmentation keeps her in front). The walk-in (`entry`) was
