@@ -7,6 +7,11 @@ import sources from "../src/data/voice.json" with { type: "json" };
 const dir = new URL("../public/assistant/voice/", import.meta.url);
 await mkdir(dir, { recursive: true });
 
+// On GitHub Actions the outcome shows up as annotations on the run, so it can be checked at a glance.
+const ci = !!process.env.GITHUB_ACTIONS;
+const fetched = [];
+const missing = [];
+
 for (const [id, url] of Object.entries(sources)) {
   const file = new URL(`${id}.mp3`, dir);
   try {
@@ -17,8 +22,15 @@ for (const [id, url] of Object.entries(sources)) {
     const res = await fetch(url);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     await writeFile(file, Buffer.from(await res.arrayBuffer()));
-    console.log(`voice: ${id}`);
+    fetched.push(id);
   } catch (e) {
-    console.warn(`voice: ${id} not fetched (${e.message})`);
+    missing.push(`${id} (${e.message})`);
   }
+}
+
+const summary = `voice: ${fetched.length} fetched${fetched.length ? ` (${fetched.join(", ")})` : ""}`;
+console.log(ci ? `::notice title=Voice lines::${summary}` : summary);
+if (missing.length) {
+  const note = `voice not fetched: ${missing.join(", ")}`;
+  console.warn(ci ? `::warning title=Voice lines::${note}` : note);
 }
