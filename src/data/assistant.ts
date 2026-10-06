@@ -54,18 +54,95 @@ export const MODELS: Model[] = [
 ];
 
 /**
- * The Varketili model close-up (`maquette-varketili.jpg`): the front face of each built block,
- * in percent of the frame, split into floor bands by the block's floor count.
+ * The Varketili model close-up (`maquette-varketili.jpg`), measured floor by floor. Each part is
+ * one face of a block: its left and right edges, and the floor lines from the roof down, read
+ * at each edge (in percent of the frame), so the floors follow the model's perspective. Floors
+ * count down from the part's `top` floor (the block's highest unless given), as on the website;
+ * the ground floor and anything hidden behind the trees is left out.
  */
 export const MAQUETTE = "/assistant/maquette-varketili.jpg";
 export const MAQUETTE_RATIO = 5504 / 3072;
-export const FACADES: { block: string; x: [number, number]; y: [number, number] }[] = [
-  { block: "v2", x: [22.1, 28.8], y: [37.5, 65] },
-  { block: "v3", x: [28.9, 37.2], y: [36.8, 71] },
-  { block: "v4", x: [37.5, 46], y: [42.2, 73.7] },
-  { block: "v6", x: [49.1, 59.6], y: [39.8, 76.8] },
-  { block: "v7", x: [61.5, 71.8], y: [39.1, 80] },
+export type FacadePart = { x: [number, number]; l: number[]; r: number[]; top?: number };
+export const FACADES: { block: string; parts: FacadePart[] }[] = [
+  {
+    block: "v2",
+    parts: [
+      {
+        x: [22.15, 28.94],
+        l: [37.62, 40.97, 43.49, 46, 48.67, 50.76, 53.28, 55.87, 58.5, 61.2, 63.9],
+        r: [37.62, 41.02, 43.59, 46.15, 48.87, 51.01, 53.58, 56.22, 58.9, 61.65, 64.4],
+      },
+    ],
+  },
+  {
+    block: "v3",
+    parts: [
+      {
+        x: [28.98, 37.2],
+        l: [37.6, 40.1, 42.9, 45.6, 48.4, 51.1, 54.4, 57, 60.1, 63.33, 66.75, 69.63],
+        r: [37.75, 40.8, 43.6, 46.5, 49.25, 52.13, 53.95, 57.9, 61.05, 64.2, 67.55, 70.8],
+      },
+    ],
+  },
+  {
+    block: "v4",
+    parts: [
+      { x: [37.6, 45.9], l: [43.38, 46.44, 49.5, 52.73, 54.4], r: [43.38, 46.6, 49.84, 53.24, 55.45] },
+      { x: [37.55, 44.7], l: [54.4, 58.78, 62.02, 65.29, 68.5, 71.72], r: [55.45, 60.16, 63.5, 66.98, 70.33, 73.45], top: 8 },
+    ],
+  },
+  {
+    block: "v6",
+    parts: [
+      {
+        x: [49.15, 59.9],
+        l: [40.06, 44.58, 47.81, 51.01, 54.26, 57.49, 60.77, 64],
+        r: [40.64, 44.93, 48.39, 51.88, 55.42, 58.86, 62.37, 65.88],
+      },
+      { x: [48.34, 59.35], l: [64.24, 67.74, 71.24, 74.74, 78.24], r: [66.66, 70.18, 73.7, 77.27, 80.8], top: 5 },
+    ],
+  },
+  {
+    block: "v7",
+    parts: [
+      {
+        x: [61.45, 68.07],
+        l: [39.12, 43.93, 47.23, 50.69, 54.15, 57.63, 61.04, 64.6, 68.3, 72.1, 75.65, 79.2],
+        r: [39.41, 44.35, 47.95, 51.54, 55.13, 58.61, 62.16, 65.8, 69.45, 73.1, 76.8, 80.45],
+      },
+      {
+        x: [68.07, 72.1],
+        l: [39.41, 44.35, 47.95, 51.54, 55.13, 58.61, 62.16, 65.8, 69.45, 73.1, 76.8, 80.45],
+        r: [38.63, 43.13, 46.3, 49.46, 52.8, 56.13, 59.5, 63, 66.5, 70, 73.6, 77.1],
+      },
+    ],
+  },
 ];
+
+/** Every selectable floor outline on the close-up: one polygon per face the floor crosses. */
+export function facadeFloors(floors: (block: string) => number) {
+  return FACADES.flatMap(({ block, parts }) =>
+    parts.flatMap((p) => {
+      const top = p.top ?? floors(block);
+      return p.l.slice(1).map((_, i) => ({
+        block,
+        floor: top - i,
+        points: [
+          [p.x[0], p.l[i]],
+          [p.x[1], p.r[i]],
+          [p.x[1], p.r[i + 1]],
+          [p.x[0], p.l[i + 1]],
+        ],
+      }));
+    }),
+  ).filter((f) => f.floor >= 2);
+}
+
+/** Where a block's label sits: above the middle of its roof line. */
+export const facadeLabel = (f: (typeof FACADES)[number]) => {
+  const p = f.parts[0];
+  return { x: (p.x[0] + p.x[1]) / 2, y: Math.min(p.l[0], p.r[0]) - 1 };
+};
 
 export const STATUS: Record<UnitStatus, Line> = {
   available: { ka: "თავისუფალი", en: "Available" },

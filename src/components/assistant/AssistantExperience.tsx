@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { withBase } from "@/data/projects";
 import { blockById, unitsOn, varketiliBlocks } from "@/data/inventory";
-import { ASSISTANT_NAME, FACADES, LINES, MAQUETTE, MODELS, REPLIES, UI, type Lang, type Line, type Model, type Reply } from "@/data/assistant";
+import { ASSISTANT_NAME, FACADES, facadeFloors, facadeLabel, LINES, MAQUETTE, MODELS, REPLIES, UI, type Lang, type Line, type Model, type Reply } from "@/data/assistant";
 import LogoMark from "@/components/brand/LogoMark";
 import Icon from "@/components/ui/Icon";
 import Select from "@/components/ui/Select";
@@ -16,6 +16,7 @@ type Pick = { block: string; floor: number };
 
 // Showroom and model close-up share one frame size; hotspots and floors sit in percent of it.
 const RATIO = 5504 / 3072;
+const floorShapes = facadeFloors((block) => blockById(block)?.floors ?? 12);
 
 /**
  * The assistant's showroom, stage 1, self-contained: walk in, Mariam greets you, click a model,
@@ -189,37 +190,30 @@ export default function AssistantExperience() {
         <div className="absolute" style={frame} onPointerLeave={() => setHover(null)}>
           <img src={withBase(MAQUETTE)} alt={lang === "ka" ? "SEU ვარკეთილის მაკეტი" : "Scale model of SEU Varketili"} className="absolute inset-0 h-full w-full object-cover" />
           <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" data-cursor="native">
-            {FACADES.map((f) => {
-              const b = blockById(f.block);
-              if (!b) return null;
-              const step = (f.y[1] - f.y[0]) / b.floors;
-              return Array.from({ length: b.floors - 1 }, (_, i) => {
-                const floor = i + 2;
-                const y = f.y[1] - floor * step;
-                const on = hover?.block === f.block && hover.floor === floor;
-                return (
-                  <rect
-                    key={`${f.block}-${floor}`}
-                    x={f.x[0]}
-                    y={y}
-                    width={f.x[1] - f.x[0]}
-                    height={step}
-                    fill="#e07a3a"
-                    fillOpacity={on ? 0.55 : hover?.block === f.block ? 0.08 : 0}
-                    className="cursor-pointer outline-none"
-                    onPointerMove={(e) => setHover({ block: f.block, floor, x: e.clientX, y: e.clientY })}
-                    onClick={() => openFloor({ block: f.block, floor })}
-                    aria-hidden
-                  />
-                );
-              });
+            {floorShapes.map((f, i) => {
+              const on = hover?.block === f.block && hover.floor === f.floor;
+              return (
+                <polygon
+                  key={i}
+                  points={f.points.map((pt) => pt.join(",")).join(" ")}
+                  fill="#e07a3a"
+                  stroke="#fff"
+                  strokeWidth={on ? 1.5 : 0}
+                  vectorEffect="non-scaling-stroke"
+                  fillOpacity={on ? 0.5 : hover?.block === f.block ? 0.1 : 0}
+                  className="cursor-pointer outline-none"
+                  onPointerMove={(e) => setHover({ block: f.block, floor: f.floor, x: e.clientX, y: e.clientY })}
+                  onClick={() => openFloor({ block: f.block, floor: f.floor })}
+                  aria-hidden
+                />
+              );
             })}
           </svg>
           {FACADES.map((f) => (
             <span
               key={f.block}
               className="pointer-events-none absolute -translate-x-1/2 -translate-y-full rounded-full bg-seu-ink/80 px-2.5 py-1 text-[12px] font-semibold backdrop-blur sm:px-3"
-              style={{ left: `${(f.x[0] + f.x[1]) / 2}%`, top: `${f.y[0] - 1}%` }}
+              style={{ left: `${facadeLabel(f).x}%`, top: `${facadeLabel(f).y}%` }}
               aria-hidden
             >
               <span className="hidden sm:inline">{t(UI.block)} </span>
