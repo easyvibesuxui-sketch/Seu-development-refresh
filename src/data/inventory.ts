@@ -184,7 +184,7 @@ export const benefits = [
   "School",
 ];
 
-/* Georgian for the site's /ka/ pages (see lib/i18n); the terms follow seudevelopment.ge. */
+/* Georgian for the site's Georgian pages (see lib/i18n); the terms follow seudevelopment.ge. */
 const KA_VIEW: Record<ViewId, string> = { park: "ჰუალინგის პარკი", city: "ქალაქი", sea: "თბილისის ზღვა", mountains: "მთები", courtyard: "ეზო", panorama: "პანორამა" };
 const KA_STATUS: Record<UnitStatus, string> = { available: "ხელმისაწვდომი", reserved: "დაჯავშნილი", sold: "გაყიდული" };
 const KA_ROOM: Record<RoomKind, string> = {

@@ -72,7 +72,7 @@ const ROLES: Role[] = [
 
 const OFFER = ["A stable, fully funded company", "Health insurance", "Training and growth plans", "A team that cares about the result"];
 
-// The same openings in Georgian, for the /ka/ pages.
+// The same openings in Georgian, for the Georgian pages.
 const ROLES_KA: Role[] = [
   {
     id: "marketing",

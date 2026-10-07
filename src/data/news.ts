@@ -116,7 +116,7 @@ export const newsBySlug = (slug: string) => news.find((n) => n.slug === slug);
 
 export const isExternal = (src: string) => src.startsWith("http");
 
-/* Georgian titles as published on seudevelopment.ge/news, for the /ka/ pages (see lib/i18n). */
+/* Georgian titles as published on seudevelopment.ge/news, for the Georgian pages (see lib/i18n). */
 const KA: Record<string, { title: string; tag: string; excerpt: string }> = {
   "international-business-forum": {
     title: "საერთაშორისო ბიზნეს ფორუმი",

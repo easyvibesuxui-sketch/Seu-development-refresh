@@ -1,6 +1,6 @@
 import Gate from "@/components/gate/Gate";
 
-// The entrance: choose the virtual assistant (coming soon) or the website at /home/.
+// The entrance, in Georgian: the virtual assistant, or the website at /home/ (English: /en/).
 export default function GatePage() {
   return <Gate />;
 }

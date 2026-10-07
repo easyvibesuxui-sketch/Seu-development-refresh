@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import NewsScreen, { newsMeta } from "@/screens/NewsScreen";
 
-export const metadata: Metadata = newsMeta("en");
+export const metadata: Metadata = newsMeta("ka");
 
 export default function Page() {
-  return <NewsScreen lang="en" />;
+  return <NewsScreen lang="ka" />;
 }

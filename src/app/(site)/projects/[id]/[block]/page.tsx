@@ -4,7 +4,7 @@ import BlockScreen, { blockMeta, blockParams } from "@/screens/BlockScreen";
 export const generateStaticParams = blockParams;
 
 export async function generateMetadata({ params }: PageProps<"/projects/[id]/[block]">): Promise<Metadata> {
-  return blockMeta("en", (await params).block);
+  return blockMeta("ka", (await params).block);
 }
 
 export default async function Page({ params }: PageProps<"/projects/[id]/[block]">) {

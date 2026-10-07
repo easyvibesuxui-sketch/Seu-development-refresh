@@ -33,7 +33,7 @@ export const MODELS: Model[] = [
     id: "green-yard",
     project: "green-yard",
     name: { ka: "SEU Green Yard", en: "SEU Green Yard" },
-    note: { ka: "დასრულებული · ჯიქიას ქუჩა", en: "Finished · Jikia Street" },
+    note: { ka: "დასრულებული · ანა პოლიტკოვსკაიას ქ. 32", en: "Finished · 32 Anna Politkovskaya St" },
     at: { x: 14, y: 47 },
     href: "/projects/green-yard/",
     film: "/assistant/film-green-yard",
@@ -183,9 +183,10 @@ export const LINES = {
     ka: "გამარჯობა, კეთილი იყოს თქვენი მობრძანება SEU Development-ში! მე მარიამი ვარ. რისი შეძენა გსურთ, თუ დაგათვალიერებინოთ ჩვენი პროექტები?",
     en: "Hello and welcome to SEU Development! I'm Mariam. What are you looking to buy, or shall I show you around our projects?",
   },
+  // Recorded line with the sentences about the side models cut out (media/job.json, splice).
   showroom: {
-    ka: "აქ ჩვენი პროექტების მაკეტებია. ცენტრში მიმდინარე SEU ვარკეთილია: ფერადი კორპუსები უკვე შენდება, თეთრი დაგეგმილია. მარცხნივ დასრულებული Green Yard-ია ჯიქიას ქუჩაზე, მარჯვნივ ვასილისკო. დააჭირეთ მაკეტს, რომელიც გაინტერესებთ.",
-    en: "These are the models of our projects. In the centre is SEU Varketili, under way now: the coloured blocks are being built, the white ones are planned. On the left is the finished Green Yard on Jikia Street, on the right Vasilisko. Click the model you are interested in.",
+    ka: "აქ ჩვენი პროექტების მაკეტებია. ცენტრში მიმდინარე SEU ვარკეთილია: ფერადი კორპუსები უკვე შენდება, თეთრი დაგეგმილია. დააჭირეთ მაკეტს, რომელიც გაინტერესებთ.",
+    en: "These are the models of our projects. In the centre is SEU Varketili, under way now: the coloured blocks are being built, the white ones are planned. Click the model you are interested in.",
   },
   buy: {
     ka: "ბინები გვაქვს SEU ვარკეთილში, სტუდიოდან სამსაძინებლიანამდე. მოდით, მაკეტზე გაჩვენებთ.",

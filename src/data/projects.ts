@@ -125,7 +125,7 @@ export function distanceKm([lng1, lat1]: [number, number], [lng2, lat2]: [number
   return 6371 * 2 * Math.asin(Math.sqrt(a));
 }
 
-/* Georgian names for the site's /ka/ pages (see lib/i18n). Brand names stay as they are. */
+/* Georgian names for the site's Georgian pages (see lib/i18n). Brand names stay as they are. */
 const KA_NAME: Record<string, string> = {
   varketili: "SEU ვარკეთილი",
   "varketili-2": "SEU ვარკეთილი II",

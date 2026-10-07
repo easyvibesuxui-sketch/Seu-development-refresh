@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import ContactScreen, { contactMeta } from "@/screens/ContactScreen";
 
-export const metadata: Metadata = contactMeta("en");
+export const metadata: Metadata = contactMeta("ka");
 
 export default function Page() {
-  return <ContactScreen lang="en" />;
+  return <ContactScreen lang="ka" />;
 }

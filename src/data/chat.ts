@@ -289,7 +289,7 @@ const TOPICS: Topic[] = [
   },
   {
     id: "green-yard",
-    stems: ["green", "გრინ", "იარდ", "მწვანე ეზო", "ჯიქია", "jikia", "პოლიტკოვსკ", "politkovsk"],
+    stems: ["green", "გრინ", "იარდ", "მწვანე ეზო", "პოლიტკოვსკ", "politkovsk"],
     reply: {
       act: { type: "scene", to: "green-yard" },
       suggest: ["vasilisko", "varketili", "company"],

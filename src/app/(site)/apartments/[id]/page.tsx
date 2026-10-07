@@ -4,7 +4,7 @@ import ApartmentScreen, { apartmentMeta, apartmentParams } from "@/screens/Apart
 export const generateStaticParams = apartmentParams;
 
 export async function generateMetadata({ params }: PageProps<"/apartments/[id]">): Promise<Metadata> {
-  return apartmentMeta("en", (await params).id);
+  return apartmentMeta("ka", (await params).id);
 }
 
 export default async function Page({ params }: PageProps<"/apartments/[id]">) {

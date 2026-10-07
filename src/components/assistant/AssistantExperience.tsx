@@ -34,7 +34,7 @@ const onMotionPref = (change: () => void) => {
  * camera dives into it, you point at a floor on the model, and its plan and apartments open in
  * a drawer; a finished project plays its presentation film. Buttons, hotspots and chat answers
  * all go through `perform`, so they play the same way. The language is the path's (/assistant/
- * English, /ka/assistant/ Georgian); switching rewrites the address without leaving the room.
+ * Georgian, /en/assistant/ English); switching rewrites the address without leaving the room.
  * The chat answers through `engine`: the templates today, an AI later (see data/chat.ts).
  */
 export default function AssistantExperience({ engine = templateEngine }: { engine?: ChatEngine }) {

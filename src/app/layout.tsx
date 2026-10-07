@@ -8,15 +8,15 @@ import Cursor from "@/components/motion/Cursor";
 
 export const metadata: Metadata = {
   title: { default: "SEU Development", template: "%s · SEU Development" },
-  description: "SEU Development — residential projects in Tbilisi since 2014.",
+  description: "SEU Development — საცხოვრებელი პროექტები თბილისში 2014 წლიდან.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    // Georgian pages live under /ka/: the page's language is set before it paints (see lib/i18n).
-    <html lang="en" className="h-full antialiased" suppressHydrationWarning>
+    // English pages live under /en/: the page's language is set before it paints (see lib/i18n).
+    <html lang="ka" className="h-full antialiased" suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: `if(/\\/ka(\\/|$)/.test(location.pathname))document.documentElement.lang="ka"` }} />
+        <script dangerouslySetInnerHTML={{ __html: `if(/\\/en(\\/|$)/.test(location.pathname))document.documentElement.lang="en"` }} />
       </head>
       <body className="min-h-full">
         {children}

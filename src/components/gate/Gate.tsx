@@ -42,11 +42,11 @@ export default function Gate() {
           <span className="text-[11px] text-white/75">Development</span>
         </span>
       </div>
-      {/* The gate in the other language: / is English, /ka/ Georgian. */}
+      {/* The gate in the other language: / is Georgian, /en/ English. */}
       <nav className="absolute right-6 top-6 z-30 md:right-14 md:top-10" aria-label={t("Language", "ენა")}>
         <div className="segmented ctl-sm border-white/40 bg-seu-ink/50 backdrop-blur">
           {(["ka", "en"] as const).map((l) => (
-            <Link key={l} href={l === "ka" ? "/ka/" : "/"} lang={l} hrefLang={l} aria-current={lang === l ? "true" : undefined} className="grid place-items-center px-3 text-white">
+            <Link key={l} href={l === "ka" ? "/" : "/en/"} lang={l} hrefLang={l} aria-current={lang === l ? "true" : undefined} className="grid place-items-center px-3 text-white">
               {l === "ka" ? "ქარ" : "EN"}
             </Link>
           ))}
