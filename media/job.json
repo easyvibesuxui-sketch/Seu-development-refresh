@@ -1,4 +1,3 @@
 {
-  "trim": [{ "voice": "finished-ka", "end": 3.4, "as": "done-ka" }],
-  "lipsync": [{ "base": "public/assistant/greet.mp4", "voice": "greet-ka", "out": "public/assistant/greet-ka", "pads": [0, 12, 0, 0] }]
+  "splice": [{ "voice": "showroom-ka", "keep": [[0, 9.45], [15.25, 99]], "as": "showroom-ka" }]
 }

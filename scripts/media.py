@@ -3,6 +3,8 @@
 media/job.json lists the work:
   "probe": true                      duration and pauses of every recorded line -> media/out/probe.json
   "trim": [{"voice", "end", "as"}]   cut a line at `end` seconds (with a short fade) -> public/assistant/voice/<as>.mp3
+  "splice": [{"voice", "keep", "as"}] keep only the [start, end] stretches of a line -> public/assistant/voice/<as>.mp3
+                                     (a committed file there wins over the CDN copy at build time)
   "lipsync": [{"base", "voice", "out", "pads"?}]
                                      Wav2Lip: the base clip's mouth follows the line -> <out>.mp4 / .webm (silent;
                                      the page plays the voice itself). A base shorter than the line is extended
@@ -76,6 +78,24 @@ def trim(job):
     dst.parent.mkdir(parents=True, exist_ok=True)
     run(["ffmpeg", "-y", "-v", "error", "-i", str(src), "-t", f"{end}", "-af", f"afade=t=out:st={max(0, end - 0.12)}:d=0.12", "-c:a", "libmp3lame", "-q:a", "2", str(dst)])
     note("Voice trim", f"{job['voice']} cut at {end}s -> {dst.relative_to(ROOT)} ({duration(dst):.2f}s)")
+
+
+def splice(job):
+    """Keep only the listed [start, end] stretches of a line (cut inside its pauses), joined with soft fades."""
+    src = voice(job["voice"])
+    keep = [(float(a), float(b)) for a, b in job["keep"]]
+    total = duration(src)
+    parts, labels = [], []
+    for i, (a, b) in enumerate(keep):
+        b = min(b, total)
+        fade = f"afade=t=in:st=0:d=0.06,afade=t=out:st={max(0, b - a - 0.08)}:d=0.08"
+        parts.append(f"[0:a]atrim={a}:{b},asetpts=PTS-STARTPTS,{fade}[p{i}]")
+        labels.append(f"[p{i}]")
+    graph = ";".join(parts) + f";{''.join(labels)}concat=n={len(keep)}:v=0:a=1[out]"
+    dst = ROOT / "public/assistant/voice" / f"{job['as']}.mp3"
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    run(["ffmpeg", "-y", "-v", "error", "-i", str(src), "-filter_complex", graph, "-map", "[out]", "-c:a", "libmp3lame", "-q:a", "2", str(dst)])
+    note("Voice splice", f"{job['voice']} kept {keep} -> {dst.relative_to(ROOT)} ({duration(dst):.2f}s)")
 
 
 # Weights for Wav2Lip: the original links are gone, so try the known mirrors in turn.
@@ -175,6 +195,8 @@ def main():
     TMP.mkdir(parents=True, exist_ok=True)
     if job.get("probe"):
         probe()
+    for t in job.get("splice", []):
+        splice(t)
     for t in job.get("trim", []):
         trim(t)
     for l in job.get("lipsync", []):
