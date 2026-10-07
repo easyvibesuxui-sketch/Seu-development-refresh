@@ -154,8 +154,7 @@ export default function AssistantExperience() {
     } else if (reply === "buy") {
       say(LINES.buy);
       afterSpeech(() => goToModel(varketili), still.current ? 0 : 2200);
-    } else if (reply === "prices") say(LINES.prices);
-    else if (reply === "visit") say(LINES.visit);
+    } else if (reply === "visit") say(LINES.visit);
     else if (reply === "varketili") goToModel(varketili);
   };
 

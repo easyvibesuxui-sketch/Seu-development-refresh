@@ -195,7 +195,7 @@ export default function BlockPicker() {
 
 /**
  * Floor card, as on era.estate: the floor and block in large figures, delivery, then what is
- * still available on that floor by flat type with the lowest price. Sits beside the facade,
+ * still available on that floor by flat type. Sits beside the facade,
  * on whichever side has room.
  */
 function FloorCard({ block, floor }: Hover) {
@@ -244,12 +244,11 @@ function FloorCard({ block, floor }: Hover) {
             {types.map((t) => {
               const of = free.filter((u) => u.bedrooms === t);
               return (
-                <li key={t} className="grid grid-cols-[1fr_auto_auto] items-baseline gap-3">
+                <li key={t} className="grid grid-cols-[1fr_auto] items-baseline gap-3">
                   <span className="font-semibold">{bedroomText(t)}</span>
                   <span className="rounded-full px-2 py-0.5 text-[12px] font-semibold text-white" style={{ background: "var(--seu-available)" }}>
                     {of.length} free
                   </span>
-                  <span className="text-right text-seu-muted">from ${Math.min(...of.map((u) => u.price)).toLocaleString("en-US")}</span>
                 </li>
               );
             })}

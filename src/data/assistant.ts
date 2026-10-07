@@ -1,4 +1,4 @@
-import { units, type RoomKind, type UnitStatus, type ViewId } from "./inventory";
+import { type RoomKind, type UnitStatus, type ViewId } from "./inventory";
 
 /*
  * The virtual assistant's script and stage. One consultant, Mariam, in one showroom: every
@@ -170,8 +170,6 @@ export const VIEW: Record<ViewId, Line> = {
   panorama: { ka: "პანორამა", en: "Panorama" },
 };
 
-const fromPrice = Math.min(...units.filter((u) => u.status !== "sold").map((u) => u.price));
-const usd = (n: number) => `$${n.toLocaleString("en-US")}`;
 
 export const LINES = {
   greet: {
@@ -183,8 +181,8 @@ export const LINES = {
     en: "These are the models of our projects. In the centre is SEU Varketili, under way now: the coloured blocks are being built, the white ones are planned. On the left is the finished Green Yard on Jikia Street, on the right Vasilisko. Click the model you are interested in.",
   },
   buy: {
-    ka: `ბინები გვაქვს SEU ვარკეთილში, სტუდიოდან სამსაძინებლიანამდე, ${usd(fromPrice)}-დან. მოდით, მაკეტზე გაჩვენებთ.`,
-    en: `We have apartments at SEU Varketili, from studios to three bedrooms, from ${usd(fromPrice)}. Let me show you on the model.`,
+    ka: "ბინები გვაქვს SEU ვარკეთილში, სტუდიოდან სამსაძინებლიანამდე. მოდით, მაკეტზე გაჩვენებთ.",
+    en: "We have apartments at SEU Varketili, from studios to three bedrooms. Let me show you on the model.",
   },
   varketili: {
     ka: "SEU ვარკეთილი თბილისის ზღვასთან ახლოსაა. რომელი კორპუსი და რომელი სართული გაინტერესებთ? მიიტანეთ სართულზე და დააჭირეთ, გაჩვენებთ გეგმას.",
@@ -198,10 +196,6 @@ export const LINES = {
     ka: "ეს პროექტი უკვე დასრულებული და დასახლებულია. ახლა ბინები SEU ვარკეთილშია, გაჩვენოთ?",
     en: "This project is finished and lived in. Apartments are available now at SEU Varketili. Shall I show you?",
   },
-  prices: {
-    ka: `ვარკეთილში ბინების ფასი ${usd(fromPrice)}-დან იწყება, დაახლოებით $1,000-დან კვადრატულ მეტრზე. ზუსტ ფასს თითოეული ბინის გვერდზე ნახავთ.`,
-    en: `Apartments at Varketili start from ${usd(fromPrice)}, around $1,000 per m². Each apartment's page shows its exact price.`,
-  },
   visit: {
     ka: "სიამოვნებით შეგხვდებით ოფისში. დატოვეთ ნომერი და გადმოგირეკავთ.",
     en: "I would be glad to meet you at the office. Leave your number and we will call you back.",
@@ -211,12 +205,11 @@ export const LINES = {
 export type LineId = keyof typeof LINES;
 export const lineId = (line: Line) => (Object.keys(LINES) as LineId[]).find((k) => LINES[k] === line);
 
-export type Reply = { id: "projects" | "buy" | "prices" | "visit" | "varketili"; label: Line };
+export type Reply = { id: "projects" | "buy" | "visit" | "varketili"; label: Line };
 
 export const REPLIES: Reply[] = [
   { id: "projects", label: { ka: "პროექტების ნახვა", en: "Show me the projects" } },
   { id: "buy", label: { ka: "ბინის ყიდვა მინდა", en: "I want to buy an apartment" } },
-  { id: "prices", label: { ka: "რა ღირს?", en: "What are the prices?" } },
   { id: "visit", label: { ka: "ვიზიტის დაჯავშნა", en: "Book a visit" } },
 ];
 
@@ -243,14 +236,13 @@ export const UI = {
   open: { ka: "აივანი", en: "Open space" },
   bedrooms: { ka: "საძინებელი", en: "Bedrooms" },
   studio: { ka: "სტუდიო", en: "Studio" },
-  price: { ka: "ფასი", en: "Price" },
   rooms: { ka: "ოთახები", en: "Room by room" },
   views: { ka: "ხედები", en: "Views" },
   name: { ka: "სახელი", en: "Name" },
   phone: { ka: "ტელეფონი", en: "Phone" },
   send: { ka: "გადმორეკვის თხოვნა", en: "Request a call" },
   thanks: { ka: "მადლობა! მალე დაგირეკავთ.", en: "Thank you! We will call you shortly." },
-  sampleNote: { ka: "გეგმები და ფასები საილუსტრაციოა.", en: "Plans and prices are illustrative." },
+  sampleNote: { ka: "გეგმები საილუსტრაციოა.", en: "Plans are illustrative." },
   chat: { ka: "კითხვა მარიამს", en: "Ask Mariam" },
   chatSoon: { ka: "თავისუფალი კითხვები მალე. ჯერ აირჩიეთ:", en: "Free questions are coming soon. For now, choose:" },
   models: { ka: "მაკეტები", en: "Models" },
@@ -263,5 +255,4 @@ export const UI = {
   onFloor: { ka: "ბინა სართულზე", en: "Where it is on the floor" },
   delivery: { ka: "ჩაბარება", en: "Delivery" },
   delivered: { ka: "ჩაბარებულია", en: "Delivered" },
-  discount: { ka: "ფასდაკლება", en: "Discount" },
 } satisfies Record<string, Line>;

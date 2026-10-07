@@ -17,8 +17,8 @@ const dot: Record<Unit["status"], string> = {
 
 /**
  * Apartment tile, kept quiet: the cut-out 3D layout, the number with its status, one row of
- * facts as icons (bedrooms, size, block, floor) and the price. Sold flats stay visible for
- * context but are not links and show no price.
+ * facts as icons (bedrooms, size, block, floor). Sold flats stay visible for context but are
+ * not links.
  */
 export default function ApartmentCard({ unit, className = "" }: { unit: Unit; className?: string }) {
   const sold = unit.status === "sold";
@@ -60,16 +60,6 @@ export default function ApartmentCard({ unit, className = "" }: { unit: Unit; cl
           </div>
         ))}
       </dl>
-      {!sold && (
-        <p className="mt-4 flex items-baseline justify-between">
-          <span className="title-m text-[18px]">${unit.price.toLocaleString("en-US")}</span>
-          {unit.discounted ? (
-            <span className="tag border-transparent bg-seu-accent text-white">−5%</span>
-          ) : (
-            <span className="text-[12px] text-seu-muted">${unit.pricePerM2}/m²</span>
-          )}
-        </p>
-      )}
     </>
   );
 

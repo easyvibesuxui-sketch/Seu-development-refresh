@@ -1,9 +1,9 @@
 /*
  * SEU Varketili inventory used by the visual search, block, apartment and search pages.
  *
- * Block names, storey counts, delivery status, the 43–116 m² size range and the
- * "from $1,000 per m²" price come from public listings (korter.ge, Nov 2025).
- * Individual unit numbers, layouts, statuses and prices are SAMPLE DATA for this concept,
+ * Block names, storey counts, delivery status and the 43–116 m² size range come from public
+ * listings (korter.ge, Nov 2025). The site states no prices: pricing is given in person.
+ * Individual unit numbers, layouts and statuses are SAMPLE DATA for this concept,
  * generated deterministically so every build shows the same inventory. Replace with the
  * developer's real feed before launch.
  */
@@ -49,10 +49,7 @@ export type Unit = {
   totalArea: number;
   livingArea: number;
   openArea: number;
-  pricePerM2: number;
-  price: number;
   status: UnitStatus;
-  discounted: boolean;
   views: ViewId[];
   rooms: Room[];
 };
@@ -121,8 +118,11 @@ function buildInventory(): Unit[] {
         // The delivered block is mostly sold; higher floors sell faster.
         const soldShare = block.status === "delivered" ? 0.82 : 0.18 + floor / 60;
         const status: UnitStatus = roll < soldShare ? "sold" : roll < soldShare + 0.14 ? "reserved" : "available";
-        const pricePerM2 = Math.round(1000 + floor * 18 + layout.bedrooms * 25 + rand() * 60);
+        // Two draws the sample data has always made (they priced the flats): kept so every unit
+        // keeps its status, sizes and rooms now that the site states no prices.
+        rand();
         const openArea = Math.round((3.5 + rand() * 6) * 10) / 10;
+        if (status === "available") rand();
         units.push({
           id: `varketili-${block.id}-${number}`,
           number,
@@ -134,10 +134,7 @@ function buildInventory(): Unit[] {
           totalArea: layout.total,
           livingArea: Math.round((layout.total - openArea) * 10) / 10,
           openArea,
-          pricePerM2,
-          price: Math.round((pricePerM2 * layout.total) / 100) * 100,
           status,
-          discounted: status === "available" && rand() < 0.12,
           views: viewsFor(slot, floor),
           rooms: roomsFor(layout.bedrooms, layout.total, rand),
         });

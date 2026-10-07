@@ -14,7 +14,6 @@ const TEXT = {
     block: "Block",
     floor: "Floor",
     total: "Total",
-    price: "Price",
     floorPlan: "Floor Plan",
     plan: "Apartment plan",
     contact: "Interested? Contact us",
@@ -29,7 +28,6 @@ const TEXT = {
     block: "კორპუსი",
     floor: "სართული",
     total: "სულ",
-    price: "ფასი",
     floorPlan: "სართულის გეგმა",
     plan: "ბინის გეგმა",
     contact: "დაინტერესდით? დაგვიკავშირდით",
@@ -90,10 +88,6 @@ export default function ApartmentPresentation({ unit, lang = "en", rooms }: { un
               <li className="flex justify-between border-t border-seu-ink/20 pt-3 font-semibold">
                 <span>{t.total}</span>
                 <span>{unit.totalArea} m²</span>
-              </li>
-              <li className="flex justify-between font-semibold">
-                <span>{t.price}</span>
-                <span>${unit.price.toLocaleString("en-US")}</span>
               </li>
             </ul>
           </div>

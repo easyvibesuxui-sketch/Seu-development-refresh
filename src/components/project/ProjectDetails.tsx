@@ -225,8 +225,7 @@ export function ApartmentTypes({ projectId }: { projectId: string }) {
       const list = own.filter((u) => u.bedrooms === b);
       if (!list.length) return null;
       const areas = list.map((u) => u.totalArea);
-      const prices = list.map((u) => u.price);
-      return { bedrooms: b, min: Math.min(...areas), max: Math.max(...areas), from: Math.min(...prices), count: list.filter((u) => u.status === "available").length };
+      return { bedrooms: b, min: Math.min(...areas), max: Math.max(...areas), count: list.filter((u) => u.status === "available").length };
     })
     .filter((t): t is NonNullable<typeof t> => Boolean(t));
 
@@ -249,7 +248,7 @@ export function ApartmentTypes({ projectId }: { projectId: string }) {
                 {t.min}–{t.max} m²
               </span>
               <span className="hidden text-[16px] text-seu-muted md:block">
-                from ${t.from.toLocaleString("en-US")} · {t.count} available
+                {t.count} available
               </span>
               <span className="btn btn-icon transition-transform group-hover:translate-x-1" aria-hidden>
                 <svg width="8" height="14" viewBox="0 0 8 14" fill="none" aria-hidden>

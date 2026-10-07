@@ -108,16 +108,7 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
           </ul>
           <div className="mt-10 h-px bg-seu-line" />
 
-          <div className="mt-8 flex flex-wrap items-end gap-8">
-            <div>
-              <p className="field-label flex items-center gap-2">
-                <Icon name="price" size={15} className="text-seu-accent-hi" /> Price
-              </p>
-              <p className="title-m text-[clamp(28px,2.4vw,38px)] normal-case">
-                ${unit.price.toLocaleString("en-US")}
-                <span className="ml-3 text-[15px] text-seu-muted">${unit.pricePerM2}/m²</span>
-              </p>
-            </div>
+          <div className="mt-8">
             <button
               type="button"
               onClick={() => setAsking(true)}

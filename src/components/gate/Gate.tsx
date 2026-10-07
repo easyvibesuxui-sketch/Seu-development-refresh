@@ -52,7 +52,7 @@ export default function Gate() {
               <br />
               assistant<span className="text-seu-accent-hi">.</span>
             </h2>
-            <p className="body-copy mt-5 max-w-sm text-white/85">A video guide in Georgian or English: the projects, prices and views, and a visit booked for you.</p>
+            <p className="body-copy mt-5 max-w-sm text-white/85">A video guide in Georgian or English: the projects, apartments and views, and a visit booked for you.</p>
             <span className="btn btn-light btn-lg mt-8 group-focus-visible:outline group-focus-visible:outline-2 group-focus-visible:outline-offset-4 group-focus-visible:outline-white">
               Talk to the assistant <Icon name="arrow" size={18} />
             </span>

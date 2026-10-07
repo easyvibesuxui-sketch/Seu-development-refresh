@@ -37,8 +37,7 @@ Critical: Mariam is one person in every frame.
   `LINES` is one file, `public/assistant/voice/<line>-<lang>.mp3`, listed with its source URL in
   `src/data/voice.json`; the deploy fetches them (`scripts/fetch-voice.mjs`) because the voice
   CDN is not reachable from the authoring container. A line without a file stays silent and the
-  subtitles carry it. Prices are spoken in words in the recording ("ორმოცდახუთი ათას ექვსასი
-  დოლარიდან"), so a price change in the inventory needs that line re-recorded.
+  subtitles carry it. The assistant, like the site, never states a price.
   clips; the clips are generated without audio.
 
 ## Scenes (stage 1)

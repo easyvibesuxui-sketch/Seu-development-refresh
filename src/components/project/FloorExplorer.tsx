@@ -173,7 +173,7 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
                         </span>
                         {on && (
                           <span className="label absolute bottom-3 left-1/2 w-max -translate-x-1/2 rounded-full bg-seu-ink/90 px-3 py-1.5 text-[12px] text-white ring-1 ring-white/20">
-                            {sold ? "Sold" : `${u.totalArea} m² · ${statusText[u.status]} · $${u.price.toLocaleString("en-US")}`}
+                            {sold ? "Sold" : `${u.totalArea} m² · ${statusText[u.status]}`}
                           </span>
                         )}
                       </>

@@ -26,7 +26,6 @@ const roomIcon: Record<Unit["rooms"][number]["kind"], IconName> = {
   storage: "storage",
 };
 
-const usd = (n: number) => `$${n.toLocaleString("en-US")}`;
 
 /**
  * The assistant's own floor drawer: the plan of the chosen floor, then an apartment's profile
@@ -137,16 +136,10 @@ export default function AssistantFloorDrawer({
                     </span>
                   </span>
                   <span className="text-right text-[14px]">
-                    {sold ? (
-                      <span className="flex items-center gap-1.5 text-seu-muted">
-                        <Icon name="lock" size={13} /> {t(STATUS.sold)}
-                      </span>
-                    ) : (
-                      <>
-                        <span className="block font-semibold">{usd(u.price)}</span>
-                        <span className="text-[12px] text-seu-muted">{t(STATUS[u.status])}</span>
-                      </>
-                    )}
+                    <span className="flex items-center gap-1.5">
+                      {sold ? <Icon name="lock" size={13} /> : <span className="h-2 w-2 rounded-full" style={{ background: fill[u.status] }} />}
+                      {t(STATUS[u.status])}
+                    </span>
                   </span>
                 </>
               );
@@ -206,7 +199,6 @@ export default function AssistantFloorDrawer({
             <p className="label flex items-center gap-2 text-[12px] uppercase tracking-[0.14em]">
               <span className="h-2 w-2 rounded-full" style={{ background: fill[unit.status] }} /> {t(STATUS[unit.status])}
             </p>
-            {unit.discounted && <span className="tag border-seu-accent-hi py-1 text-seu-accent-hi">{t(UI.discount)}</span>}
           </div>
           <dl className="mt-5 grid grid-cols-2 gap-5 sm:grid-cols-4">
             {(
@@ -236,12 +228,7 @@ export default function AssistantFloorDrawer({
             ))}
           </ul>
           <div className="mt-6 border-t border-seu-line pt-5">
-            <p className="field-label">{t(UI.price)}</p>
-            <p className="title-m text-[28px] normal-case">
-              {usd(unit.price)}
-              <span className="ml-2 text-[14px] text-seu-muted">${unit.pricePerM2}/m²</span>
-            </p>
-            <div className="mt-4 flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-3">
               {!calling && !sent && (
                 <button type="button" onClick={() => setCalling(true)} className="btn btn-primary">
                   <Icon name="phone" size={16} /> {t(UI.send)}

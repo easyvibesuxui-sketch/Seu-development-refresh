@@ -9,12 +9,11 @@ import { Container, Section } from "@/components/ui/Section";
 import Select, { type Option } from "@/components/ui/Select";
 import Icon from "@/components/ui/Icon";
 
-const GEL_PER_USD = 2.7; // indicative rate for the price filter
 const PAGE = 24;
 
-type Filters = { project: string; block: string; view: ViewId | ""; rooms: number[]; sizeFrom: string; sizeTo: string; priceFrom: string; priceTo: string; currency: "USD" | "GEL"; available: boolean };
+type Filters = { project: string; block: string; view: ViewId | ""; rooms: number[]; sizeFrom: string; sizeTo: string; available: boolean };
 
-const empty: Filters = { project: "", block: "", view: "", rooms: [], sizeFrom: "", sizeTo: "", priceFrom: "", priceTo: "", currency: "USD", available: true };
+const empty: Filters = { project: "", block: "", view: "", rooms: [], sizeFrom: "", sizeTo: "", available: true };
 
 export default function ApartmentSearch() {
   const params = useSearchParams();
@@ -34,7 +33,6 @@ export default function ApartmentSearch() {
   const gridRef = useRef<HTMLDivElement>(null);
 
   const results = useMemo(() => {
-    const k = applied.currency === "GEL" ? GEL_PER_USD : 1;
     const n = (v: string) => (v.trim() === "" ? null : Number(v));
     return units.filter((u) => {
       if (applied.project && u.project !== applied.project) return false;
@@ -42,11 +40,9 @@ export default function ApartmentSearch() {
       if (applied.view && !u.views.includes(applied.view)) return false;
       if (applied.rooms.length && !applied.rooms.includes(Math.min(u.bedrooms, 3))) return false;
       if (applied.available && u.status === "sold") return false;
-      const sf = n(applied.sizeFrom), st = n(applied.sizeTo), pf = n(applied.priceFrom), pt = n(applied.priceTo);
+      const sf = n(applied.sizeFrom), st = n(applied.sizeTo);
       if (sf !== null && u.totalArea < sf) return false;
       if (st !== null && u.totalArea > st) return false;
-      if (pf !== null && u.price * k < pf) return false;
-      if (pt !== null && u.price * k > pt) return false;
       return true;
     });
   }, [applied]);
@@ -103,7 +99,7 @@ export default function ApartmentSearch() {
               <input className="field" inputMode="numeric" placeholder="To" aria-label="Size to, m²" value={draft.sizeTo} onChange={(e) => set("sizeTo", e.target.value.replace(/\D/g, ""))} />
             </div>
           </fieldset>
-          <fieldset className="min-w-0">
+          <fieldset className="min-w-0 lg:col-span-2">
             <legend className="field-label">Bedrooms</legend>
             <div className="grid grid-cols-4 gap-2">
               {[0, 1, 2, 3].map((r) => (
@@ -111,20 +107,6 @@ export default function ApartmentSearch() {
                   {r === 0 ? "Studio" : r === 3 ? "3+" : r}
                 </button>
               ))}
-            </div>
-          </fieldset>
-          <fieldset className="min-w-0">
-            <legend className="field-label">Price, {draft.currency}</legend>
-            <div className="flex gap-3">
-              <input className="field min-w-0 flex-1" inputMode="numeric" placeholder="From" aria-label={`Price from, ${draft.currency}`} value={draft.priceFrom} onChange={(e) => set("priceFrom", e.target.value.replace(/\D/g, ""))} />
-              <input className="field min-w-0 flex-1" inputMode="numeric" placeholder="To" aria-label={`Price to, ${draft.currency}`} value={draft.priceTo} onChange={(e) => set("priceTo", e.target.value.replace(/\D/g, ""))} />
-              <div className="segmented" role="group" aria-label="Currency">
-                {(["USD", "GEL"] as const).map((c) => (
-                  <button key={c} type="button" aria-pressed={draft.currency === c} onClick={() => set("currency", c)}>
-                    {c}
-                  </button>
-                ))}
-              </div>
             </div>
           </fieldset>
           <div>
