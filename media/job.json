@@ -1,4 +1,4 @@
 {
-  "probe": true,
+  "trim": [{ "voice": "finished-ka", "end": 3.4, "as": "done-ka" }],
   "lipsync": [{ "base": "public/assistant/greet.mp4", "voice": "greet-ka", "out": "public/assistant/greet-ka", "pads": [0, 12, 0, 0] }]
 }

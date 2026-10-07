@@ -485,7 +485,7 @@ export default function AssistantExperience({ engine = templateEngine }: { engin
           <button type="button" aria-pressed={soundOn} aria-label={t(UI.sound)} title={t(UI.sound)} onClick={toggleSound} className="btn btn-glass btn-sm w-10 px-0">
             <Icon name={soundOn ? "volume" : "mute"} size={18} />
           </button>
-          <div className="segmented ctl-sm border-white/40 bg-seu-ink/50 backdrop-blur" role="group" aria-label="Language / ენა">
+          <div className="segmented ctl-sm border-white/40 bg-seu-ink/50 backdrop-blur" role="group" aria-label={lang === "ka" ? "ენა" : "Language"}>
             {(["ka", "en"] as const).map((l) => (
               <button key={l} type="button" lang={l} aria-pressed={lang === l} onClick={() => setLang(l)} className="text-white">
                 {l === "ka" ? "ქარ" : "EN"}

@@ -121,7 +121,9 @@ def wav2lip_ready():
 
 
 def extended(base, seconds):
-    """The base clip, played forward and back as often as needed to cover `seconds`, ending on its last frame."""
+    """The base clip stretched to `seconds` without a jump: it plays forward, bounces back a little
+    and plays forward again, so it starts on its first frame and ends on its last (where the
+    clips before and after it meet it)."""
     length = duration(base)
     if length >= seconds:
         return base
@@ -131,21 +133,19 @@ def extended(base, seconds):
     frames.mkdir(parents=True)
     run(["ffmpeg", "-v", "error", "-i", str(base), str(frames / "%05d.png")])
     files = sorted(frames.glob("*.png"))
+    n = len(files)
     fps = 24
     need = int(seconds * fps) + 1
-    order = []
-    forward = True
-    # Build the sequence backwards from the last frame so it ends where the original ends.
-    while len(order) < need:
-        seg = files[::-1] if forward else files
-        order.extend(seg[1:] if order else seg)
-        forward = not forward
-    order = order[:need][::-1]
+    order = list(range(n))
+    while need - len(order) > 1:
+        k = min((need - len(order)) // 2, n - 1)
+        order += list(range(n - 2, n - 2 - k, -1)) + list(range(n - k, n))
+    order += [n - 1] * (need - len(order))
     listing = TMP / "frames.txt"
-    listing.write_text("".join(f"file '{f}'\nduration {1 / fps}\n" for f in order))
+    listing.write_text("".join(f"file '{files[i]}'\nduration {1 / fps}\n" for i in order))
     out = TMP / "base-long.mp4"
     run(["ffmpeg", "-y", "-v", "error", "-f", "concat", "-safe", "0", "-i", str(listing), "-r", str(fps), "-pix_fmt", "yuv420p", "-c:v", "libx264", "-crf", "16", str(out)])
-    note("Lip sync", f"{base.name} {length:.2f}s extended to {duration(out):.2f}s")
+    note("Lip sync", f"{base.name} {length:.2f}s extended to {duration(out):.2f}s (frames 0..{n - 1}, bounce {need - n} frames)")
     return out
 
 
