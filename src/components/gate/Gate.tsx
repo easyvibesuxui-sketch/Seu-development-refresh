@@ -12,7 +12,7 @@ const GateMap = dynamic(() => import("./GateMap"), { ssr: false });
 
 /**
  * The way in: two halves side by side (stacked on phones). Left, the virtual assistant,
- * coming soon; right, the website on a live map. The half under the pointer widens; choosing
+ * Mariam; right, the website on a live map. The half under the pointer widens; choosing
  * the website grows its half over the whole screen, then the home page takes over.
  */
 export default function Gate() {
@@ -20,7 +20,7 @@ export default function Gate() {
   const router = useRouter();
 
   // The chosen half grows over the whole screen, then its page takes over.
-  const enter = (side: "assistant" | "site", href: string) => (e: React.MouseEvent) => {
+  const enter = (e: React.MouseEvent, side: "assistant" | "site", href: string) => {
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
     e.preventDefault();
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return router.push(href);
@@ -42,11 +42,11 @@ export default function Gate() {
       <div className="gate-pane gate-pane--assistant relative isolate overflow-hidden bg-seu-bg">
         <AmbientVideo name="assistant-loop" className="absolute inset-0 h-full w-full object-cover" />
         <div className="gate-shade pointer-events-none absolute inset-0" aria-hidden />
-        <Link href="/assistant/" onClick={enter("assistant", "/assistant/")} className="group absolute inset-0 z-10 outline-none" aria-labelledby="gate-assistant">
+        <Link href="/assistant/" onClick={(e) => enter(e, "assistant", "/assistant/")} className="group absolute inset-0 z-10 outline-none" aria-labelledby="gate-assistant">
           <div className="gate-copy gate-copy--shaded absolute inset-x-0 bottom-0 z-10 isolate p-8 pb-14 md:p-14">
-            <span className="tag gap-2 border-white/30 bg-seu-ink/70 text-white backdrop-blur">
-              <span className="h-2 w-2 animate-pulse rounded-full bg-seu-accent-hi" /> Preview
-            </span>
+            <p className="eyebrow text-white">
+              Mariam · <span lang="ka">ქართ</span> / EN
+            </p>
             <h2 id="gate-assistant" className="page-title mt-6 text-[clamp(40px,5vw,88px)]">
               Virtual
               <br />
@@ -64,7 +64,7 @@ export default function Gate() {
         <GateMap />
         <div className="gate-shade pointer-events-none absolute inset-0" aria-hidden />
         {/* The link covers the half; the map stays outside it so its credits are links of their own. */}
-        <Link href="/home/" onClick={enter("site", "/home/")} className="group absolute inset-0 z-10 outline-none" aria-labelledby="gate-site">
+        <Link href="/home/" onClick={(e) => enter(e, "site", "/home/")} className="group absolute inset-0 z-10 outline-none" aria-labelledby="gate-site">
           <div className="gate-copy gate-copy--shaded absolute inset-x-0 bottom-0 z-10 isolate p-8 pb-14 md:p-14">
             <p className="eyebrow text-white">SEU Development</p>
             <h2 id="gate-site" className="page-title mt-6 text-[clamp(40px,5vw,88px)]">

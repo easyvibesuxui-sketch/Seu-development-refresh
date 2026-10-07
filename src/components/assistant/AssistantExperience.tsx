@@ -1,11 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { withBase } from "@/data/projects";
 import { blockById, unitsOn, varketiliBlocks } from "@/data/inventory";
 import VOICE from "@/data/voice.json";
-import { ASSISTANT_NAME, FACADES, facadeFloors, facadeLabel, lineId, LINES, MAQUETTE, MODELS, REPLIES, UI, type Lang, type Line, type Model, type Reply } from "@/data/assistant";
+import { answerFor, ASSISTANT_NAME, FACADES, facadeFloors, floorIn, facadeLabel, lineId, LINES, MAQUETTE, MODELS, questionLang, REPLIES, UI, type ChatAction, type Lang, type Line, type Model, type Reply } from "@/data/assistant";
 import LogoMark from "@/components/brand/LogoMark";
 import Icon from "@/components/ui/Icon";
 import Select from "@/components/ui/Select";
@@ -18,6 +18,13 @@ type Pick = { block: string; floor: number };
 // Showroom and model close-up share one frame size; hotspots and floors sit in percent of it.
 const RATIO = 5504 / 3072;
 const floorShapes = facadeFloors((block) => blockById(block)?.floors ?? 12);
+
+const REDUCE = "(prefers-reduced-motion: reduce)";
+const onMotionPref = (change: () => void) => {
+  const q = window.matchMedia(REDUCE);
+  q.addEventListener("change", change);
+  return () => q.removeEventListener("change", change);
+};
 
 /**
  * The assistant's showroom, stage 1, self-contained: walk in, Mariam greets you, click a model,
@@ -32,6 +39,10 @@ export default function AssistantExperience() {
   const [model, setModel] = useState<Model | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [chatOpen, setChatOpen] = useState(false);
+  const [draft, setDraft] = useState("");
+  const [typing, setTyping] = useState(false);
+  const [withForm, setWithForm] = useState(false);
+  const chatEnd = useRef<HTMLLIElement>(null);
   const [hover, setHover] = useState<(Pick & { x: number; y: number }) | null>(null);
   const [pick, setPick] = useState<Pick | null>(null);
   const [callSent, setCallSent] = useState(false);
@@ -44,10 +55,12 @@ export default function AssistantExperience() {
   const voice = useRef<HTMLAudioElement | null>(null);
   const still = useRef(false);
   const t = (l: Line) => l[lang];
+  // Read in render for the zoom's transition; `still` mirrors it for timers and handlers.
+  const reduced = useSyncExternalStore(onMotionPref, () => window.matchMedia(REDUCE).matches, () => false);
 
   // Cover the viewport with the frame, centred on what matters.
   useEffect(() => {
-    still.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    still.current = window.matchMedia(REDUCE).matches;
     const fit = () => {
       const vw = window.innerWidth;
       const vh = window.innerHeight;
@@ -72,8 +85,9 @@ export default function AssistantExperience() {
     return () => window.removeEventListener("resize", fit);
   }, [model, scene]);
 
-  const say = useCallback((text: Line) => {
+  const say = useCallback((text: Line, form = text === LINES.visit) => {
     setLine(text);
+    setWithForm(form);
     setSaid((n) => n + 1);
     setMessages((m) => [...m, { from: "mariam", text }]);
   }, []);
@@ -143,10 +157,8 @@ export default function AssistantExperience() {
     [say],
   );
 
-  // One entry point for replies, hotspots and, in stage 2, the AI's tool calls.
-  const act = (reply: Reply["id"]) => {
-    const r = REPLIES.find((x) => x.id === reply);
-    if (r) setMessages((m) => [...m, { from: "you", text: r.label }]);
+  // One entry point for replies, hotspots and typed questions (and, later, an AI's tool calls).
+  const run = (reply: ChatAction) => {
     if (reply === "projects") {
       setModel(null);
       setScene("showroom");
@@ -155,8 +167,50 @@ export default function AssistantExperience() {
       say(LINES.buy);
       afterSpeech(() => goToModel(varketili), still.current ? 0 : 2200);
     } else if (reply === "visit") say(LINES.visit);
-    else if (reply === "varketili") goToModel(varketili);
+    else goToModel(MODELS.find((m) => m.id === reply) ?? varketili);
   };
+  const act = (reply: Reply["id"]) => {
+    const r = REPLIES.find((x) => x.id === reply);
+    if (r) setMessages((m) => [...m, { from: "you", text: r.label }]);
+    run(reply);
+  };
+
+  // A typed question: Mariam answers in the language it was asked in, after a short pause.
+  const ask = (e: React.FormEvent) => {
+    e.preventDefault();
+    const q = draft.trim();
+    if (!q || typing) return;
+    setDraft("");
+    setMessages((m) => [...m, { from: "you", text: { ka: q, en: q } }]);
+    const asked = questionLang(q);
+    if (asked && asked !== lang) setLang(asked);
+    const a = answerFor(q);
+    const spot = floorIn(q);
+    setTyping(true);
+    window.setTimeout(
+      () => {
+        setTyping(false);
+        if (spot) {
+          // A named floor opens straight away, on the model if she isn't there yet.
+          setFormBlock(spot.block);
+          setFormFloor(String(spot.floor));
+          if (window.innerWidth < 768) setChatOpen(false);
+          if (scene === "block") openFloor(spot);
+          else {
+            goToModel(varketili);
+            window.setTimeout(() => openFloor(spot), still.current ? 0 : 2100);
+          }
+        } else if (a.act) run(a.act);
+        else if (a.line) say(a.line, a.form);
+      },
+      still.current ? 0 : 700,
+    );
+  };
+
+  // The newest message stays in view.
+  useEffect(() => {
+    chatEnd.current?.scrollIntoView({ block: "end", behavior: still.current ? "auto" : "smooth" });
+  }, [messages, typing, chatOpen]);
 
   const enter = () => {
     // Browsers allow sound only after a click: this click opens Mariam's audio for the visit.
@@ -219,6 +273,37 @@ export default function AssistantExperience() {
 
   const frame = { width: box.w, height: box.h, left: box.left, top: box.top };
 
+  // A visit is booked right here: Mariam takes the number, nothing leaves the showroom.
+  const callForm = (inChat = false) =>
+    callSent ? (
+      <p role="status" className={`text-[14px] font-semibold text-white ${inChat ? "rounded-[16px] bg-white/10 px-4 py-3" : "mt-3 border-t border-white/15 pt-3"}`}>
+        {t(UI.thanks)}
+      </p>
+    ) : (
+      <form
+        className={`grid grid-cols-1 items-end gap-3 ${inChat ? "rounded-[16px] bg-white/10 p-4" : "mt-3 border-t border-white/15 pt-3 sm:grid-cols-[1fr_1fr_auto]"}`}
+        onSubmit={(e) => {
+          e.preventDefault();
+          setCallSent(true);
+        }}
+      >
+        <label className="block">
+          <span className="field-label text-white/85">{t(UI.name)}</span>
+          <input name="name" autoComplete="name" className="field" />
+        </label>
+        <label className="block">
+          <span className="field-label text-white/85">
+            {t(UI.phone)}
+            <span aria-hidden> *</span>
+          </span>
+          <input name="phone" type="tel" required autoComplete="tel" className="field" />
+        </label>
+        <button type="submit" className="btn btn-primary">
+          <Icon name="phone" size={16} /> {t(UI.call)}
+        </button>
+      </form>
+    );
+
   return (
     <main lang={lang} className="tone-dark fixed inset-0 overflow-hidden bg-seu-ink text-white">
       {/* Door: the first frame of the walk-in. */}
@@ -237,7 +322,7 @@ export default function AssistantExperience() {
             ...frame,
             transformOrigin: zoomOrigin,
             transform: zoomed ? `${zoom.shift}scale(${zoom.scale})` : "scale(1)",
-            transition: still.current ? "none" : "transform 1.8s cubic-bezier(0.7, 0, 0.2, 1), left 0.8s ease",
+            transition: reduced ? "none" : "transform 1.8s cubic-bezier(0.7, 0, 0.2, 1), left 0.8s ease",
           }}
         >
           <img src={withBase("/assistant/showroom.jpg")} alt={lang === "ka" ? "შოურუმი მაკეტებით" : "Showroom with scale models"} className="absolute inset-0 h-full w-full object-cover" />
@@ -397,36 +482,7 @@ export default function AssistantExperience() {
               </>
             )}
           </div>
-          {/* A visit is booked right here: Mariam takes the number, nothing leaves the showroom. */}
-          {line === LINES.visit &&
-            (callSent ? (
-              <p role="status" className="mt-3 border-t border-white/15 pt-3 text-[14px] font-semibold text-white">
-                {t(UI.thanks)}
-              </p>
-            ) : (
-              <form
-                className="mt-3 grid grid-cols-1 items-end gap-3 border-t border-white/15 pt-3 sm:grid-cols-[1fr_1fr_auto]"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  setCallSent(true);
-                }}
-              >
-                <label className="block">
-                  <span className="field-label text-white/85">{t(UI.name)}</span>
-                  <input name="name" autoComplete="name" className="field" />
-                </label>
-                <label className="block">
-                  <span className="field-label text-white/85">
-                    {t(UI.phone)}
-                    <span aria-hidden> *</span>
-                  </span>
-                  <input name="phone" type="tel" required autoComplete="tel" className="field" />
-                </label>
-                <button type="submit" className="btn btn-primary">
-                  <Icon name="phone" size={16} /> {t(UI.call)}
-                </button>
-              </form>
-            ))}
+          {withForm && !chatOpen && callForm()}
           {/* The models as a list too: for keyboards, screen readers and narrow screens. */}
           {(scene === "showroom" || scene === "greet") && (
             <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-white/15 pt-3 text-[13px]">
@@ -465,7 +521,7 @@ export default function AssistantExperience() {
         </section>
       )}
 
-      {/* Dialogue: the conversation so far; free questions arrive with the AI (stage 2). */}
+      {/* Dialogue: the conversation so far, and free questions typed to Mariam. */}
       {scene !== "door" && scene !== "entry" && (
         <>
           <button
@@ -473,20 +529,42 @@ export default function AssistantExperience() {
             aria-expanded={chatOpen}
             aria-controls="assistant-chat"
             onClick={() => setChatOpen((o) => !o)}
-            className="btn btn-light btn-sm absolute bottom-4 right-4 z-30 hidden md:inline-flex md:bottom-8 md:right-8"
+            className="btn btn-light btn-sm absolute left-4 top-20 z-30 md:bottom-8 md:left-auto md:right-8 md:top-auto"
           >
-            {t(UI.chat)}
+            <Icon name="chat" size={16} /> {t(UI.chat)}
           </button>
           {chatOpen && (
-            <aside id="assistant-chat" aria-label={t(UI.chat)} className="glass glass-dark absolute bottom-24 right-8 top-28 z-30 hidden w-[380px] flex-col rounded-[22px] p-5 md:flex">
-              <ol className="min-h-0 flex-1 space-y-3 overflow-y-auto pr-1" data-lenis-prevent>
+            <aside
+              id="assistant-chat"
+              aria-label={t(UI.chat)}
+              className="glass glass-dark absolute inset-x-4 bottom-4 top-32 z-40 flex flex-col rounded-[22px] p-4 md:bottom-24 md:left-auto md:right-8 md:top-28 md:w-[380px] md:p-5"
+            >
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <p className="label text-[12px] uppercase tracking-[0.16em] text-white/80">{t(ASSISTANT_NAME)}</p>
+                <button type="button" onClick={() => setChatOpen(false)} aria-label={t(UI.chatClose)} className="btn btn-glass btn-sm w-9 px-0">
+                  <Icon name="close" size={16} />
+                </button>
+              </div>
+              <ol tabIndex={0} aria-label={t(UI.chat)} className="min-h-0 flex-1 space-y-3 overflow-y-auto rounded-[12px] pr-1 outline-none focus-visible:outline-2 focus-visible:outline-white" data-lenis-prevent>
                 {messages.map((m, i) => (
                   <li key={i} className={`max-w-[85%] rounded-[16px] px-4 py-3 text-[14px] leading-relaxed ${m.from === "you" ? "ml-auto bg-seu-accent text-white" : "bg-white/10 text-white"}`}>
                     {t(m.text)}
                   </li>
                 ))}
+                {typing && (
+                  <li className="w-fit rounded-[16px] bg-white/10 px-4 py-3 text-[13px] text-white/80">
+                    <span className="speaking mr-2" data-on aria-hidden>
+                      <span />
+                      <span />
+                      <span />
+                    </span>
+                    {t(UI.typing)}
+                  </li>
+                )}
+                {withForm && !typing && <li>{callForm(true)}</li>}
+                <li ref={chatEnd} aria-hidden className="h-px" />
               </ol>
-              <p className="mt-4 text-[13px] text-white/75">{t(UI.chatSoon)}</p>
+              <p className="mt-4 text-[13px] text-white/75">{t(UI.chatHint)}</p>
               <div className="mt-2 flex flex-wrap gap-2">
                 {REPLIES.map((r) => (
                   <button key={r.id} type="button" onClick={() => act(r.id)} className="chip ctl-sm rounded-full border-white/40 px-3 text-[12px] text-white">
@@ -494,7 +572,21 @@ export default function AssistantExperience() {
                   </button>
                 ))}
               </div>
-              <input disabled placeholder={t(UI.chatSoon)} aria-label={t(UI.chat)} className="field ctl-sm mt-3 cursor-not-allowed opacity-60" />
+              <form onSubmit={ask} className="mt-3 flex gap-2">
+                <input
+                  value={draft}
+                  onChange={(e) => setDraft(e.target.value)}
+                  placeholder={t(UI.chatPlaceholder)}
+                  aria-label={t(UI.chat)}
+                  enterKeyHint="send"
+                  maxLength={300}
+                  className="field ctl-sm min-w-0 flex-1"
+                  autoFocus
+                />
+                <button type="submit" disabled={!draft.trim() || typing} aria-label={t(UI.chatSend)} className="btn btn-primary btn-sm w-10 shrink-0 px-0 disabled:opacity-50">
+                  <Icon name="arrow" size={16} />
+                </button>
+              </form>
             </aside>
           )}
         </>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { withBase } from "@/data/projects";
 import { blockById, unitsOn, type Unit } from "@/data/inventory";
 import { PLAN, PLAN_RATIO, UNIT_SHAPES, centre } from "@/data/floorplan";
@@ -49,11 +49,14 @@ export default function AssistantFloorDrawer({
   const t = (l: { ka: string; en: string }) => l[lang];
 
   // A new floor starts on its plan.
-  useEffect(() => {
+  const floorKey = pick ? `${pick.block}-${pick.floor}` : "";
+  const [shownFloor, setShownFloor] = useState(floorKey);
+  if (shownFloor !== floorKey) {
+    setShownFloor(floorKey);
     setUnit(null);
     setCalling(false);
     setSent(false);
-  }, [pick?.block, pick?.floor]);
+  }
 
   if (!pick) return null;
   const block = blockById(pick.block);

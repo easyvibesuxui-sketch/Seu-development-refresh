@@ -3,8 +3,9 @@
 The left half of the gate leads to `/assistant/`: a walk into the SEU sales showroom, where the
 consultant Mariam greets the visitor and shows the scale models; on the Varketili model the
 visitor picks a floor, and its plan and apartments open in a drawer. The assistant never
-hands over to the website: the only way out is back to the gate. Stage 1 runs entirely on GitHub Pages; the free-text AI chat (stage 2) needs a
-small server (Cloudflare Worker + Anthropic API) and is designed in but not switched on.
+hands over to the website: the only way out is back to the gate. Everything runs on GitHub Pages, typed questions
+included: they are answered on the page itself (below); an AI chat (stage 2) would need a small
+server and is designed in but not switched on.
 
 ## The consultant must never change
 
@@ -59,6 +60,16 @@ close-up means re-measuring them.
 
 All buttons, hotspots and (later) AI answers dispatch the same actions
 (`goToModel`, `openFloor`, `say`…), so the chat and the clicks always play the same way.
+
+## Typed questions (no server)
+
+"Ask Mariam" takes free text. `answerFor` in `src/data/assistant.ts` matches the question's
+stems (Georgian and English) against `ANSWERS`, first match wins, so order matters: price
+before apartment, Green Yard and Vasilisko before location. A topic either runs an action
+(Mariam then says that scene's recorded line) or answers in words only; `floorIn` reads
+"block 7, floor 5" / "მე-7 კორპუსის მე-5 სართული" and opens that floor. Mariam answers in the
+language the question was typed in. Prices are never named: price questions, and anything
+unmatched, end with the call form. Text-only answers have no recording; the subtitles carry them.
 
 ## Stage 2: AI chat
 
