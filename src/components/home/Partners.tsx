@@ -1,8 +1,10 @@
-import { withBase } from "@/data/projects";
-import { Container, Section, SectionHeader } from "@/components/ui/Section";
+"use client";
 
-// The partner list comes from the CMS on the live site; the design uses Bank of Georgia as placeholder.
-export const partners = Array.from({ length: 8 }, (_, i) => ({ id: i, name: "Bank of Georgia", logo: "/images/partner-bog.png" }));
+import { withBase } from "@/data/projects";
+import { partners } from "@/data/partners";
+import { Container, Section, SectionHeader } from "@/components/ui/Section";
+import { useT } from "@/lib/useLang";
+
 
 function Tile({ name, logo }: { name: string; logo: string }) {
   return (
@@ -14,11 +16,12 @@ function Tile({ name, logo }: { name: string; logo: string }) {
 
 /** Marquee on the home page; a grid (as in the About / SEU Card designs) elsewhere. */
 export default function Partners({ variant = "marquee", subtitle }: { variant?: "marquee" | "grid"; subtitle?: string }) {
+  const t = useT();
   if (variant === "grid") {
     return (
       <Section tone="dark">
         <Container>
-          <SectionHeader eyebrow="Together with" title="Partners" intro={subtitle} />
+          <SectionHeader eyebrow={t("Together with", "ერთად")} title={t("Partners", "პარტნიორები")} intro={subtitle} />
           <div className="mt-20 grid grid-cols-2 gap-6 md:grid-cols-4" data-stagger>
             {partners.map((p) => (
               <Tile key={p.id} {...p} />
@@ -33,7 +36,7 @@ export default function Partners({ variant = "marquee", subtitle }: { variant?: 
   return (
     <Section tone="dark" className="overflow-hidden">
       <Container>
-        <SectionHeader index="06" eyebrow="Together with" title="Partners" />
+        <SectionHeader index="06" eyebrow={t("Together with", "ერთად")} title={t("Partners", "პარტნიორები")} />
       </Container>
       <div className="marquee relative mt-20 flex w-max gap-6">
         {row.map((p, i) => (

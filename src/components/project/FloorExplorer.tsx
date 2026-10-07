@@ -5,7 +5,8 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import gsap from "gsap";
 import { withBase } from "@/data/projects";
-import { bedroomText, blockById, statusText, unitsOn, varketiliBlocks, type Unit } from "@/data/inventory";
+import { bedroomsIn, blockById, blockNameIn, deliveryIn, unitStatusIn, unitsOn, varketiliBlocks, type Unit } from "@/data/inventory";
+import { useHref, useLang } from "@/lib/useLang";
 import ApartmentCard from "@/components/ui/ApartmentCard";
 import Icon from "@/components/ui/Icon";
 import BackLink from "@/components/ui/BackLink";
@@ -53,6 +54,10 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
   const numberRef = useRef<HTMLSpanElement>(null);
   const prevFloor = useRef(floor);
   const floorUnits = useMemo(() => unitsOn(blockId, floor), [blockId, floor]);
+  const lang = useLang();
+  const h = useHref();
+  const t = (en: string, ka: string) => (lang === "ka" ? ka : en);
+  const st = (s: Unit["status"]) => unitStatusIn(s, lang);
 
   // Changing floors slides the plate vertically and rolls the number like a counter drum.
   useEffect(() => {
@@ -73,7 +78,7 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
       </Suspense>
       <div className="flex items-center justify-between">
         <BackLink href="/projects/varketili/" />
-        <div className="flex gap-2" role="tablist" aria-label="Layout view">
+        <div className="flex gap-2" role="tablist" aria-label={t("Layout view", "განლაგების ხედი")}>
           {(["plan", "grid"] as const).map((v) => (
             <button
               key={v}
@@ -83,14 +88,14 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
               onClick={() => setView(v)}
               className="chip ctl-sm rounded-full px-5"
             >
-              {v === "plan" ? "Floor plan" : "Grid view"}
+              {v === "plan" ? t("Floor plan", "გეგმა") : t("Grid view", "ცხრილი")}
             </button>
           ))}
         </div>
         <button
           type="button"
           aria-pressed={sun}
-          aria-label="Toggle sun directions"
+          aria-label={t("Toggle sun directions", "მზის მიმართულებები")}
           onClick={() => setSun(!sun)}
           className="btn btn-icon aria-pressed:border-seu-accent aria-pressed:bg-seu-accent aria-pressed:text-white"
         >
@@ -101,22 +106,22 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
       </div>
 
       <div className="mt-10 grid gap-10 lg:grid-cols-[160px_minmax(0,1fr)_300px]">
-        <aside aria-label="Block and floor" className="flex flex-row items-center justify-between gap-6 lg:flex-col lg:items-start lg:justify-start">
+        <aside aria-label={t("Block and floor", "ბლოკი და სართული")} className="flex flex-row flex-wrap items-center justify-between gap-x-6 gap-y-4 lg:flex-col lg:flex-nowrap lg:items-start lg:justify-start">
           <div>
-            <p className="eyebrow mb-4">SEU Varketili</p>
+            <p className="eyebrow mb-4">{t("SEU Varketili", "SEU ვარკეთილი")}</p>
             <h1 className="section-title text-[clamp(32px,3vw,52px)]" data-split>
-              {block.name}
+              {blockNameIn(block, lang)}
             </h1>
           </div>
           <div className="flex items-center gap-4 lg:mt-24 lg:flex-col lg:items-start">
-            <ArrowButton dir="up" onClick={() => step(1)} label="Floor up" />
+            <ArrowButton dir="up" onClick={() => step(1)} label={t("Floor up", "სართული ზემოთ")} />
             <div className="overflow-hidden">
               <span ref={numberRef} className="page-title block text-[clamp(48px,4vw,72px)] leading-none tabular-nums">
                 {floor}
               </span>
-              <span className="text-[13px] text-seu-muted">Floor · {available} available</span>
+              <span className="text-[13px] text-seu-muted">{t(`Floor · ${available} available`, `სართ. · ${available} თავისუფალი`)}</span>
             </div>
-            <ArrowButton dir="down" onClick={() => step(-1)} label="Floor down" />
+            <ArrowButton dir="down" onClick={() => step(-1)} label={t("Floor down", "სართული ქვემოთ")} />
           </div>
         </aside>
 
@@ -124,9 +129,9 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
           <div ref={planRef}>
             {view === "plan" ? (
               <div className="relative mx-auto w-full max-w-[980px]">
-                <p className="label mb-2 text-center text-[11px] uppercase tracking-[0.2em] text-seu-muted">North · Hualing</p>
+                <p className="label mb-2 text-center text-[11px] uppercase tracking-[0.2em] text-seu-muted">{t("North · Hualing", "ჩრდილოეთი · ჰუალინგი")}</p>
                 <div className="relative" style={{ aspectRatio: `${PLAN_RATIO}` }}>
-                  <img src={withBase(PLAN)} alt={`Typical floor plan of ${block.name}`} className="h-full w-full rounded-[16px]" />
+                  <img src={withBase(PLAN)} alt={t(`Typical floor plan of ${block.name}`, `${blockNameIn(block, lang)}: ტიპური სართულის გეგმა`)} className="h-full w-full rounded-[16px]" />
                   <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
                     {floorUnits.map((u) => (
                       <polygon
@@ -168,12 +173,12 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
                           <span className="flex flex-col items-center leading-tight">
                             {sold && <Icon name="lock" size={14} className="mb-0.5 hidden md:block" />}
                             <span className="label block text-[11px] font-semibold md:text-[14px]">{u.number}</span>
-                            {!sold && <span className="hidden text-[11px] md:block">{u.bedrooms === 0 ? "Studio" : `${u.bedrooms} bd`}</span>}
+                            {!sold && <span className="hidden text-[11px] md:block">{u.bedrooms === 0 ? t("Studio", "სტუდიო") : t(`${u.bedrooms} bd`, `${u.bedrooms} საძ.`)}</span>}
                           </span>
                         </span>
                         {on && (
                           <span className="label absolute bottom-3 left-1/2 w-max -translate-x-1/2 rounded-full bg-seu-ink/90 px-3 py-1.5 text-[12px] text-white ring-1 ring-white/20">
-                            {sold ? "Sold" : `${u.totalArea} m² · ${statusText[u.status]}`}
+                            {sold ? st("sold") : `${u.totalArea} ${t("m²", "მ²")} · ${st(u.status)}`}
                           </span>
                         )}
                       </>
@@ -183,7 +188,7 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
                       <div
                         key={u.id}
                         role="img"
-                        aria-label={`Apartment ${u.number}, sold`}
+                        aria-label={t(`Apartment ${u.number}, sold`, `ბინა ${u.number}, გაყიდული`)}
                         onMouseEnter={() => setHover(u.id)}
                         onMouseLeave={() => setHover(null)}
                         className="absolute cursor-not-allowed"
@@ -194,21 +199,21 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
                     ) : (
                       <Link
                         key={u.id}
-                        href={`/apartments/${u.id}/`}
+                        href={h(`/apartments/${u.id}/`)}
                         onMouseEnter={() => setHover(u.id)}
                         onMouseLeave={() => setHover(null)}
                         onFocus={() => setHover(u.id)}
                         onBlur={() => setHover(null)}
                         className="absolute"
                         style={box}
-                        aria-label={`Apartment ${u.number}, ${bedroomText(u.bedrooms)}, ${u.totalArea} m², ${statusText[u.status]}`}
+                        aria-label={`${t("Apartment", "ბინა")} ${u.number}, ${bedroomsIn(u.bedrooms, lang)}, ${u.totalArea} ${t("m²", "მ²")}, ${st(u.status)}`}
                       >
                         {inner}
                       </Link>
                     );
                   })}
                 </div>
-                <p className="label mt-3 text-center text-[11px] uppercase tracking-[0.2em] text-seu-muted">South · Tbilisi Sea</p>
+                <p className="label mt-3 text-center text-[11px] uppercase tracking-[0.2em] text-seu-muted">{t("South · Tbilisi Sea", "სამხრეთი · თბილისის ზღვა")}</p>
                 {sun && (
                   <svg className="sun-path pointer-events-none absolute -inset-6" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
                     <path d="M-2 70 Q50 -40 102 70" fill="none" stroke="#ffd59a" strokeOpacity=".8" strokeDasharray="1 1.4" vectorEffect="non-scaling-stroke" />
@@ -230,15 +235,15 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
             {(["available", "reserved", "sold"] as const).map((s) => (
               <span key={s} className="label flex items-center gap-2">
                 <span className="h-2.5 w-2.5 rounded-full" style={{ background: statusFill[s] }} />
-                {statusText[s]}
+                {st(s)}
               </span>
             ))}
           </div>
         </div>
 
-        <aside aria-label="Blocks" className="lg:pt-24">
-          <p className="title-display text-[22px] tracking-[0.08em]">Blocks</p>
-          <nav aria-label="Choose a block" className="relative mt-3 overflow-hidden rounded-[16px] ring-1 ring-white/15" style={{ aspectRatio: `${SITE_RATIO}` }}>
+        <aside aria-label={t("Blocks", "ბლოკები")} className="lg:pt-24">
+          <p className="title-display text-[22px] tracking-[0.08em]">{t("Blocks", "ბლოკები")}</p>
+          <nav aria-label={t("Choose a block", "აირჩიეთ ბლოკი")} className="relative mt-3 overflow-hidden rounded-[16px] ring-1 ring-white/15" style={{ aspectRatio: `${SITE_RATIO}` }}>
             <img src={withBase(SITE)} alt="" className="h-full w-full" />
             <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
               {varketiliBlocks.map((b) => (
@@ -260,9 +265,9 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
               return (
                 <Link
                   key={b.id}
-                  href={`/projects/varketili/${b.id}/`}
+                  href={h(`/projects/varketili/${b.id}/`)}
                   aria-current={here ? "page" : undefined}
-                  aria-label={`${b.name}${here ? " (this block)" : ""}`}
+                  aria-label={`${blockNameIn(b, lang)}${here ? t(" (this block)", " (ეს ბლოკი)") : ""}`}
                   onMouseEnter={() => setHoverBlock(b.id)}
                   onMouseLeave={() => setHoverBlock(null)}
                   className={`label absolute grid h-8 w-8 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full text-[12px] ring-1 transition-colors ${
@@ -276,7 +281,8 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
             })}
           </nav>
           <p className="mt-4 text-[13px] text-seu-muted">
-            {block.floors} floors · {block.status === "delivered" ? `Delivered ${block.delivery}` : `Delivery ${block.delivery}`}
+            {block.floors} {t("floors", "სართული")} ·{" "}
+            {block.status === "delivered" ? t(`Delivered ${block.delivery}`, `ჩაბარდა ${deliveryIn(block.delivery, lang)}`) : t(`Delivery ${block.delivery}`, `ჩაბარება: ${deliveryIn(block.delivery, lang)}`)}
           </p>
         </aside>
       </div>

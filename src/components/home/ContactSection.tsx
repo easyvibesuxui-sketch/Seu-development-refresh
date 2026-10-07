@@ -3,24 +3,26 @@
 import { useState } from "react";
 import Reveal from "@/components/ui/Reveal";
 import { Container, Section, SectionHeader } from "@/components/ui/Section";
+import { useT } from "@/lib/useLang";
 
 const fields = [
-  { name: "name", label: "Name", type: "text", required: false, autoComplete: "name" },
-  { name: "phone", label: "Phone", type: "tel", required: true, autoComplete: "tel" },
-  { name: "email", label: "Email", type: "email", required: false, autoComplete: "email" },
+  { name: "name", label: ["Name", "სახელი"], type: "text", required: false, autoComplete: "name" },
+  { name: "phone", label: ["Phone", "ტელეფონი"], type: "tel", required: true, autoComplete: "tel" },
+  { name: "email", label: ["Email", "ელ. ფოსტა"], type: "email", required: false, autoComplete: "email" },
 ];
 
 export default function ContactSection({ split = false }: { split?: boolean }) {
   const [sent, setSent] = useState(false);
+  const t = useT();
 
   return (
     <Section id="contact" tone="dark">
       <Container className="grid gap-20 lg:grid-cols-2 lg:gap-28">
         <div>
-          <SectionHeader index={split ? undefined : "08"} eyebrow="Talk to sales" title="Request a call" className="lg:grid-cols-1" />
+          <SectionHeader index={split ? undefined : "08"} eyebrow={t("Talk to sales", "გაყიდვების განყოფილება")} title={t("Request a call", "მოითხოვე ზარი")} className="lg:grid-cols-1" />
           {sent ? (
             <p role="status" className="lead mt-12 text-seu-accent-hi">
-              Thank you! A sales manager will call you shortly.
+              {t("Thank you! A sales manager will call you shortly.", "მადლობა! გაყიდვების მენეჯერი მალე დაგიკავშირდებათ.")}
             </p>
           ) : (
             <form
@@ -34,7 +36,7 @@ export default function ContactSection({ split = false }: { split?: boolean }) {
                 <Reveal key={f.name} delay={i * 80}>
                   <label className="block">
                     <span className="field-label">
-                      {f.label}
+                      {t(f.label[0], f.label[1])}
                       {f.required && <span className="text-seu-accent-hi"> *</span>}
                     </span>
                     <input name={f.name} type={f.type} required={f.required} autoComplete={f.autoComplete} className="field" />
@@ -43,7 +45,7 @@ export default function ContactSection({ split = false }: { split?: boolean }) {
               ))}
               <Reveal delay={260}>
                 <button type="submit" className="btn btn-primary btn-lg mt-4">
-                  Request a call
+                  {t("Request a call", "ზარის მოთხოვნა")}
                 </button>
               </Reveal>
             </form>
@@ -51,13 +53,13 @@ export default function ContactSection({ split = false }: { split?: boolean }) {
         </div>
 
         <div className={split ? "lg:pt-40" : ""}>
-          <p className="eyebrow">Visit us</p>
+          <p className="eyebrow">{t("Visit us", "გვეწვიეთ")}</p>
           <Reveal delay={120} className="mt-8 overflow-hidden rounded-[24px] border border-seu-line bg-seu-surface">
             <a
               href="https://www.google.com/maps/search/?api=1&query=41.7217,44.7019"
               target="_blank"
               rel="noreferrer"
-              aria-label="Open the office location in Google Maps (opens in a new tab)"
+              aria-label={t("Open the office location in Google Maps (opens in a new tab)", "ოფისის მდებარეობა Google Maps-ში (იხსნება ახალ ჩანართში)")}
               className="group relative block h-64 overflow-hidden bg-seu-ink"
             >
               <MapSketch />
@@ -70,11 +72,11 @@ export default function ContactSection({ split = false }: { split?: boolean }) {
             </a>
             <dl className="grid gap-6 p-8 sm:grid-cols-2">
               <div>
-                <dt className="field-label">Office</dt>
-                <dd className="lead">Tbilisi, A. Politkovskaya St. 32</dd>
+                <dt className="field-label">{t("Office", "ოფისი")}</dt>
+                <dd className="lead">{t("Tbilisi, A. Politkovskaya St. 32", "თბილისი, ა. პოლიტკოვსკაიას ქ. 32")}</dd>
               </div>
               <div>
-                <dt className="field-label">Phone</dt>
+                <dt className="field-label">{t("Phone", "ტელეფონი")}</dt>
                 <dd>
                   <a href="tel:+995596707070" className="lead hover:text-seu-accent-hi">
                     +995 596 70 70 70
@@ -82,7 +84,7 @@ export default function ContactSection({ split = false }: { split?: boolean }) {
                 </dd>
               </div>
               <div className="sm:col-span-2">
-                <dt className="field-label">Email</dt>
+                <dt className="field-label">{t("Email", "ელ. ფოსტა")}</dt>
                 <dd>
                   <a href="mailto:info@seudevelopment.ge" className="lead hover:text-seu-accent-hi">
                     info@seudevelopment.ge

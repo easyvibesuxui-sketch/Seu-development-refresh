@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import Icon from "./Icon";
+import { useT } from "@/lib/useLang";
 
 // Open sheets, innermost last: only the top one answers Escape, and the page stays locked
 // until the last one closes.
@@ -39,6 +40,7 @@ export default function Sheet({
   children: ReactNode;
 }) {
   const id = useId();
+  const t = useT();
   const [shown, setShown] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
   const drag = useRef<{ y: number; dy: number } | null>(null);
@@ -119,7 +121,7 @@ export default function Sheet({
       <button
         type="button"
         tabIndex={-1}
-        aria-label="Close"
+        aria-label={t("Close", "დახურვა")}
         onClick={onClose}
         className={`absolute inset-0 cursor-default bg-seu-ink/60 backdrop-blur-sm transition-opacity duration-500 ${shown ? "opacity-100" : "opacity-0"}`}
       />
@@ -146,7 +148,7 @@ export default function Sheet({
                 {title}
               </h2>
             </div>
-            <button type="button" onClick={onClose} aria-label="Close" className="btn btn-icon" data-autofocus>
+            <button type="button" onClick={onClose} aria-label={t("Close", "დახურვა")} className="btn btn-icon" data-autofocus>
               <Icon name="close" size={18} />
             </button>
           </header>

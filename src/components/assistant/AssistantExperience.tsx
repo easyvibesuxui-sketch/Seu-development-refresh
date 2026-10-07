@@ -406,7 +406,7 @@ export default function AssistantExperience() {
 
       {/* Top bar: back to the gate, logo, language. */}
       <header className="absolute inset-x-0 top-0 z-20 flex items-center justify-between gap-3 p-4 md:p-8">
-        <Link href="/" className="btn btn-glass btn-sm">
+        <Link href={lang === "ka" ? "/ka/" : "/"} className="btn btn-glass btn-sm">
           <Icon name="arrow" size={16} className="rotate-180" /> {t(UI.back)}
         </Link>
         <span className="pointer-events-none hidden items-center gap-2.5 sm:flex" aria-hidden>

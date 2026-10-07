@@ -8,6 +8,8 @@
  * developer's real feed before launch.
  */
 
+import type { Lang } from "@/lib/i18n";
+
 export type UnitStatus = "available" | "reserved" | "sold";
 
 export type Room = { kind: RoomKind; area: number };
@@ -181,3 +183,44 @@ export const benefits = [
   "A lobby at the entrance to every building",
   "School",
 ];
+
+/* Georgian for the site's /ka/ pages (see lib/i18n); the terms follow seudevelopment.ge. */
+const KA_VIEW: Record<ViewId, string> = { park: "ჰუალინგის პარკი", city: "ქალაქი", sea: "თბილისის ზღვა", mountains: "მთები", courtyard: "ეზო", panorama: "პანორამა" };
+const KA_STATUS: Record<UnitStatus, string> = { available: "ხელმისაწვდომი", reserved: "დაჯავშნილი", sold: "გაყიდული" };
+const KA_ROOM: Record<RoomKind, string> = {
+  living: "მისაღები",
+  kitchen: "სამზარეულო",
+  bedroom: "საძინებელი",
+  bathroom: "სააბაზანო",
+  wc: "სველი წერტილი",
+  hall: "ჰოლი",
+  balcony: "აივანი",
+  storage: "სათავსო",
+};
+const KA_BENEFITS = [
+  "2 ჰექტარამდე რეკრეაციული სივრცე",
+  "დაცული ეზო",
+  "მიწისქვეშა და ზედაპირული პარკინგი",
+  "სავაჭრო და საოფისე ფართები",
+  "საბავშვო მოედნები",
+  "სპორტული მოედნები",
+  "ჩოგბურთის კორტები",
+  "სავარჯიშო დარბაზი",
+  "ლობი ყოველი კორპუსის შესასვლელში",
+  "სკოლა",
+];
+
+export const viewIn = (v: ViewId, lang: Lang) => (lang === "ka" ? KA_VIEW[v] : viewText[v]);
+export const unitStatusIn = (s: UnitStatus, lang: Lang) => (lang === "ka" ? KA_STATUS[s] : statusText[s]);
+export const roomIn = (r: RoomKind, lang: Lang) => (lang === "ka" ? KA_ROOM[r] : roomText[r]);
+export const roomsIn = (lang: Lang): Record<RoomKind, string> => (lang === "ka" ? KA_ROOM : roomText);
+export const bedroomsIn = (n: number, lang: Lang) => (lang === "ka" ? (n === 0 ? "სტუდიო" : `${n} საძინებელი`) : bedroomText(n));
+export const benefitsIn = (lang: Lang) => (lang === "ka" ? KA_BENEFITS : benefits);
+/** "Block 7" / "ბლოკი 7". */
+export const blockNameIn = (b: Block, lang: Lang) => (lang === "ka" ? `ბლოკი ${b.id.slice(1)}` : b.name);
+/** "Q2 2026" / "2026, II კვ.". */
+export const deliveryIn = (d: string, lang: Lang) => {
+  const q = d.match(/^Q(\d) (\d{4})$/);
+  if (lang === "en" || !q) return d;
+  return `${q[2]}, ${["", "I", "II", "III", "IV"][+q[1]]} კვ.`;
+};

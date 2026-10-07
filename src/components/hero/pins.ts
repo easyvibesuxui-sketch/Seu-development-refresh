@@ -1,4 +1,5 @@
-import { statusLabel, withBase, type Highlight, type MappedProject } from "@/data/projects";
+import { nameIn, statusIn, withBase, type Highlight, type MappedProject } from "@/data/projects";
+import type { Lang } from "@/lib/i18n";
 import styles from "./HeroMap.module.css";
 
 const DROP_PATH = "M28 70C28 70 3 45 3 27a25 25 0 1 1 50 0C53 45 28 70 28 70z";
@@ -25,12 +26,12 @@ const icons: Record<Highlight["kind"], string> = {
   park: `<path d="M12 3l5 7h-3l4 6H6l4-6H7l5-7z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 16v5" stroke="currentColor" stroke-width="1.8"/>`,
 };
 
-export function createProjectPin(project: MappedProject, onClick: () => void) {
+export function createProjectPin(project: MappedProject, onClick: () => void, lang: Lang = "en") {
   const el = document.createElement("button");
   el.type = "button";
   el.className = `${styles.pin} ${styles.projectPin}`;
   el.dataset.status = project.status;
-  el.setAttribute("aria-label", project.name);
+  el.setAttribute("aria-label", nameIn(project, lang));
   if (project.overviewSpread) {
     el.style.setProperty("--spread-x", `${project.overviewSpread.x}px`);
     el.dataset.labelOverview = project.overviewSpread.label;
@@ -43,8 +44,8 @@ export function createProjectPin(project: MappedProject, onClick: () => void) {
       <img class="${styles.logo}" src="${withBase("/brand/logo-wire.svg")}" alt="" />
     </span>
     <span class="${styles.label}">
-      <span class="${styles.labelName}">${project.name}</span>
-      <span class="${styles.chip}">${statusLabel[project.status]}</span>
+      <span class="${styles.labelName}">${nameIn(project, lang)}</span>
+      <span class="${styles.chip}">${statusIn(project.status, lang)}</span>
     </span>`;
   el.addEventListener("click", (event) => {
     event.stopPropagation();
@@ -53,12 +54,12 @@ export function createProjectPin(project: MappedProject, onClick: () => void) {
   return el;
 }
 
-export function createHighlightPin(highlight: Highlight, distance: number) {
+export function createHighlightPin(highlight: Highlight, distance: number, lang: Lang = "en") {
   const el = document.createElement("div");
   el.className = `${styles.pin} ${styles.highlightPin}`;
   el.dataset.project = highlight.project;
   el.setAttribute("role", "img");
-  el.setAttribute("aria-label", highlight.name);
+  el.setAttribute("aria-label", nameIn(highlight, lang));
   el.innerHTML = `
     <span class="${styles.ground}"></span>
     <span class="${styles.body}">
@@ -66,8 +67,8 @@ export function createHighlightPin(highlight: Highlight, distance: number) {
       <svg class="${styles.icon}" viewBox="0 0 24 24" aria-hidden="true">${icons[highlight.kind]}</svg>
     </span>
     <span class="${styles.label}">
-      <span class="${styles.labelName}">${highlight.name}</span>
-      <span class="${styles.distance}">${distance.toFixed(1)} km</span>
+      <span class="${styles.labelName}">${nameIn(highlight, lang)}</span>
+      <span class="${styles.distance}">${distance.toFixed(1)} ${lang === "ka" ? "კმ" : "km"}</span>
     </span>`;
   return el;
 }

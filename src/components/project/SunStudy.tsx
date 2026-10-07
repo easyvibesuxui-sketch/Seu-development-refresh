@@ -6,8 +6,9 @@ import Sheet from "@/components/ui/Sheet";
 import type { GeoJSONSource, Map as MapLibreMap, Marker } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { mappedProjects, withBase } from "@/data/projects";
-import { createMapStyle, projectTowers, seuColor } from "@/components/hero/mapStyle";
+import { createMapStyle, mapLocale, projectTowers, seuColor } from "@/components/hero/mapStyle";
 import { atMinutes, clock, sunPosition, sunTimes } from "@/lib/sun";
+import { useLang } from "@/lib/useLang";
 
 /*
  * Sun study, in the manner of Shadowmap: the site in 3D with a compass ring on the ground,
@@ -23,7 +24,9 @@ const RING = 210; // compass ring radius, metres
 const M_LAT = 111_320;
 const rad = Math.PI / 180;
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const MONTHS_KA = ["იან", "თებ", "მარ", "აპრ", "მაი", "ივნ", "ივლ", "აგვ", "სექ", "ოქტ", "ნოე", "დეკ"];
 const COMPASS = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
+const COMPASS_KA = ["ჩ", "ჩა", "ა", "სა", "ს", "სდ", "დ", "ჩდ"];
 
 type Pt = [number, number];
 
@@ -62,6 +65,8 @@ export default function SunStudy({ onClose, variant = "full", place }: { onClose
   const [ready, setReady] = useState(false);
   // Bumped whenever a new set of buildings has been read from the tiles.
   const [built, setBuilt] = useState(0);
+  const lang = useLang();
+  const t = (en: string, ka: string) => (lang === "ka" ? ka : en);
 
   const day = useMemo(() => dayOf(year, doy), [year, doy]);
   const times = useMemo(() => sunTimes(day, lat, lng, UTC_OFFSET), [day, lat, lng]);
@@ -125,6 +130,7 @@ export default function SunStudy({ onClose, variant = "full", place }: { onClose
       map = new maplibre.Map({
         container: containerRef.current,
         style: createMapStyle(),
+        locale: mapLocale(lang),
         center: site.coords,
         zoom: 16.4,
         pitch: 52,
@@ -338,7 +344,7 @@ export default function SunStudy({ onClose, variant = "full", place }: { onClose
     return () => window.clearInterval(id);
   }, [playing, times]);
 
-  const dateText = `${day.getUTCDate()} ${MONTHS[day.getUTCMonth()]} ${year}`;
+  const dateText = `${day.getUTCDate()} ${(lang === "ka" ? MONTHS_KA : MONTHS)[day.getUTCMonth()]} ${year}`;
   const daylight = times.set - times.rise;
   const toNow = () => {
     const l = new Date(Date.now() + UTC_OFFSET * 3_600_000);
@@ -353,12 +359,14 @@ export default function SunStudy({ onClose, variant = "full", place }: { onClose
       {sun.altitude <= 0.5 && <div className="pointer-events-none absolute inset-0 bg-[#0c1a2a]/45" aria-hidden />}
 
       <section
-        aria-label="Time and date"
+        aria-label={t("Time and date", "დრო და თარიღი")}
         className="glass glass-dark absolute left-4 right-4 top-4 rounded-[24px] p-5 text-white md:left-auto md:right-6 md:top-6 md:w-[380px]"
       >
         <div className="flex items-center justify-between">
-          <p className="eyebrow text-white/85">Sun study · {place ?? "SEU Varketili"}</p>
-          <button ref={closeRef} type="button" onClick={onClose} data-autofocus aria-label="Close sun study" className="btn btn-icon btn-sm h-10 w-10 border-white/40 text-white">
+          <p className="eyebrow text-white/85">
+            {t("Sun study", "მზის კვლევა")} · {place ?? t("SEU Varketili", "SEU ვარკეთილი")}
+          </p>
+          <button ref={closeRef} type="button" onClick={onClose} data-autofocus aria-label={t("Close sun study", "მზის კვლევის დახურვა")} className="btn btn-icon btn-sm h-10 w-10 border-white/40 text-white">
             <svg width="14" height="14" viewBox="0 0 14 14" stroke="currentColor" strokeWidth="1.5" aria-hidden>
               <path d="M1 1l12 12M13 1L1 13" />
             </svg>
@@ -372,12 +380,12 @@ export default function SunStudy({ onClose, variant = "full", place }: { onClose
           </p>
           <div className="flex gap-2">
             <button type="button" onClick={toNow} className="btn btn-sm border-white/40 text-white">
-              Now
+              {t("Now", "ახლა")}
             </button>
             <button
               type="button"
               aria-pressed={playing}
-              aria-label={playing ? "Pause the day" : "Play the day"}
+              aria-label={playing ? t("Pause the day", "დღის შეჩერება") : t("Play the day", "დღის დაკვრა")}
               onClick={() => {
                 if (!playing && minutes >= times.set) setMinutes(times.rise);
                 setPlaying(!playing);
@@ -393,8 +401,12 @@ export default function SunStudy({ onClose, variant = "full", place }: { onClose
 
         <label className="mt-5 block">
           <span className="flex justify-between text-[12px] text-white/75">
-            <span>Sunrise {clock(times.rise)}</span>
-            <span>Sunset {clock(times.set)}</span>
+            <span>
+              {t("Sunrise", "მზის ამოსვლა")} {clock(times.rise)}
+            </span>
+            <span>
+              {t("Sunset", "მზის ჩასვლა")} {clock(times.set)}
+            </span>
           </span>
           <input
             type="range"
@@ -403,7 +415,7 @@ export default function SunStudy({ onClose, variant = "full", place }: { onClose
             max={times.set}
             step={5}
             value={Math.min(times.set, Math.max(times.rise, minutes))}
-            aria-label="Time of day"
+            aria-label={t("Time of day", "დღის დრო")}
             aria-valuetext={clock(minutes)}
             onChange={(e) => {
               setPlaying(false);
@@ -413,8 +425,8 @@ export default function SunStudy({ onClose, variant = "full", place }: { onClose
         </label>
         <label className="mt-4 block">
           <span className="flex justify-between text-[12px] text-white/75">
-            <span>1 Jan</span>
-            <span>31 Dec</span>
+            <span>{t("1 Jan", "1 იან")}</span>
+            <span>{t("31 Dec", "31 დეკ")}</span>
           </span>
           <input
             type="range"
@@ -422,7 +434,7 @@ export default function SunStudy({ onClose, variant = "full", place }: { onClose
             min={0}
             max={364}
             value={doy}
-            aria-label="Date"
+            aria-label={t("Date", "თარიღი")}
             aria-valuetext={dateText}
             onChange={(e) => setDoy(+e.target.value)}
           />
@@ -430,28 +442,28 @@ export default function SunStudy({ onClose, variant = "full", place }: { onClose
 
         <dl className="mt-5 grid grid-cols-3 gap-3 border-t border-white/15 pt-4 text-[12px]">
           <div>
-            <dt className="text-white/70">Altitude</dt>
+            <dt className="text-white/70">{t("Altitude", "სიმაღლე")}</dt>
             <dd className="mt-1 text-[16px] tabular-nums">{Math.max(0, Math.round(sun.altitude))}°</dd>
           </div>
           <div>
-            <dt className="text-white/70">Direction</dt>
+            <dt className="text-white/70">{t("Direction", "მიმართულება")}</dt>
             <dd className="mt-1 text-[16px] tabular-nums">
-              {Math.round(sun.azimuth)}° {COMPASS[Math.round(sun.azimuth / 45) % 8]}
+              {Math.round(sun.azimuth)}° {(lang === "ka" ? COMPASS_KA : COMPASS)[Math.round(sun.azimuth / 45) % 8]}
             </dd>
           </div>
           <div>
-            <dt className="text-white/70">Daylight</dt>
+            <dt className="text-white/70">{t("Daylight", "დღის ხანგრძლივობა")}</dt>
             <dd className="mt-1 text-[16px] tabular-nums">
-              {Math.floor(daylight / 60)}h {daylight % 60}m
+              {Math.floor(daylight / 60)}{t("h", "სთ")} {daylight % 60}{t("m", "წთ")}
             </dd>
           </div>
         </dl>
         <p className="mt-4 flex items-center gap-4 text-[12px] text-white/75">
           <span className="flex items-center gap-2">
-            <span className="h-[3px] w-5 rounded bg-[#f2c230]" /> Today
+            <span className="h-[3px] w-5 rounded bg-[#f2c230]" /> {t("Today", "დღეს")}
           </span>
           <span className="flex items-center gap-2">
-            <span className="w-5 border-t-2 border-dashed border-white" /> June / December
+            <span className="w-5 border-t-2 border-dashed border-white" /> {t("June / December", "ივნისი / დეკემბერი")}
           </span>
         </p>
       </section>
@@ -460,14 +472,14 @@ export default function SunStudy({ onClose, variant = "full", place }: { onClose
 
   if (variant === "sheet")
     return (
-      <Sheet open onClose={onClose} label={`Sun study${place ? `, ${place}` : ""}, SEU Varketili`} bodyClassName="relative h-[86svh] overflow-hidden bg-seu-ink">
+      <Sheet open onClose={onClose} label={`${t("Sun study", "მზის კვლევა")}${place ? `, ${place}` : ""}, ${t("SEU Varketili", "SEU ვარკეთილი")}`} bodyClassName="relative h-[86svh] overflow-hidden bg-seu-ink">
         {body}
       </Sheet>
     );
 
   // Portalled to <body>: above the site header and clear of any transformed section.
   return createPortal(
-    <div role="dialog" aria-modal="true" aria-label="Sun study, SEU Varketili" className="tone-dark fixed inset-0 z-[400] bg-seu-ink" data-lenis-prevent>
+    <div role="dialog" aria-modal="true" aria-label={t("Sun study, SEU Varketili", "მზის კვლევა, SEU ვარკეთილი")} className="tone-dark fixed inset-0 z-[400] bg-seu-ink" data-lenis-prevent>
       {body}
     </div>,
     document.body,

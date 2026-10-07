@@ -3,7 +3,8 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { projects, statusLabel } from "@/data/projects";
+import { districtIn, nameIn, projects, statusIn } from "@/data/projects";
+import { useLang } from "@/lib/useLang";
 import { Container, Section, SectionHeader } from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
 import AmbientVideo from "@/components/ui/AmbientVideo";
@@ -16,6 +17,8 @@ gsap.registerPlugin(ScrollTrigger);
  */
 export default function ProjectsDeck() {
   const deckRef = useRef<HTMLDivElement>(null);
+  const lang = useLang();
+  const t = (en: string, ka: string) => (lang === "ka" ? ka : en);
 
   useEffect(() => {
     const deck = deckRef.current;
@@ -47,10 +50,13 @@ export default function ProjectsDeck() {
       <Container>
         <SectionHeader
           index="02"
-          eyebrow="Portfolio"
-          title="Our projects"
-          intro="From finished homes in Saburtalo to the new district rising in Varketili — every project funded from day one and delivered on time."
-          action={<ButtonLink href="/projects/">All projects</ButtonLink>}
+          eyebrow={t("Portfolio", "პორტფოლიო")}
+          title={t("Our projects", "ჩვენი პროექტები")}
+          intro={t(
+            "From finished homes in Saburtalo to the new district rising in Varketili — every project funded from day one and delivered on time.",
+            "საბურთალოს დასრულებული სახლებიდან ვარკეთილის ახალ უბნამდე — ყველა პროექტი პირველივე დღიდან დაფინანსებულია და დროულად სრულდება.",
+          )}
+          action={<ButtonLink href="/projects/">{t("All projects", "ყველა პროექტი")}</ButtonLink>}
         />
       </Container>
 
@@ -71,31 +77,31 @@ export default function ProjectsDeck() {
               <div className="relative flex h-full flex-col justify-between px-[clamp(20px,3.5vw,56px)] pb-[clamp(24px,5vh,56px)] pt-28">
                 <p className="eyebrow glass glass-dark self-start rounded-full py-2 pl-4 pr-5 text-white [--muted:#fff]">
                   <span className="text-[#ffd7b5]">{String(i + 1).padStart(2, "0")}</span>
-                  {statusLabel[p.status]} · {p.date}
+                  {statusIn(p.status, lang)} · {p.date}
                 </p>
                 <div className="grid items-end gap-10 lg:grid-cols-[1.4fr_1fr]">
                   <h3 id={`deck-${p.id}`} className="page-title text-[clamp(36px,4.6vw,80px)]">
-                    {p.name}
+                    {nameIn(p, lang)}
                   </h3>
                   <div className="flex flex-col items-start gap-8 lg:items-end">
                     <dl className="flex gap-10 text-[15px]">
                       <div>
-                        <dt className="text-white/80">Location</dt>
-                        <dd className="title-m mt-1 normal-case">{p.district}</dd>
+                        <dt className="text-white/80">{t("Location", "მდებარეობა")}</dt>
+                        <dd className="title-m mt-1 normal-case">{districtIn(p.district, lang)}</dd>
                       </div>
                       <div>
-                        <dt className="text-white/80">Apartments</dt>
+                        <dt className="text-white/80">{t("Apartments", "ბინები")}</dt>
                         <dd className="title-m mt-1 normal-case">
-                          {p.sizes[0]}–{p.sizes[1]} m²
+                          {p.sizes[0]}–{p.sizes[1]} {t("m²", "მ²")}
                         </dd>
                       </div>
                       <div>
-                        <dt className="text-white/80">Floors</dt>
+                        <dt className="text-white/80">{t("Floors", "სართული")}</dt>
                         <dd className="title-m mt-1 normal-case">{p.floors}</dd>
                       </div>
                     </dl>
                     <ButtonLink href={`/projects/${p.id}/`} variant={p.status === "ongoing" ? "primary" : "glass"} size="lg">
-                      Explore {p.name.replace("SEU ", "")}
+                      {t("Explore", "დაათვალიერეთ")} {nameIn(p, lang).replace("SEU ", "")}
                     </ButtonLink>
                   </div>
                 </div>

@@ -3,9 +3,11 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { withBase } from "@/data/projects";
+import { useLang } from "@/lib/useLang";
 
 /** The SEU card follows the pointer in 3D, floats gently and casts a moving glow. */
 export default function TiltCard() {
+  const ka = useLang() === "ka";
   const wrapRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -42,7 +44,7 @@ export default function TiltCard() {
     <div ref={wrapRef} className="relative grid place-items-center py-10 [perspective:1100px]">
       <div className="absolute h-[70%] w-[60%] rounded-full bg-[radial-gradient(closest-side,#4fe0c8aa,#7bdc3a55,transparent)] blur-3xl" />
       <div ref={cardRef} className="tilt-card relative w-[min(340px,70vw)] [transform-style:preserve-3d]">
-        <img src={withBase("/images/seu-card.png")} alt="SEU card" className="w-full drop-shadow-[0_40px_40px_#15201d55]" />
+        <img src={withBase("/images/seu-card.png")} alt={ka ? "SEU ბარათი" : "SEU card"} className="w-full drop-shadow-[0_40px_40px_#15201d55]" />
         {/* Glare clipped to the card's own shape. */}
         <span
           className="pointer-events-none absolute inset-0 mix-blend-overlay [background:radial-gradient(circle_at_var(--gx,50%)_var(--gy,30%),#ffffff80,transparent_45%)]"

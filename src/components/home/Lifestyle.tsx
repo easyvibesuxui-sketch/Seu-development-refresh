@@ -4,11 +4,12 @@ import { useState } from "react";
 import { distanceKm, highlights, projects, withBase } from "@/data/projects";
 import AmbientVideo from "@/components/ui/AmbientVideo";
 import { Container, Section } from "@/components/ui/Section";
+import { useLang } from "@/lib/useLang";
 
 const varketili = projects.find((p) => p.id === "varketili");
-const near = (id: string) => {
+const near = (id: string, unit = "km") => {
   const h = highlights.find((x) => x.id === id);
-  return h && varketili?.coords ? `${distanceKm(varketili.coords, h.coords).toFixed(1)} km` : "";
+  return h && varketili?.coords ? `${distanceKm(varketili.coords, h.coords).toFixed(1)} ${unit}` : "";
 };
 
 // Copy comes from the project benefits list on the current SEU site.
@@ -16,6 +17,10 @@ const TOPICS = [
   {
     id: "infrastructure",
     title: "Infrastructure",
+    ka: [
+      "ინფრასტრუქტურა",
+      `მეტრო ვარკეთილი ${near("varketili-metro", "კმ")}, Hualing Tbilisi Sea Plaza ${near("hualing-plaza", "კმ")}, East Point ${near("east-point", "კმ")} — მაღაზიები, სკოლები და თბილისის ზღვა აქ ყოველდღიური ცხოვრების ნაწილია.`,
+    ],
     text: `Varketili metro ${near("varketili-metro")}, Hualing Tbilisi Sea Plaza ${near("hualing-plaza")}, East Point ${near("east-point")} — shops, schools and the Tbilisi Sea are part of everyday life here.`,
     image: "/images/sun-aerial.jpg",
     side: "/images/sun-balcony.jpg",
@@ -23,6 +28,7 @@ const TOPICS = [
   {
     id: "services",
     title: "Services",
+    ka: ["სერვისები", "დაცული ეზო, ლობი ყოველი კორპუსის შესასვლელში, მიწისქვეშა და ზედაპირული პარკინგი, სავაჭრო და საოფისე ფართები ადგილზევე."],
     text: "A secure courtyard, a lobby at the entrance of every building, underground and surface parking, and retail and office space on site.",
     image: "/images/sun-lobby.jpg",
     side: "/images/sun-facade.jpg",
@@ -30,6 +36,7 @@ const TOPICS = [
   {
     id: "recreation",
     title: "Courtyard & recreation",
+    ka: ["ეზო და დასვენება", "2 ჰექტარამდე რეკრეაციული სივრცე საბავშვო და სპორტული მოედნებით, ჩოგბურთის კორტებით, სავარჯიშო დარბაზითა და სკოლით კომპლექსის ტერიტორიაზე."],
     text: "Up to two hectares of recreational space with playgrounds, sports grounds, tennis courts, a gym and a school within the complex.",
     image: "/images/sun-courtyard.jpg",
     side: "/images/varketili-panorama.jpg",
@@ -38,6 +45,7 @@ const TOPICS = [
 
 export default function Lifestyle() {
   const [active, setActive] = useState(TOPICS[0].id);
+  const ka = useLang() === "ka";
 
   return (
     <Section tone="light" flush className="pb-section">
@@ -51,14 +59,14 @@ export default function Lifestyle() {
         <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-b from-transparent to-[#f6f1e8]" />
         <div className="relative px-gutter text-center">
           <p className="eyebrow glass glass-dark mx-auto w-max rounded-full py-2 pl-4 pr-5 text-white [--muted:#fff]">
-            <span className="text-[#ffd7b5]">05</span>Neighbourhood
+            <span className="text-[#ffd7b5]">05</span>{ka ? "სამეზობლო" : "Neighbourhood"}
           </p>
           <h2 className="mt-8 text-[clamp(40px,5.6vw,96px)] leading-[0.9]" data-split>
             <span className="title-display uppercase" style={{ fontWeight: 600 }}>
-              A new way
+              {ka ? "ცხოვრების" : "A new way"}
             </span>{" "}
             <span className="title-display uppercase" style={{ fontWeight: 200 }}>
-              of living
+              {ka ? "ახალი წესი" : "of living"}
             </span>
           </h2>
         </div>
@@ -79,12 +87,12 @@ export default function Lifestyle() {
                 >
                   <span className="flex items-baseline gap-5">
                     <span className="label text-[12px] text-seu-accent-hi">{String(i + 1).padStart(2, "0")}</span>
-                    <span className="title-m text-seu-muted transition-colors duration-500 group-aria-expanded:text-seu-fg">{t.title}</span>
+                    <span className="title-m text-seu-muted transition-colors duration-500 group-aria-expanded:text-seu-fg">{ka ? t.ka[0] : t.title}</span>
                   </span>
                   <span className="h-px w-8 bg-current text-seu-muted transition-[width,color] duration-500 group-aria-expanded:w-14 group-aria-expanded:text-seu-accent-hi" />
                 </button>
                 <div id={`topic-${t.id}`} hidden={t.id !== active} className="body-copy pb-8 pr-10">
-                  {t.text}
+                  {ka ? t.ka[1] : t.text}
                 </div>
               </li>
             ))}

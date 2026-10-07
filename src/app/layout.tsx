@@ -13,7 +13,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className="h-full antialiased">
+    // Georgian pages live under /ka/: the page's language is set before it paints (see lib/i18n).
+    <html lang="en" className="h-full antialiased" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: `if(/\\/ka(\\/|$)/.test(location.pathname))document.documentElement.lang="ka"` }} />
+      </head>
       <body className="min-h-full">
         {children}
         <ScrollFX />

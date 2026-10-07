@@ -1,11 +1,17 @@
+"use client";
+
 import Link from "next/link";
 import { withBase } from "@/data/projects";
-import { isExternal, type NewsItem } from "@/data/news";
+import { isExternal, newsIn, type NewsItem } from "@/data/news";
+import { useHref, useLang } from "@/lib/useLang";
 
-export default function NewsCard({ item, wide }: { item: NewsItem; wide?: boolean }) {
+export default function NewsCard({ item: source, wide }: { item: NewsItem; wide?: boolean }) {
+  const lang = useLang();
+  const h = useHref();
+  const item = newsIn(source, lang);
   return (
     <Link
-      href={`/news/${item.slug}/`}
+      href={h(`/news/${item.slug}/`)}
       className={`card group md:p-6 ${
         wide ? "md:col-span-7" : "md:col-span-5"
       }`}
@@ -27,7 +33,7 @@ export default function NewsCard({ item, wide }: { item: NewsItem; wide?: boolea
         )}
       </div>
       <div className="mt-6 flex flex-wrap gap-3">
-        <span className="tag tag-solid">{item.minutes} min read</span>
+        <span className="tag tag-solid">{lang === "ka" ? `${item.minutes} წთ საკითხავი` : `${item.minutes} min read`}</span>
         <span className="tag tag-solid">{item.tag}</span>
         <span className="label ml-auto self-center text-[12px] text-seu-muted">{item.date}</span>
       </div>

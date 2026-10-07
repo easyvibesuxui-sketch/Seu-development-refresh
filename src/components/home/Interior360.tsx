@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { withBase } from "@/data/projects";
+import { useLang } from "@/lib/useLang";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -13,10 +14,10 @@ const STRIPS = 48;
 
 // Points of interest at their position across the panorama (0–1 of its width).
 const SPOTS = [
-  { at: 0.17, label: "Kitchen", note: "Island with travertine top" },
-  { at: 0.33, label: "Dining", note: "Table for six by the window" },
-  { at: 0.52, label: "Living room", note: "Floor-to-ceiling glazing" },
-  { at: 0.9, label: "Balcony", note: "View over the hills" },
+  { at: 0.17, label: "Kitchen", note: "Island with travertine top", ka: ["სამზარეულო", "კუნძული ტრავერტინის ზედაპირით"] },
+  { at: 0.33, label: "Dining", note: "Table for six by the window", ka: ["სასადილო", "ექვსკაციანი მაგიდა ფანჯარასთან"] },
+  { at: 0.52, label: "Living room", note: "Floor-to-ceiling glazing", ka: ["მისაღები", "იატაკიდან ჭერამდე მინა"] },
+  { at: 0.9, label: "Balcony", note: "View over the hills", ka: ["აივანი", "ხედი გორაკებზე"] },
 ];
 
 /*
@@ -26,6 +27,8 @@ const SPOTS = [
  */
 export default function Interior360() {
   const rootRef = useRef<HTMLElement>(null);
+  const lang = useLang();
+  const t = (en: string, ka: string) => (lang === "ka" ? ka : en);
   const stageRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<HTMLDivElement>(null);
   const spotRefs = useRef<(HTMLLIElement | null)[]>([]);
@@ -133,8 +136,11 @@ export default function Interior360() {
           ref={stageRef}
           tabIndex={0}
           role="group"
-          aria-roledescription="360° viewer"
-          aria-label="360° view of a sample SEU apartment. Use the left and right arrow keys or drag to look around."
+          aria-roledescription={t("360° viewer", "360° ხედი")}
+          aria-label={t(
+            "360° view of a sample SEU apartment. Use the left and right arrow keys or drag to look around.",
+            "SEU-ს სანიმუშო ბინის 360° ხედი. მიმოიხედეთ მარცხენა და მარჯვენა ისრებით ან გადათრევით.",
+          )}
           data-cursor="drag"
           className="absolute inset-0 cursor-grab touch-pan-y select-none overflow-hidden bg-seu-ink active:cursor-grabbing"
           style={{ perspective: geo ? `${geo.d}px` : undefined }}
@@ -181,8 +187,8 @@ export default function Interior360() {
                     <span className="h-1.5 w-1.5 rounded-full bg-white" />
                   </span>
                   <span>
-                    <span className="label block uppercase tracking-[0.14em]">{s.label}</span>
-                    <span className="block text-[12px] text-white/75">{s.note}</span>
+                    <span className="label block uppercase tracking-[0.14em]">{t(s.label, s.ka[0])}</span>
+                    <span className="block text-[12px] text-white/75">{t(s.note, s.ka[1])}</span>
                   </span>
                 </span>
               </li>
@@ -192,17 +198,17 @@ export default function Interior360() {
 
         <div className="pointer-events-none relative mx-auto flex h-full max-w-[1680px] flex-col justify-between px-gutter pb-14 pt-32">
           <p className="eyebrow glass glass-dark self-start rounded-full py-2 pl-4 pr-5 text-white [--muted:#fff]">
-            <span className="text-[#ffd7b5]">03</span>Inside · 360°
+            <span className="text-[#ffd7b5]">03</span>{t("Inside", "შიგნით")} · 360°
           </p>
           <div className="flex flex-wrap items-end justify-between gap-8">
             <h2 id="inside-title" className="section-title" data-split>
-              Step inside<span className="text-seu-accent-hi">.</span>
+              {t("Step inside", "შემობრძანდით")}<span className="text-seu-accent-hi">.</span>
             </h2>
             <p className="label flex items-center gap-3 text-[12px] uppercase tracking-[0.2em] text-seu-fg/85">
               <svg width="34" height="14" viewBox="0 0 34 14" fill="none" aria-hidden>
                 <path d="M6 1L1 7l5 6M28 1l5 6-5 6M1 7h32" stroke="currentColor" strokeWidth="1.2" />
               </svg>
-              Scroll or drag to look around
+              {t("Scroll or drag to look around", "გადაახვიეთ ან გადაათრიეთ მიმოსახედად")}
             </p>
           </div>
         </div>

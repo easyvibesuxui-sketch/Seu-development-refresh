@@ -4,7 +4,8 @@ import { useEffect, useRef } from "react";
 import type { Map as MapLibreMap } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { mappedProjects, withBase } from "@/data/projects";
-import { createMapStyle, projectTowers, seuColor } from "@/components/hero/mapStyle";
+import { createMapStyle, mapLocale, projectTowers, seuColor } from "@/components/hero/mapStyle";
+import { useLang } from "@/lib/useLang";
 
 /**
  * The day map of the home hero, slowly orbiting one project (SEU Varketili unless told
@@ -13,6 +14,7 @@ import { createMapStyle, projectTowers, seuColor } from "@/components/hero/mapSt
  */
 export default function GateMap({ className = "", project = "varketili", zoom = 15.3 }: { className?: string; project?: string; zoom?: number }) {
   const ref = useRef<HTMLDivElement>(null);
+  const lang = useLang();
 
   useEffect(() => {
     let map: MapLibreMap | null = null;
@@ -35,6 +37,7 @@ export default function GateMap({ className = "", project = "varketili", zoom = 
         interactive: false,
         attributionControl: { compact: true },
         canvasContextAttributes: { antialias: true },
+        locale: mapLocale(lang),
       });
       map.on("load", () => {
         if (!map) return;
@@ -73,7 +76,7 @@ export default function GateMap({ className = "", project = "varketili", zoom = 
       cancelAnimationFrame(frame);
       map?.remove();
     };
-  }, [project, zoom]);
+  }, [project, zoom, lang]);
 
   return <div ref={ref} className={className} style={{ position: "absolute", inset: 0 }} />;
 }

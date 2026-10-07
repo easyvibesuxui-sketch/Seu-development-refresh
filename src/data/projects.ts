@@ -1,3 +1,5 @@
+import type { Lang } from "@/lib/i18n";
+
 export type ProjectStatus = "ongoing" | "upcoming" | "finished";
 
 export type Project = {
@@ -122,3 +124,23 @@ export function distanceKm([lng1, lat1]: [number, number], [lng2, lat2]: [number
   const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * rad) * Math.cos(lat2 * rad) * Math.sin(dLng / 2) ** 2;
   return 6371 * 2 * Math.asin(Math.sqrt(a));
 }
+
+/* Georgian names for the site's /ka/ pages (see lib/i18n). Brand names stay as they are. */
+const KA_NAME: Record<string, string> = {
+  varketili: "SEU ვარკეთილი",
+  "varketili-2": "SEU ვარკეთილი II",
+  "varketili-3": "SEU ვარკეთილი III",
+  "green-yard": "SEU Green Yard",
+  vasilisko: "SEU ვასილისკო",
+  "varketili-metro": "მეტრო ვარკეთილი",
+  "hualing-plaza": "Hualing Tbilisi Sea Plaza",
+  "east-point": "East Point",
+  "hualing-park": "ჰუალინგის პარკი",
+};
+const KA_DISTRICT: Record<string, string> = { Varketili: "ვარკეთილი", Saburtalo: "საბურთალო" };
+const KA_STATUS: Record<ProjectStatus, string> = { ongoing: "მიმდინარე", upcoming: "იწყება", finished: "დასრულებული" };
+
+/** A project's or landmark's name in the page's language. */
+export const nameIn = (item: { id: string; name: string }, lang: Lang) => (lang === "ka" ? (KA_NAME[item.id] ?? item.name) : item.name);
+export const districtIn = (district: string, lang: Lang) => (lang === "ka" ? (KA_DISTRICT[district] ?? district) : district);
+export const statusIn = (status: ProjectStatus, lang: Lang) => (lang === "ka" ? KA_STATUS[status] : statusLabel[status]);

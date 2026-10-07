@@ -605,7 +605,8 @@ body::before {
   background: var(--field);
 }
 
-.segmented > button {
+.segmented > button,
+.segmented > a {
   min-width: 44px;
   padding: 0 12px;
   border-radius: 999px;
@@ -619,7 +620,8 @@ body::before {
     color 0.3s;
 }
 
-.segmented > button[aria-pressed="true"] {
+.segmented > button[aria-pressed="true"],
+.segmented > a[aria-current="true"] {
   background: var(--seu-accent);
   color: #fff;
 }

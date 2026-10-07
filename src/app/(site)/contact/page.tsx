@@ -1,18 +1,8 @@
 import type { Metadata } from "next";
-import ContactSection from "@/components/home/ContactSection";
-import PageHero from "@/components/ui/PageHero";
+import ContactScreen, { contactMeta } from "@/screens/ContactScreen";
 
-export const metadata: Metadata = { title: "Contact" };
+export const metadata: Metadata = contactMeta("en");
 
-export default function ContactPage() {
-  return (
-    <main>
-      <PageHero
-        eyebrow="Talk to us"
-        title="Contact"
-        intro="Leave your number and a sales manager will call you back, or visit our office in Saburtalo."
-      />
-      <ContactSection split />
-    </main>
-  );
+export default function Page() {
+  return <ContactScreen lang="en" />;
 }

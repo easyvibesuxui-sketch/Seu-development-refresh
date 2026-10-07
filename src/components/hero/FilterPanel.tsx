@@ -3,6 +3,7 @@
 import { useId, useState } from "react";
 import { useRouter } from "next/navigation";
 import Icon from "@/components/ui/Icon";
+import { useHref, useT } from "@/lib/useLang";
 
 // Same buckets as the apartment search: studio, 1, 2 and 3+ bedrooms.
 const ROOMS = [
@@ -22,6 +23,8 @@ export default function FilterPanel({ className = "", tone = "light" }: { classN
   const [rooms, setRooms] = useState<number[]>([]);
   const router = useRouter();
   const id = useId();
+  const t = useT();
+  const h = useHref();
 
   const toggle = (n: number) => setRooms((cur) => (cur.includes(n) ? cur.filter((b) => b !== n) : [...cur, n]));
 
@@ -35,33 +38,33 @@ export default function FilterPanel({ className = "", tone = "light" }: { classN
         if (rooms.length) q.set("rooms", [...rooms].sort().join(","));
         if (from.trim()) q.set("from", from.trim());
         if (to.trim()) q.set("to", to.trim());
-        router.push(`/search/?${q}`);
+        router.push(h(`/search/?${q}`));
       }}
     >
       <p id={`${id}-title`} className="eyebrow">
-        Find an apartment
+        {t("Find an apartment", "აირჩიე ბინა")}
       </p>
 
       <fieldset className="mt-6">
-        <legend className="field-label">Size, m²</legend>
+        <legend className="field-label">{t("Size, m²", "ზომა, მ²")}</legend>
         <div className="grid grid-cols-2 gap-3">
           <label>
-            <span className="sr-only">From, m²</span>
-            <input className="field" inputMode="numeric" placeholder="From" value={from} onChange={(e) => setFrom(e.target.value.replace(/\D/g, ""))} />
+            <span className="sr-only">{t("From, m²", "დან, მ²")}</span>
+            <input className="field" inputMode="numeric" placeholder={t("From", "დან")} value={from} onChange={(e) => setFrom(e.target.value.replace(/\D/g, ""))} />
           </label>
           <label>
-            <span className="sr-only">To, m²</span>
-            <input className="field" inputMode="numeric" placeholder="To" value={to} onChange={(e) => setTo(e.target.value.replace(/\D/g, ""))} />
+            <span className="sr-only">{t("To, m²", "მდე, მ²")}</span>
+            <input className="field" inputMode="numeric" placeholder={t("To", "მდე")} value={to} onChange={(e) => setTo(e.target.value.replace(/\D/g, ""))} />
           </label>
         </div>
       </fieldset>
 
       <fieldset className="mt-5">
-        <legend className="field-label">Bedrooms</legend>
-        <div className="grid grid-cols-4 gap-2">
+        <legend className="field-label">{t("Bedrooms", "საძინებლები")}</legend>
+        <div className="grid grid-cols-[1.5fr_1fr_1fr_1fr] gap-2">
           {ROOMS.map((r) => (
             <button key={r.value} type="button" aria-pressed={rooms.includes(r.value)} onClick={() => toggle(r.value)} className="chip px-0">
-              {r.label}
+              {r.value === 0 ? t("Studio", "სტუდიო") : r.label}
             </button>
           ))}
         </div>
@@ -69,12 +72,12 @@ export default function FilterPanel({ className = "", tone = "light" }: { classN
 
       <div className="mt-6 flex items-center gap-3">
         <button type="submit" className="btn btn-primary flex-1">
-          Search
+          {t("Search", "ძებნა")}
         </button>
         <button
           type="button"
           className="btn btn-icon"
-          aria-label="Reset filters"
+          aria-label={t("Reset filters", "ფილტრის გასუფთავება")}
           onClick={() => {
             setFrom("");
             setTo("");

@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { withBase } from "@/data/projects";
 import { MAP_READY_EVENT, mapIsReady, startIntro } from "@/lib/intro";
+import { useLang } from "@/lib/useLang";
 
 const MAX_WAIT_MS = 9000;
 // Module state survives client-side navigation, so returning to the home page skips the loader.
@@ -18,6 +19,7 @@ const FALLBACK_MS = 2600;
  */
 export default function Preloader() {
   const rootRef = useRef<HTMLDivElement>(null);
+  const lang = useLang();
   const countRef = useRef<HTMLSpanElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -109,7 +111,7 @@ export default function Preloader() {
   }, []);
 
   return (
-    <div ref={rootRef} className="preloader" role="status" aria-label="Loading">
+    <div ref={rootRef} className="preloader" role="status" aria-label={lang === "ka" ? "იტვირთება" : "Loading"}>
       <video
         ref={videoRef}
         className="pl-film"

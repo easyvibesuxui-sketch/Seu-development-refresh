@@ -215,3 +215,22 @@ export function projectTowers(projects: MappedProject[]): GeoJSON.FeatureCollect
 }
 
 export const seuColor = palette.seu;
+
+/** MapLibre's own control labels in the page's language. */
+export const mapLocale = (lang: "en" | "ka"): Record<string, string> | undefined =>
+  lang === "ka"
+    ? {
+        "Map.Title": "რუკა",
+        "Marker.Title": "რუკის ნიშნული",
+        "AttributionControl.ToggleAttribution": "წყაროების ჩვენება",
+        "AttributionControl.MapFeedback": "რუკაზე უკუკავშირი",
+        "NavigationControl.ZoomIn": "გადიდება",
+        "NavigationControl.ZoomOut": "დაპატარავება",
+        "NavigationControl.ResetBearing": "გადაათრიეთ მოსაბრუნებლად, დააჭირეთ ჩრდილოეთისკენ დასაბრუნებლად",
+        "CooperativeGesturesHandler.WindowsHelpText": "რუკის გასადიდებლად გამოიყენეთ Ctrl + გადახვევა",
+        "CooperativeGesturesHandler.MacHelpText": "რუკის გასადიდებლად გამოიყენეთ ⌘ + გადახვევა",
+        "CooperativeGesturesHandler.MobileHelpText": "რუკის გადასაადგილებლად გამოიყენეთ ორი თითი",
+        "ScaleControl.Kilometers": "კმ",
+        "ScaleControl.Meters": "მ",
+      }
+    : undefined;

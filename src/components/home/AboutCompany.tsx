@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import LogoMark from "@/components/brand/LogoMark";
 import { withBase } from "@/data/projects";
+import { useT } from "@/lib/useLang";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -20,6 +21,7 @@ const RINGS = [
 export default function AboutCompany() {
   const rootRef = useRef<HTMLElement>(null);
   const [playing, setPlaying] = useState(false);
+  const t = useT();
 
   useEffect(() => {
     const root = rootRef.current;
@@ -93,10 +95,10 @@ export default function AboutCompany() {
         <div className="relative z-10 mx-auto flex max-w-[1680px] items-start justify-between px-gutter pt-28 md:pt-32">
           <div>
             <p className="eyebrow mb-5">
-              <span className="text-seu-accent-hi">01</span>Since 2014
+              <span className="text-seu-accent-hi">01</span>{t("Since 2014", "2014 წლიდან")}
             </p>
             <h2 className="section-title" data-split>
-              About company<span className="text-seu-accent-hi">.</span>
+              {t("About company", "კომპანიის შესახებ")}<span className="text-seu-accent-hi">.</span>
             </h2>
           </div>
           <span className="group hidden md:block">
@@ -123,14 +125,14 @@ export default function AboutCompany() {
               ))}
 
               <div className="ac-video pointer-events-auto relative aspect-[16/9] w-[min(440px,74vw)] overflow-hidden rounded-[20px] shadow-[0_30px_80px_rgb(19_33_29/0.25)]">
-                <img src={withBase("/images/choose-varketili.jpg")} alt="SEU Varketili aerial render" className="h-full w-full object-cover" />
+                <img src={withBase("/images/choose-varketili.jpg")} alt={t("SEU Varketili aerial render", "SEU ვარკეთილის რენდერი ზემოდან")} className="h-full w-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-seu-ink/60 via-transparent to-transparent" />
                 {/* Centring lives on the wrapper so GSAP can scale the button freely. */}
                 <div className="absolute inset-0 grid place-items-center">
                   <button
                     type="button"
                     onClick={() => setPlaying(true)}
-                    aria-label="Play SEU Varketili video"
+                    aria-label={t("Play SEU Varketili video", "SEU ვარკეთილის ვიდეოს ჩართვა")}
                     data-cursor="play"
                     className="ac-play relative grid h-16 w-16 place-items-center rounded-full border border-white/50 bg-white/15 backdrop-blur-md transition-[background-color] duration-500 hover:bg-seu-accent"
                   >
@@ -146,10 +148,12 @@ export default function AboutCompany() {
 
           {/* Side notes share the header's container and the composition's centre line. */}
           <div className="pointer-events-none absolute inset-0 z-10 mx-auto flex max-w-[1680px] items-end justify-between px-gutter pb-10 lg:items-center lg:pb-0">
-            <p className="ac-left title-m hidden max-w-[220px] lg:block">Real estate market since 2014.</p>
+            <p className="ac-left title-m hidden max-w-[220px] lg:block">{t("Real estate market since 2014.", "უძრავი ქონების ბაზარზე 2014 წლიდან.")}</p>
             <p className="ac-right body-copy ml-auto max-w-[320px] text-right">
-              The company&apos;s team, consisting of experienced professionals, cares about continuous development,
-              adheres to high construction standards and uses innovative technologies.
+              {t(
+                "The company's team, consisting of experienced professionals, cares about continuous development, adheres to high construction standards and uses innovative technologies.",
+                "კომპანიის გუნდი, რომელიც გამოცდილ პროფესიონალებს აერთიანებს, ზრუნავს მუდმივ განვითარებაზე, იცავს მშენებლობის მაღალ სტანდარტებს და იყენებს ინოვაციურ ტექნოლოგიებს.",
+              )}
             </p>
           </div>
         </div>
@@ -159,7 +163,7 @@ export default function AboutCompany() {
         <div
           role="dialog"
           aria-modal="true"
-          aria-label="SEU Varketili video"
+          aria-label={t("SEU Varketili video", "SEU ვარკეთილის ვიდეო")}
           className="fixed inset-0 z-[100] grid place-items-center bg-black/80 p-6 backdrop-blur-md"
           onClick={() => setPlaying(false)}
         >
@@ -173,7 +177,7 @@ export default function AboutCompany() {
             />
           </div>
           <button type="button" className="btn btn-glass absolute right-6 top-6" onClick={() => setPlaying(false)} autoFocus>
-            Close
+            {t("Close", "დახურვა")}
           </button>
         </div>
       )}

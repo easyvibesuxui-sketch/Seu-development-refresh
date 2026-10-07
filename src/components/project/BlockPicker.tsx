@@ -5,7 +5,8 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { withBase } from "@/data/projects";
-import { bedroomText, unitsOn, varketiliBlocks, type Block } from "@/data/inventory";
+import { bedroomsIn, blockNameIn, deliveryIn, unitsOn, varketiliBlocks, type Block } from "@/data/inventory";
+import { useHref, useLang } from "@/lib/useLang";
 import FilterPanel from "@/components/hero/FilterPanel";
 
 // The 3D sun study loads its map only when opened.
@@ -75,6 +76,9 @@ export default function BlockPicker() {
   const sunButton = useRef<HTMLButtonElement>(null);
   const scrollerRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const lang = useLang();
+  const h = useHref();
+  const t = (en: string, ka: string) => (lang === "ka" ? ka : en);
 
   // On narrow screens the render is wider than the viewport: start centred, let people swipe.
   useEffect(() => {
@@ -91,7 +95,7 @@ export default function BlockPicker() {
           style={{ aspectRatio: `${RATIO}`, width: `max(100%, calc(max(100svh, 680px) * ${RATIO}))` }}
           onMouseLeave={() => setHover(null)}
         >
-          <img src={withBase(RENDER)} alt="SEU Varketili at golden hour: five residential blocks" className="h-full w-full" />
+          <img src={withBase(RENDER)} alt={t("SEU Varketili at golden hour: five residential blocks", "SEU ვარკეთილი მზის ჩასვლისას: ხუთი საცხოვრებელი ბლოკი")} className="h-full w-full" />
           <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" data-cursor="native">
             {varketiliBlocks.map((b) =>
               Array.from({ length: b.floors }, (_, i) => {
@@ -101,13 +105,13 @@ export default function BlockPicker() {
                 return (
                   <a
                     key={`${b.id}-${floor}`}
-                    href={withBase(floorHref(b, floor))}
+                    href={withBase(h(floorHref(b, floor)))}
                     tabIndex={-1}
                     aria-hidden
                     onMouseEnter={() => setHover({ block: b, floor })}
                     onClick={(e) => {
                       e.preventDefault();
-                      router.push(floorHref(b, floor));
+                      router.push(h(floorHref(b, floor)));
                     }}
                     // Mouse-only shortcut (keyboard goes through the pins): no focus ring on click.
                     className="cursor-pointer outline-none"
@@ -133,8 +137,8 @@ export default function BlockPicker() {
             return (
               <Link
                 key={b.id}
-                href={`/projects/varketili/${b.id}/`}
-                aria-label={`${b.name}, ${b.floors} floors: choose a floor`}
+                href={h(`/projects/varketili/${b.id}/`)}
+                aria-label={t(`${b.name}, ${b.floors} floors: choose a floor`, `${blockNameIn(b, lang)}, ${b.floors} სართული: აირჩიეთ სართული`)}
                 className="group absolute -translate-x-1/2 -translate-y-full"
                 style={{ left: `${pin.x}%`, top: `${pin.y}%` }}
               >
@@ -162,21 +166,21 @@ export default function BlockPicker() {
       <div className="pointer-events-none relative z-10 mx-auto max-w-[1680px] px-gutter pt-28 [&_a]:pointer-events-auto [&_button]:pointer-events-auto">
         {/* Navigation reads as a quiet text link; the sun study is the one call to action. */}
         <div className="flex flex-wrap items-center gap-6">
-          <Link href="/projects/" className="group inline-flex items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-white">
+          <Link href={h("/projects/")} className="group inline-flex items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-white">
             <span className="grid h-10 w-10 place-items-center rounded-full border border-white/50 bg-seu-ink/55 backdrop-blur transition-colors group-hover:border-white group-hover:bg-seu-ink/80">
               <svg width="8" height="12" viewBox="0 0 8 12" fill="none" aria-hidden className="transition-transform group-hover:-translate-x-0.5">
                 <path d="M7 1L2 6l5 5" stroke="currentColor" strokeWidth="1.4" />
               </svg>
             </span>
-            <span className="[text-shadow:0_1px_12px_rgb(0_0_0/0.6)]">All projects</span>
+            <span className="[text-shadow:0_1px_12px_rgb(0_0_0/0.6)]">{t("All projects", "ყველა პროექტი")}</span>
           </Link>
           <button ref={sunButton} type="button" aria-haspopup="dialog" onClick={() => setSun(true)} className="btn btn-primary btn-sm">
-            <SunIcon /> Sun study
+            <SunIcon /> {t("Sun study", "მზის კვლევა")}
           </button>
         </div>
-        <p className="eyebrow mt-8 text-white/85">Visual search · Choose a floor</p>
+        <p className="eyebrow mt-8 text-white/85">{t("Visual search · Choose a floor", "ვიზუალური ძებნა · აირჩიეთ სართული")}</p>
         <h1 className="title-display mt-3 text-[clamp(32px,3.4vw,56px)] uppercase leading-none" data-split>
-          SEU Varketili<span className="text-seu-accent-hi">.</span>
+          {t("SEU Varketili", "SEU ვარკეთილი")}<span className="text-seu-accent-hi">.</span>
         </h1>
       </div>
 
@@ -209,6 +213,8 @@ function FloorCard({ block, floor }: Hover) {
   const total = all.length;
   const free = all.filter((u) => u.status === "available");
   const types = [...new Set(free.map((u) => u.bedrooms))].sort((a, b) => a - b);
+  const lang = useLang();
+  const t = (en: string, ka: string) => (lang === "ka" ? ka : en);
 
   return (
     <div
@@ -223,31 +229,39 @@ function FloorCard({ block, floor }: Hover) {
       <div className="grid grid-cols-2 divide-x divide-seu-line">
         <p>
           <span className="title-display block text-[48px] leading-none">{String(floor).padStart(2, "0")}</span>
-          <span className="label mt-2 block text-[12px] uppercase tracking-[0.16em]">Floor</span>
+          <span className="label mt-2 block text-[12px] uppercase tracking-[0.16em]">{t("Floor", "სართული")}</span>
         </p>
         <p className="pl-6">
           <span className="title-display block text-[48px] leading-none">{block.id.slice(1)}</span>
-          <span className="label mt-2 block text-[12px] uppercase tracking-[0.16em]">Block</span>
+          <span className="label mt-2 block text-[12px] uppercase tracking-[0.16em]">{t("Block", "ბლოკი")}</span>
         </p>
       </div>
       <p className="mt-5 border-t border-seu-line pt-4 text-[12px] uppercase tracking-[0.14em] text-seu-muted">
-        {block.status === "delivered" ? `Delivered ${block.delivery}` : `Completion ${block.delivery}`}
+        {block.status === "delivered" ? t(`Delivered ${block.delivery}`, `ჩაბარდა ${deliveryIn(block.delivery, lang)}`) : t(`Completion ${block.delivery}`, `დასრულება: ${deliveryIn(block.delivery, lang)}`)}
       </p>
       {floor === 1 ? (
-        <p className="mt-3 text-[14px]">Lobby and retail</p>
+        <p className="mt-3 text-[14px]">{t("Lobby and retail", "ლობი და კომერციული ფართი")}</p>
       ) : types.length ? (
         <>
           <p className="mt-3 text-[14px]">
-            <span className="font-semibold">{free.length}</span> of {total} flats available
+            {lang === "ka" ? (
+              <>
+                {total}-დან <span className="font-semibold">{free.length}</span> ბინა ხელმისაწვდომია
+              </>
+            ) : (
+              <>
+                <span className="font-semibold">{free.length}</span> of {total} flats available
+              </>
+            )}
           </p>
           <ul className="mt-3 space-y-2 text-[14px]">
-            {types.map((t) => {
-              const of = free.filter((u) => u.bedrooms === t);
+            {types.map((n) => {
+              const of = free.filter((u) => u.bedrooms === n);
               return (
-                <li key={t} className="grid grid-cols-[1fr_auto] items-baseline gap-3">
-                  <span className="font-semibold">{bedroomText(t)}</span>
+                <li key={n} className="grid grid-cols-[1fr_auto] items-baseline gap-3">
+                  <span className="font-semibold">{bedroomsIn(n, lang)}</span>
                   <span className="rounded-full px-2 py-0.5 text-[12px] font-semibold text-white" style={{ background: "var(--seu-available)" }}>
-                    {of.length} free
+                    {of.length} {t("free", "თავისუფალი")}
                   </span>
                 </li>
               );
@@ -255,7 +269,7 @@ function FloorCard({ block, floor }: Hover) {
           </ul>
         </>
       ) : (
-        <p className="mt-3 text-[14px] text-seu-muted">No flats available on this floor</p>
+        <p className="mt-3 text-[14px] text-seu-muted">{t("No flats available on this floor", "ამ სართულზე ხელმისაწვდომი ბინა არ არის")}</p>
       )}
     </div>
   );

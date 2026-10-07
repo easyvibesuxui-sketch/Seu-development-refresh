@@ -40,7 +40,7 @@ const TEXT = {
 /*
  * Printable two-page A4 apartment presentation, laid out after the developer's PDF template
  * (docs/design/apartment-profile-template.pdf). "Download PDF" uses the browser's print-to-PDF.
- * The website prints it in English; the assistant in the visitor's language.
+ * Printed in the page's language: the website by its path (/ka/ is Georgian), the assistant by the visitor's choice.
  */
 export default function ApartmentPresentation({ unit, lang = "en", rooms }: { unit: Unit; lang?: Lang; rooms: Record<RoomKind, string> }) {
   const t = TEXT[lang];

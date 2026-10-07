@@ -3,9 +3,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { LngLatBoundsLike, Map as MapLibreMap, Marker } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { distanceKm, highlights, mappedProjects, statusLabel, withBase, type MappedProject } from "@/data/projects";
+import { distanceKm, highlights, mappedProjects, nameIn, statusIn, withBase, type MappedProject } from "@/data/projects";
+import { useLang } from "@/lib/useLang";
 import { INTRO_EVENT, introStarted, markMapReady } from "@/lib/intro";
-import { createMapStyle, projectTowers, seuColor } from "./mapStyle";
+import { createMapStyle, mapLocale, projectTowers, seuColor } from "./mapStyle";
 import { createTraffic } from "./traffic";
 import FilterPanel from "./FilterPanel";
 import Clouds, { type CloudsHandle } from "./Clouds";
@@ -39,6 +40,8 @@ export default function HeroMap() {
   const [active, setActive] = useState<MappedProject>(mappedProjects[0]);
   const [ready, setReady] = useState(false);
   const [landed, setLanded] = useState(false);
+  const lang = useLang();
+  const t = (en: string, ka: string) => (lang === "ka" ? ka : en);
 
   const goToProject = useCallback((project: MappedProject) => {
     const map = mapRef.current;
@@ -100,6 +103,7 @@ export default function HeroMap() {
       const map = new maplibre.Map({
         container: containerRef.current,
         style: createMapStyle(),
+        locale: mapLocale(lang),
         center: first.coords,
         zoom: 12.2,
         pitch: 0,
@@ -228,10 +232,10 @@ export default function HeroMap() {
               .setLngLat(coords)
               .addTo(map),
           );
-        for (const project of mappedProjects) addMarker(createProjectPin(project, () => goToProject(project)), project.coords);
+        for (const project of mappedProjects) addMarker(createProjectPin(project, () => goToProject(project), lang), project.coords);
         for (const highlight of highlights) {
           const owner = mappedProjects.find((p) => p.id === highlight.project);
-          if (owner) addMarker(createHighlightPin(highlight, distanceKm(owner.coords, highlight.coords)), highlight.coords);
+          if (owner) addMarker(createHighlightPin(highlight, distanceKm(owner.coords, highlight.coords), lang), highlight.coords);
         }
 
         setReady(true);
@@ -261,7 +265,7 @@ export default function HeroMap() {
       mapRef.current?.remove();
       mapRef.current = null;
     };
-  }, [goToProject]);
+  }, [goToProject, lang]);
 
   // Landmarks only accompany their own project, never the city overview.
   useEffect(() => {
@@ -290,30 +294,32 @@ export default function HeroMap() {
         {mode === "project" ? (
           <div key={active.id} className={styles.captionInner}>
             <p className={styles.status}>
-              <FlagIcon /> {statusLabel[active.status].toUpperCase()} <span>{active.date}</span>
+              <FlagIcon /> {statusIn(active.status, lang).toUpperCase()} <span>{active.date}</span>
             </p>
-            <h1 className={styles.title}>{active.name}</h1>
+            <h1 className={styles.title}>{nameIn(active, lang)}</h1>
           </div>
         ) : (
           <div key="overview" className={styles.captionInner}>
-            <p className={styles.status}>Tbilisi · {mappedProjects.length} projects</p>
-            <h1 className={styles.title}>All projects</h1>
+            <p className={styles.status}>
+              {t("Tbilisi", "თბილისი")} · {mappedProjects.length} {t("projects", "პროექტი")}
+            </p>
+            <h1 className={styles.title}>{t("All projects", "ყველა პროექტი")}</h1>
             <div className={styles.legend}>
-              <span data-status="ongoing">Ongoing</span>
-              <span data-status="finished">Finished</span>
+              <span data-status="ongoing">{statusIn("ongoing", lang)}</span>
+              <span data-status="finished">{statusIn("finished", lang)}</span>
             </div>
           </div>
         )}
 
         <div className={styles.controls}>
-          <div className={styles.dots} role="tablist" aria-label="Projects">
+          <div className={styles.dots} role="tablist" aria-label={t("Projects", "პროექტები")}>
             {mappedProjects.map((p) => (
               <button
                 key={p.id}
                 type="button"
                 role="tab"
                 aria-selected={mode === "project" && active.id === p.id}
-                aria-label={p.name}
+                aria-label={nameIn(p, lang)}
                 className={styles.dot}
                 onClick={() => goToProject(p)}
               />
@@ -328,14 +334,14 @@ export default function HeroMap() {
               else showAllProjects();
             }}
           >
-            <span>{mode === "overview" ? `Back to ${active.name}` : "All projects"}</span>
+            <span>{mode === "overview" ? t(`Back to ${active.name}`, `უკან: ${nameIn(active, lang)}`) : t("All projects", "ყველა პროექტი")}</span>
           </button>
         </div>
       </div>
 
       <FilterPanel className={styles.filter} />
 
-      <a href="#about" className={styles.scrollHint} aria-label="Scroll to About company">
+      <a href="#about" className={styles.scrollHint} aria-label={t("Scroll to About company", "კომპანიის შესახებ")}>
         <svg width="14" height="16" viewBox="0 0 14 16" fill="none" aria-hidden>
           <path d="M7 1v13M1 8l6 6 6-6" stroke="currentColor" strokeWidth="1.4" />
         </svg>

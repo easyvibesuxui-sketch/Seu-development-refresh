@@ -5,8 +5,9 @@ import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import LogoMark from "@/components/brand/LogoMark";
-import { statusLabel, withBase, type Project } from "@/data/projects";
-import { benefits, bedroomText, units } from "@/data/inventory";
+import { statusIn, withBase, type Project } from "@/data/projects";
+import { bedroomsIn, benefitsIn, units } from "@/data/inventory";
+import { useHref, useLang, useT } from "@/lib/useLang";
 import { Container, Section, SectionHeader } from "@/components/ui/Section";
 import Icon, { type IconName } from "@/components/ui/Icon";
 
@@ -58,12 +59,14 @@ export function ProjectStats({ stats }: { stats: Stat[] }) {
 }
 
 export function AboutProject({ project, address, text, award }: { project: Project; address: string; text: string; award?: string }) {
+  const lang = useLang();
+  const t = (en: string, ka: string) => (lang === "ka" ? ka : en);
   return (
     <Section tone="light">
       <Container>
         <SectionHeader
-          eyebrow={`${statusLabel[project.status]} · ${project.date}`}
-          title="About project"
+          eyebrow={`${statusIn(project.status, lang)} · ${project.date}`}
+          title={t("About project", "პროექტის შესახებ")}
           action={
             <span className="group hidden md:block">
               <LogoMark className="w-24 overflow-visible" />
@@ -91,8 +94,8 @@ export function AboutProject({ project, address, text, award }: { project: Proje
                 className="h-full w-full object-cover opacity-70 transition duration-700 group-hover:scale-105 group-hover:opacity-90"
               />
               <span className="btn btn-glass btn-sm absolute bottom-5 left-5 text-white">
-                Open in Google Maps <span aria-hidden>↗</span>
-                <span className="sr-only">(opens in a new tab)</span>
+                {t("Open in Google Maps", "გახსნა Google Maps-ში")} <span aria-hidden>↗</span>
+                <span className="sr-only">{t("(opens in a new tab)", "(იხსნება ახალ ჩანართში)")}</span>
               </span>
             </a>
           </div>
@@ -111,6 +114,8 @@ const SLIDES = ["/images/upcoming-1.jpg", "/images/varketili-panorama.jpg", "/im
 export function Benefits() {
   const [index, setIndex] = useState(0);
   const trackRef = useRef<HTMLDivElement>(null);
+  const lang = useLang();
+  const t = (en: string, ka: string) => (lang === "ka" ? ka : en);
 
   useEffect(() => {
     const track = trackRef.current;
@@ -124,9 +129,9 @@ export function Benefits() {
     <Section tone="dark" className="overflow-hidden">
       <Container className="grid gap-16 md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
       <div>
-        <SectionHeader eyebrow="Why SEU" title="Benefits" className="lg:grid-cols-1" />
+        <SectionHeader eyebrow={t("Why SEU", "რატომ SEU")} title={t("Benefits", "უპირატესობები")} className="lg:grid-cols-1" />
         <ul className="mt-12 grid gap-x-8 gap-y-5 sm:grid-cols-2" data-stagger>
-          {benefits.map((b, i) => (
+          {benefitsIn(lang).map((b, i) => (
             <li key={b} className="flex items-center gap-4 text-[16px]">
               <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-seu-line text-seu-accent-hi">
                 <Icon name={BENEFIT_ICONS[i] ?? "shield"} size={20} />
@@ -153,8 +158,8 @@ export function Benefits() {
         </div>
         <div className="mt-8 flex items-center justify-between">
           <div className="flex gap-3">
-            <ArrowButton dir="prev" onClick={() => go(-1)} label="Previous image" />
-            <ArrowButton dir="next" onClick={() => go(1)} label="Next image" />
+            <ArrowButton dir="prev" onClick={() => go(-1)} label={t("Previous image", "წინა სურათი")} />
+            <ArrowButton dir="next" onClick={() => go(1)} label={t("Next image", "შემდეგი სურათი")} />
           </div>
           <p className="title-m tabular-nums" aria-live="polite">
             {String(index + 1).padStart(2, "0")}
@@ -185,22 +190,23 @@ export function ArrowButton({ dir, onClick, label }: { dir: "prev" | "next" | "u
 
 export function VirtualTour({ videoId }: { videoId: string }) {
   const [playing, setPlaying] = useState(false);
+  const t = useT();
   return (
     <Section tone="dark">
       <Container>
-        <SectionHeader eyebrow="Walk through" title="Virtual tour" />
+        <SectionHeader eyebrow={t("Walk through", "დაათვალიერეთ")} title={t("Virtual tour", "ვირტუალური ტური")} />
       </Container>
       <div className="relative mx-gutter mt-20 h-[78vh] min-h-[420px] overflow-hidden rounded-[24px]" data-cursor="play" data-window>
         {playing ? (
           <iframe
             className="h-full w-full"
             src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0`}
-            title="SEU Varketili virtual tour"
+            title={t("SEU Varketili virtual tour", "SEU ვარკეთილის ვირტუალური ტური")}
             allow="autoplay; encrypted-media; picture-in-picture"
             allowFullScreen
           />
         ) : (
-          <button type="button" onClick={() => setPlaying(true)} className="group absolute inset-0" aria-label="Play virtual tour">
+          <button type="button" onClick={() => setPlaying(true)} className="group absolute inset-0" aria-label={t("Play virtual tour", "ვირტუალური ტურის ჩართვა")}>
             <div className="absolute inset-0" data-zoom>
               <img src={withBase("/images/sun-interior.jpg")} alt="" className="h-full w-full object-cover" />
             </div>
@@ -219,6 +225,9 @@ export function VirtualTour({ videoId }: { videoId: string }) {
 }
 
 export function ApartmentTypes({ projectId }: { projectId: string }) {
+  const lang = useLang();
+  const h = useHref();
+  const tr = (en: string, ka: string) => (lang === "ka" ? ka : en);
   const own = units.filter((u) => u.project === projectId);
   const types = [0, 1, 2, 3]
     .map((b) => {
@@ -232,23 +241,23 @@ export function ApartmentTypes({ projectId }: { projectId: string }) {
   return (
     <Section tone="light">
       <Container>
-      <SectionHeader eyebrow="Layouts" title="Apartment types" />
+      <SectionHeader eyebrow={tr("Layouts", "განლაგებები")} title={tr("Apartment types", "ბინის ტიპები")} />
       <ul className="mt-16 border-t border-seu-line" data-stagger>
         {types.map((t) => (
           <li key={t.bedrooms}>
             <Link
-              href={`/search/?project=${projectId}&rooms=${t.bedrooms}`}
+              href={h(`/search/?project=${projectId}&rooms=${t.bedrooms}`)}
               className="group grid grid-cols-[72px_1fr_auto] items-center gap-6 border-b border-seu-line py-6 transition-colors hover:bg-seu-field md:grid-cols-[96px_1.2fr_1fr_1fr_auto]"
             >
               <span className="block aspect-square overflow-hidden rounded-[12px] bg-white">
                 <img src={withBase("/images/apartment-plan.png")} alt="" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
               </span>
-              <span className="title-m">{bedroomText(t.bedrooms)}</span>
+              <span className="title-m">{bedroomsIn(t.bedrooms, lang)}</span>
               <span className="hidden text-[16px] md:block">
-                {t.min}–{t.max} m²
+                {t.min}–{t.max} {tr("m²", "მ²")}
               </span>
               <span className="hidden text-[16px] text-seu-muted md:block">
-                {t.count} available
+                {t.count} {tr("available", "ხელმისაწვდომი")}
               </span>
               <span className="btn btn-icon transition-transform group-hover:translate-x-1" aria-hidden>
                 <svg width="8" height="14" viewBox="0 0 8 14" fill="none" aria-hidden>

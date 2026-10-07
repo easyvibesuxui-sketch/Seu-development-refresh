@@ -4,7 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import gsap from "gsap";
 import { withBase } from "@/data/projects";
-import { roomText, statusText, units, viewText, type RoomKind, type Unit, type ViewId } from "@/data/inventory";
+import { roomIn, unitStatusIn, units, viewIn, type RoomKind, type Unit, type ViewId } from "@/data/inventory";
+import { useHref, useLang } from "@/lib/useLang";
 import { Container, Section, SectionHeader } from "@/components/ui/Section";
 import ApartmentCard from "@/components/ui/ApartmentCard";
 import BackLink from "@/components/ui/BackLink";
@@ -45,6 +46,9 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
   const [sheet, setSheet] = useState(false);
   const [sun, setSun] = useState(false);
   const stageRef = useRef<HTMLDivElement>(null);
+  const lang = useLang();
+  const h = useHref();
+  const t = (en: string, ka: string) => (lang === "ka" ? ka : en);
   const similar = units
     .filter((u) => u.id !== unit.id && u.bedrooms === unit.bedrooms && u.status !== "sold")
     .sort((a, b) => Math.abs(a.totalArea - unit.totalArea) - Math.abs(b.totalArea - unit.totalArea))
@@ -66,25 +70,27 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
           <div className="mt-10 flex items-center gap-8">
             <p className="flex items-center gap-3 text-[16px] text-seu-muted">
               <Icon name="block" size={22} className="text-seu-accent-hi" />
-              Block <span className="title-m text-[28px] text-seu-fg">{unit.block.slice(1)}</span>
+              {t("Block", "ბლოკი")} <span className="title-m text-[28px] text-seu-fg">{unit.block.slice(1)}</span>
             </p>
             <p className="flex items-center gap-3 text-[16px] text-seu-muted">
               <Icon name="floor" size={22} className="text-seu-accent-hi" />
-              Floor <span className="title-m text-[28px] text-seu-fg">{unit.floor}</span>
+              {t("Floor", "სართული")} <span className="title-m text-[28px] text-seu-fg">{unit.floor}</span>
             </p>
           </div>
-          <p className="eyebrow mt-10">SEU Varketili · {statusText[unit.status]}</p>
+          <p className="eyebrow mt-10">
+            {t("SEU Varketili", "SEU ვარკეთილი")} · {unitStatusIn(unit.status, lang)}
+          </p>
           <h1 className="page-title mt-4 text-[clamp(40px,4.4vw,76px)]">
-            Apartment {unit.number}<span className="text-seu-accent-hi">.</span>
+            {t("Apartment", "ბინა")} {unit.number}<span className="text-seu-accent-hi">.</span>
           </h1>
 
           <dl className="mt-8 grid grid-cols-2 gap-x-6 gap-y-6 sm:grid-cols-4" data-stagger>
             {(
               [
-                ["area", "Total size", `${unit.totalArea} m²`],
-                ["living", "Main size", `${unit.livingArea} m²`],
-                ["balcony", "Open space", `${unit.openArea} m²`],
-                ["bed", "Bedrooms", unit.bedrooms === 0 ? "Studio" : String(unit.bedrooms)],
+                ["area", t("Total size", "საერთო ფართი"), `${unit.totalArea} ${t("m²", "მ²")}`],
+                ["living", t("Main size", "საცხოვრებელი ფართი"), `${unit.livingArea} ${t("m²", "მ²")}`],
+                ["balcony", t("Open space", "საზაფხულო ფართი"), `${unit.openArea} ${t("m²", "მ²")}`],
+                ["bed", t("Bedrooms", "საძინებლები"), unit.bedrooms === 0 ? t("Studio", "სტუდიო") : String(unit.bedrooms)],
               ] as [IconName, string, string][]
             ).map(([icon, k, v]) => (
               <div key={k} className="flex flex-col gap-3">
@@ -98,11 +104,11 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
               </div>
             ))}
           </dl>
-          <ul className="mt-8 flex flex-wrap gap-2" aria-label="Views">
+          <ul className="mt-8 flex flex-wrap gap-2" aria-label={t("Views", "ხედები")}>
             {unit.views.map((v) => (
               <li key={v} className="tag gap-2 py-1.5">
                 <Icon name={viewIcon[v]} size={15} className="text-seu-accent-hi" />
-                {viewText[v]}
+                {viewIn(v, lang)}
               </li>
             ))}
           </ul>
@@ -114,19 +120,21 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
               onClick={() => setAsking(true)}
               className="btn btn-primary btn-lg"
             >
-              <Icon name="phone" size={16} /> Request a call
+              <Icon name="phone" size={16} /> {t("Request a call", "ზარის მოთხოვნა")}
             </button>
           </div>
 
-          <h2 className="eyebrow mt-16">Room by room</h2>
+          <h2 className="eyebrow mt-16">{t("Room by room", "ოთახები")}</h2>
           <ul className="mt-6 grid grid-cols-2 gap-x-8 gap-y-5 text-[15px] sm:grid-cols-3" data-stagger>
             {unit.rooms.map((r, i) => (
               <li key={i} className="flex items-center justify-between gap-3 border-b border-seu-line pb-3">
                 <span className="flex items-center gap-2.5 text-seu-muted">
                   <Icon name={roomIcon[r.kind]} size={18} className="text-seu-accent-hi" />
-                  {roomText[r.kind]}
+                  {roomIn(r.kind, lang)}
                 </span>
-                <span className="label">{r.area} m²</span>
+                <span className="label">
+                  {r.area} {t("m²", "მ²")}
+                </span>
               </li>
             ))}
           </ul>
@@ -135,40 +143,40 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
         <div>
           <div className="flex items-center justify-end">
             <a
-              href={withBase(`/apartments/${unit.id}/presentation/`)}
+              href={withBase(h(`/apartments/${unit.id}/presentation/`))}
               target="_blank"
               rel="noreferrer"
               className="btn btn-sm"
             >
               <Icon name="file" size={16} />
-              See presentation <span aria-hidden>↗</span>
-              <span className="sr-only">(opens in a new tab)</span>
+              {t("See presentation", "პრეზენტაციის ნახვა")} <span aria-hidden>↗</span>
+              <span className="sr-only">{t("(opens in a new tab)", "(იხსნება ახალ ჩანართში)")}</span>
             </a>
           </div>
           <div ref={stageRef} className="relative mt-4 aspect-[4/3.3] overflow-hidden rounded-[24px] bg-seu-paper">
-            <div className="vars-light absolute left-4 top-4 z-10 flex gap-2" role="tablist" aria-label="Layout view">
-              {(["3D", "2D", "Plan"] as Tab[]).map((t) => (
+            <div className="vars-light absolute left-4 top-4 z-10 flex gap-2" role="tablist" aria-label={t("Layout view", "განლაგების ხედი")}>
+              {(["3D", "2D", "Plan"] as Tab[]).map((v) => (
                 <button
-                  key={t}
+                  key={v}
                   type="button"
                   role="tab"
-                  aria-selected={tab === t}
-                  onClick={() => setTab(t)}
+                  aria-selected={tab === v}
+                  onClick={() => setTab(v)}
                   className="chip ctl-sm rounded-full px-4"
                 >
-                  {t}
+                  {v === "Plan" ? t("Plan", "გეგმა") : v}
                 </button>
               ))}
             </div>
-            <Compass />
+            <Compass label={t("North arrow", "ჩრდილოეთის ისარი")} />
             <div className="absolute inset-0 grid place-items-center p-12">
               {tab === "3D" ? (
-                <img data-tab-img src={withBase("/images/apartment-3d.webp")} alt={`Apartment ${unit.number}, 3D layout`} className="max-h-full w-[92%] object-contain drop-shadow-[0_30px_40px_rgb(19_33_29/0.25)]" />
+                <img data-tab-img src={withBase("/images/apartment-3d.webp")} alt={t(`Apartment ${unit.number}, 3D layout`, `ბინა ${unit.number}, 3D განლაგება`)} className="max-h-full w-[92%] object-contain drop-shadow-[0_30px_40px_rgb(19_33_29/0.25)]" />
               ) : (
                 <img
                   data-tab-img
                   src={withBase("/images/apartment-plan.png")}
-                  alt={`Apartment ${unit.number}, floor plan`}
+                  alt={t(`Apartment ${unit.number}, floor plan`, `ბინა ${unit.number}, გეგმა`)}
                   className={`max-h-full w-[75%] object-contain ${tab === "2D" ? "[filter:sepia(.35)_saturate(1.4)_hue-rotate(-12deg)]" : ""}`}
                 />
               )}
@@ -176,14 +184,14 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
             {/* The whole floor opens from a centred button, in a bottom sheet. */}
             <div className="vars-light absolute inset-x-0 bottom-5 z-10 flex flex-wrap justify-center gap-3 px-4">
               <button type="button" aria-haspopup="dialog" onClick={() => setSheet(true)} className="btn btn-primary">
-                <Icon name="plan" size={18} /> Floor plan
+                <Icon name="plan" size={18} /> {t("Floor plan", "სართულის გეგმა")}
               </button>
               <button type="button" aria-haspopup="dialog" onClick={() => setSun(true)} className="btn bg-white/70 backdrop-blur">
-                <Icon name="sun" size={18} /> Sun study
+                <Icon name="sun" size={18} /> {t("Sun study", "მზის კვლევა")}
               </button>
             </div>
           </div>
-          <p className="mt-3 text-[12px] text-seu-muted">Layout images are illustrative for this concept.</p>
+          <p className="mt-3 text-[12px] text-seu-muted">{t("Layout images are illustrative for this concept.", "განლაგების სურათები საილუსტრაციოა.")}</p>
         </div>
       </section>
 
@@ -191,9 +199,9 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
 
       <Section tone="light" className="overflow-hidden">
         <Container>
-        <SectionHeader eyebrow="Same size, other floors" title="Similar apartments" />
+        <SectionHeader eyebrow={t("Same size, other floors", "იგივე ზომა, სხვა სართულები")} title={t("Similar apartments", "მსგავსი ბინები")} />
         </Container>
-        <div className="mt-16 flex snap-x scroll-px-gutter gap-6 overflow-x-auto px-gutter pb-6" data-cursor="drag" tabIndex={0} aria-label="Similar apartments, scroll horizontally">
+        <div className="mt-16 flex snap-x scroll-px-gutter gap-6 overflow-x-auto px-gutter pb-6" data-cursor="drag" tabIndex={0} aria-label={t("Similar apartments, scroll horizontally", "მსგავსი ბინები, გადაახვიეთ ჰორიზონტალურად")}>
           {similar.map((u) => (
             <ApartmentCard key={u.id} unit={u} className="w-[300px] shrink-0 snap-start" />
           ))}
@@ -202,7 +210,7 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
 
       <RequestCallModal unit={unit} open={asking} onClose={() => setAsking(false)} />
       <FloorPlanSheet unit={unit} open={sheet} onClose={closeSheet} />
-      {sun && <SunStudy variant="sheet" place={`Block ${unit.block.slice(1)}, floor ${unit.floor}`} onClose={closeSun} />}
+      {sun && <SunStudy variant="sheet" place={t(`Block ${unit.block.slice(1)}, floor ${unit.floor}`, `ბლოკი ${unit.block.slice(1)}, სართული ${unit.floor}`)} onClose={closeSun} />}
     </main>
   );
 }

@@ -1,14 +1,8 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
-import ApartmentSearch from "@/components/search/ApartmentSearch";
+import SearchScreen, { searchMeta } from "@/screens/SearchScreen";
 
-export const metadata: Metadata = { title: "Apartments" };
+export const metadata: Metadata = searchMeta("en");
 
-// useSearchParams needs a Suspense boundary in a static export.
-export default function SearchPage() {
-  return (
-    <Suspense>
-      <ApartmentSearch />
-    </Suspense>
-  );
+export default function Page() {
+  return <SearchScreen />;
 }

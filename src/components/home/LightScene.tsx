@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import AmbientVideo from "@/components/ui/AmbientVideo";
 import { withBase } from "@/data/projects";
+import { useT } from "@/lib/useLang";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -19,6 +20,7 @@ const OPENING = { cx: 0.5, cy: 0.514, w: 0.189, h: 0.66 };
  * aside, then the copy settles in. A tall track with a sticky stage keeps it tied to scroll.
  */
 export default function LightScene() {
+  const t = useT();
   const rootRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -56,7 +58,7 @@ export default function LightScene() {
   }, []);
 
   return (
-    <section ref={rootRef} data-tone="dark" data-no-out className="tone-dark relative z-10 h-[340vh] shadow-[0_-30px_80px_rgb(0_0_0/0.25)]" aria-label="Homes made of light">
+    <section ref={rootRef} data-tone="dark" data-no-out className="tone-dark relative z-10 h-[340vh] shadow-[0_-30px_80px_rgb(0_0_0/0.25)]" aria-label={t("Homes made of light", "სინათლით სავსე სახლები")}>
       <div className="sticky top-0 h-[100svh] overflow-hidden bg-[#222a24]">
         {/* The film fills the stage; the wall with its window sits on top of it. */}
         <div className="absolute inset-0 overflow-hidden">
@@ -80,30 +82,32 @@ export default function LightScene() {
 
         <h2 className="pointer-events-none absolute inset-0 uppercase">
           <span className="ls-top absolute left-1/2 top-[5%] -translate-x-1/2 text-center md:left-[17%] md:top-1/2 md:-translate-y-1/2">
-            <span className="title-display block text-[clamp(44px,12vw,96px)] leading-none md:text-[clamp(44px,5.4vw,112px)]">Homes</span>
-            <span className="label mt-3 block text-[12px] tracking-[0.5em] text-seu-cream md:text-[13px]">made of</span>
+            <span className="title-display block text-[clamp(44px,12vw,96px)] leading-none md:text-[clamp(44px,5.4vw,112px)]">{t("Homes", "სახლები")}</span>
+            <span className="label mt-3 block text-[12px] tracking-[0.5em] text-seu-cream md:text-[13px]">{t("made of", "სავსე")}</span>
           </span>
           <span className="ls-bottom title-display absolute bottom-[5%] left-1/2 -translate-x-1/2 text-[clamp(44px,12vw,96px)] leading-none text-seu-accent-hi md:bottom-auto md:left-[83%] md:top-1/2 md:-translate-y-1/2 md:text-[clamp(44px,5.4vw,112px)]">
-            light
+            {t("light", "სინათლით")}
           </span>
         </h2>
 
         <div className="ls-copy absolute inset-x-gutter bottom-[10vh] grid gap-8 md:grid-cols-[1.2fr_1fr] md:items-end">
           <p className="title-display text-[clamp(30px,3.4vw,56px)] uppercase leading-[0.98]">
-            Planned around
+            {t("Planned around", "დაგეგმილი")}
             <br />
-            daylight
+            {t("daylight", "დღის სინათლით")}
           </p>
           <div>
             <p className="max-w-md text-[16px] leading-relaxed text-seu-cream md:text-[17px]">
-              Open layouts, tall windows and generous balconies let the morning and evening sun reach the rooms you
-              actually live in.
+              {t(
+                "Open layouts, tall windows and generous balconies let the morning and evening sun reach the rooms you actually live in.",
+                "ღია განლაგება, მაღალი ფანჯრები და ფართო აივნები დილისა და საღამოს მზეს იმ ოთახებამდე უშვებს, სადაც რეალურად ცხოვრობთ.",
+              )}
             </p>
             <div className="mt-6 flex gap-10">
               {[
-                ["3.5 ha", "district"],
-                ["2 ha", "of recreation"],
-                ["From 45 m²", "apartments"],
+                [t("3.5 ha", "3.5 ჰა"), t("district", "უბანი")],
+                [t("2 ha", "2 ჰა"), t("of recreation", "რეკრეაცია")],
+                [t("From 45 m²", "45 მ²-დან"), t("apartments", "ბინები")],
               ].map(([v, k]) => (
                 <p key={k}>
                   <span className="title-display block text-[clamp(22px,2vw,30px)]">{v}</span>

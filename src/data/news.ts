@@ -1,3 +1,5 @@
+import type { Lang } from "@/lib/i18n";
+
 /*
  * News items. Titles and YouTube ids are the ones published on seudevelopment.ge/news; the
  * featured forum story comes from the site's own copy. Dates and reading times are
@@ -113,3 +115,55 @@ export const news: NewsItem[] = [
 export const newsBySlug = (slug: string) => news.find((n) => n.slug === slug);
 
 export const isExternal = (src: string) => src.startsWith("http");
+
+/* Georgian titles as published on seudevelopment.ge/news, for the /ka/ pages (see lib/i18n). */
+const KA: Record<string, { title: string; tag: string; excerpt: string }> = {
+  "international-business-forum": {
+    title: "საერთაშორისო ბიზნეს ფორუმი",
+    tag: "SEU Development",
+    excerpt: "SEU Development მონაწილეობდა საერთაშორისო ბიზნეს ფორუმში, სადაც წარმოადგინა უახლესი პროექტები და ხედვა საქართველოში უძრავი ქონების მომავლის შესახებ.",
+  },
+  "seu-varketili": {
+    title: "SEU ვარკეთილი — ევროპული საცხოვრებელი კომპლექსი",
+    tag: "SEU ვარკეთილი",
+    excerpt: "ვარკეთილის ახალი უბანი, ევროპული სტანდარტებით 3.5 ჰექტარზე: საკუთარი სკოლით, სპორტული მოედნებითა და ორი ჰექტარი რეკრეაციული სივრცით.",
+  },
+  "city-in-your-neighbourhood": {
+    title: "ქალაქი თქვენს სამეზობლოში",
+    tag: "SEU ვარკეთილი",
+    excerpt: "მაღაზიები, ოფისები, სკოლა და პარკები კომპლექსის შიგნით — ყველაფერი ყოველდღიური ცხოვრებისთვის სახლიდან რამდენიმე ნაბიჯში.",
+  },
+  "green-yard-mural": {
+    title: "„მწვანე ეზოს“ საცხოვრებელი კომპლექსის ეზო მუსია ქებურიამ მოხატა",
+    tag: "Green Yard",
+    excerpt: "მხატვარმა Green Yard-ის ეზო მაცხოვრებლებისთვის ღია ცის ქვეშ გალერეად აქცია.",
+  },
+  "new-project-saburtalo": {
+    title: "SEU Development-ის ახალი საცხოვრებელი პროექტი საბურთალოზე",
+    tag: "საბურთალო",
+    excerpt: "SEU Development-ის საბურთალოზე დასრულებულ კომპლექსებს ახალი საცხოვრებელი პროექტი ემატება.",
+  },
+  "real-estate-project-awards-2018": {
+    title: "Real Estate Project Awards 2018",
+    tag: "ჯილდოები",
+    excerpt: "SEU Development-მა East Europe Real Estate Project Awards-ზე ორ ნომინაციაში გაიმარჯვა: წლის საუკეთესო საცხოვრებელი კომპლექსი და წლის წარმატებული გაყიდვები.",
+  },
+  "first-residential-complex": {
+    title: "SEU Development-ის პირველი საცხოვრებელი კომპლექსი",
+    tag: "ისტორია",
+    excerpt: "როგორ ჩააბარა SEU Development-მა პირველი საცხოვრებელი კომპლექსი — თავიდანვე სრულად დაფინანსებული და დროულად დასრულებული.",
+  },
+  "zurab-mekvabishvili-interview": {
+    title: "ზურაბ მექვაბიშვილის ინტერვიუ",
+    tag: "ინტერვიუ",
+    excerpt: "საუბარი კომპანიის მიდგომაზე: მშენებლობის სტანდარტები, დაფინანსება და სოციალური პასუხისმგებლობა.",
+  },
+  "new-project": {
+    title: "SEU Development-ის ახალი პროექტი",
+    tag: "პროექტები",
+    excerpt: "SEU Development მომდევნო საცხოვრებელ პროექტს წარმოგიდგენთ.",
+  },
+};
+
+/** A news item with its words in the page's language. */
+export const newsIn = (item: NewsItem, lang: Lang): NewsItem => (lang === "ka" && KA[item.slug] ? { ...item, ...KA[item.slug] } : item);

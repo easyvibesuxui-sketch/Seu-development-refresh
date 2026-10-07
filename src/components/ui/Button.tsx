@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useHref } from "@/lib/useLang";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 
 type Variant = "primary" | "ghost" | "light" | "glass";
@@ -14,7 +17,7 @@ export function Button({ variant, size, className, type = "button", ...rest }: C
   return <button type={type} className={classes({ variant, size, className })} {...rest} />;
 }
 
-/** Same look for navigation: internal routes use Next links, everything else a plain anchor. */
+/** Same look for navigation: internal routes use Next links (in the page's language), everything else a plain anchor. */
 export function ButtonLink({
   href,
   variant,
@@ -22,7 +25,8 @@ export function ButtonLink({
   className,
   ...rest
 }: Common & { href: string } & Omit<ComponentPropsWithoutRef<"a">, "href">) {
+  const h = useHref();
   const cls = classes({ variant, size, className });
-  if (href.startsWith("/")) return <Link href={href} className={cls} {...rest} />;
+  if (href.startsWith("/")) return <Link href={h(href)} className={cls} {...rest} />;
   return <a href={href} className={cls} {...rest} />;
 }

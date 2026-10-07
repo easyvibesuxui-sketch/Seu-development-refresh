@@ -1,23 +1,12 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { roomText, unitById, units } from "@/data/inventory";
-import ApartmentPresentation from "@/components/apartment/ApartmentPresentation";
+import { apartmentParams, presentationMeta, PresentationScreen } from "@/screens/ApartmentScreen";
 
-/* The apartment's printable presentation (see ApartmentPresentation). */
-export function generateStaticParams() {
-  // Sold flats have no page: they are closed to buyers.
-  return units.filter((u) => u.status !== "sold").map((u) => ({ id: u.id }));
-}
+export const generateStaticParams = apartmentParams;
 
 export async function generateMetadata({ params }: PageProps<"/apartments/[id]/presentation">): Promise<Metadata> {
-  const { id } = await params;
-  return { title: `Apartment ${unitById(id)?.number ?? ""} presentation` };
+  return presentationMeta("en", (await params).id);
 }
 
-export default async function PresentationPage({ params }: PageProps<"/apartments/[id]/presentation">) {
-  const { id } = await params;
-  const unit = unitById(id);
-  if (!unit || unit.status === "sold") notFound();
-
-  return <ApartmentPresentation unit={unit} rooms={roomText} />;
+export default async function Page({ params }: PageProps<"/apartments/[id]/presentation">) {
+  return <PresentationScreen lang="en" id={(await params).id} />;
 }
