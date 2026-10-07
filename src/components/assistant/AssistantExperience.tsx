@@ -406,7 +406,7 @@ export default function AssistantExperience({ engine = templateEngine }: { engin
           </video>
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-seu-ink/60 via-transparent to-seu-ink/70" />
           {model.facts && (
-            <div className="glass glass-dark absolute right-4 top-20 z-10 max-w-[min(360px,calc(100vw-2rem))] rounded-[22px] p-5 md:right-8 md:top-28">
+            <div className="glass glass-dark absolute right-4 top-36 z-10 max-w-[min(360px,calc(100vw-2rem))] rounded-[22px] p-5 md:right-8 md:top-28">
               <p className="eyebrow text-white">
                 {t(UI.finishedIn)} · {model.facts.year}
               </p>

@@ -214,7 +214,7 @@ export const LINES = {
  * Greeting clips whose lips follow the recorded greeting (made in media/job.json); a language
  * without one plays the plain greeting clip.
  */
-export const SYNCED_GREETING: Partial<Record<Lang, string>> = {};
+export const SYNCED_GREETING: Partial<Record<Lang, string>> = { ka: "greet-ka" };
 
 export type LineId = keyof typeof LINES;
 export const lineId = (line: Line) => (Object.keys(LINES) as LineId[]).find((k) => LINES[k] === line);
