@@ -56,7 +56,7 @@ export default function Gate() {
       <div className="gate-pane gate-pane--assistant relative isolate overflow-hidden bg-seu-bg">
         <AmbientVideo name="assistant-loop" className="absolute inset-0 h-full w-full object-cover" />
         <div className="gate-shade pointer-events-none absolute inset-0" aria-hidden />
-        <Link href="/assistant/" onClick={(e) => enter(e, "assistant", "/assistant/")} className="group absolute inset-0 z-10 outline-none" aria-labelledby="gate-assistant">
+        <Link href={h("/assistant/")} onClick={(e) => enter(e, "assistant", h("/assistant/"))} className="group absolute inset-0 z-10 outline-none" aria-labelledby="gate-assistant">
           <div className="gate-copy gate-copy--shaded absolute inset-x-0 bottom-0 z-10 isolate p-8 pb-14 md:p-14">
             <p className="eyebrow text-white">
               {t("Mariam", "მარიამი")} · <span lang="ka">ქართ</span> / EN

@@ -1,4 +1,4 @@
-import { varketiliBlocks, type RoomKind, type UnitStatus, type ViewId } from "./inventory";
+import { type RoomKind, type UnitStatus, type ViewId } from "./inventory";
 
 /*
  * The virtual assistant's script and stage. One consultant, Mariam, in one showroom: every
@@ -23,6 +23,9 @@ export type Model = {
   closeup?: string;
   /** Where choosing this project leads on the website. */
   href: string;
+  /** Finished projects: the presentation film the zoom lands on, and the facts shown with it. */
+  film?: string;
+  facts?: { address: Line; year: string; floors: number };
 };
 
 export const MODELS: Model[] = [
@@ -33,6 +36,8 @@ export const MODELS: Model[] = [
     note: { ka: "დასრულებული · ჯიქიას ქუჩა", en: "Finished · Jikia Street" },
     at: { x: 14, y: 47 },
     href: "/projects/green-yard/",
+    film: "/assistant/film-green-yard",
+    facts: { address: { ka: "ანა პოლიტკოვსკაიას ქ. 32, საბურთალო", en: "32 Anna Politkovskaya St, Saburtalo" }, year: "2019", floors: 19 },
   },
   {
     id: "varketili",
@@ -50,6 +55,8 @@ export const MODELS: Model[] = [
     note: { ka: "დასრულებული · საბურთალო", en: "Finished · Saburtalo" },
     at: { x: 87, y: 47 },
     href: "/projects/vasilisko/",
+    film: "/assistant/film-vasilisko",
+    facts: { address: { ka: "წმ. მოწამე ვასილისკოს ქ. 1–3, საბურთალო", en: "1–3 Holy Martyr Vasilisko St, Saburtalo" }, year: "2021", floors: 12 },
   },
 ];
 
@@ -192,15 +199,22 @@ export const LINES = {
     ka: "აი, ამ სართულის გეგმა. თავისუფალ ბინაზე დააჭირეთ და დეტალებს გაჩვენებთ.",
     en: "Here is the plan of this floor. Click an available apartment and I'll show you the details.",
   },
-  finished: {
-    ka: "ეს პროექტი უკვე დასრულებული და დასახლებულია. ახლა ბინები SEU ვარკეთილშია, გაჩვენოთ?",
-    en: "This project is finished and lived in. Apartments are available now at SEU Varketili. Shall I show you?",
+  // Recorded as the first sentence of the earlier "finished" line (cut in media/job.json).
+  done: {
+    ka: "ეს პროექტი უკვე დასრულებული და დასახლებულია.",
+    en: "This project is finished and lived in.",
   },
   visit: {
     ka: "სიამოვნებით შეგხვდებით ოფისში. დატოვეთ ნომერი და გადმოგირეკავთ.",
     en: "I would be glad to meet you at the office. Leave your number and we will call you back.",
   },
 } satisfies Record<string, Line>;
+
+/**
+ * Greeting clips whose lips follow the recorded greeting (made in media/job.json); a language
+ * without one plays the plain greeting clip.
+ */
+export const SYNCED_GREETING: Partial<Record<Lang, string>> = {};
 
 export type LineId = keyof typeof LINES;
 export const lineId = (line: Line) => (Object.keys(LINES) as LineId[]).find((k) => LINES[k] === line);
@@ -219,8 +233,11 @@ export const UI = {
   skip: { ka: "გამოტოვება", en: "Skip" },
   back: { ka: "უკან", en: "Back" },
   toShowroom: { ka: "შოურუმში დაბრუნება", en: "Back to the showroom" },
-  showVarketili: { ka: "ვარკეთილის ჩვენება", en: "Show me Varketili" },
-  block: { ka: "კორპუსი", en: "Block" },
+  replay: { ka: "თავიდან ნახვა", en: "Watch again" },
+  finishedIn: { ka: "დასრულდა", en: "Finished" },
+  floorsCount: { ka: "სართული", en: "floors" },
+  film: { ka: "საპრეზენტაციო ფილმი", en: "Presentation film" },
+  block: { ka: "ბლოკი", en: "Block" },
   floor: { ka: "სართული", en: "Floor" },
   pickFloor: { ka: "სართულის არჩევა", en: "Choose a floor" },
   showPlan: { ka: "გეგმის ჩვენება", en: "Show the plan" },
@@ -260,134 +277,3 @@ export const UI = {
   delivery: { ka: "ჩაბარება", en: "Delivery" },
   delivered: { ka: "ჩაბარებულია", en: "Delivered" },
 } satisfies Record<string, Line>;
-
-/*
- * Free questions, answered on the page itself: no server, no AI yet. A question is matched by
- * the stems it contains (Georgian and English) and the first topic that fits answers it. A
- * topic either moves the showroom (`act`, and Mariam says that scene's recorded line) or answers
- * in words only. Prices are never named: those questions go to a call with a consultant.
- */
-export type ChatAction = Reply["id"] | "green-yard" | "vasilisko";
-export type Answer = { id: string; stems: string[]; act?: ChatAction; line?: Line; form?: boolean };
-
-const quarter = (d: string, ka: boolean) => {
-  const m = d.match(/^Q(\d) (\d{4})$/);
-  if (!m) return ka ? `${d} წელს` : `in ${d}`;
-  return ka ? `${m[2]} წლის ${["", "პირველ", "მეორე", "მესამე", "მეოთხე"][+m[1]]} კვარტალში` : `in Q${m[1]} ${m[2]}`;
-};
-const deliveries = (ka: boolean) => {
-  const done = varketiliBlocks.filter((b) => b.status === "delivered").map((b) => b.id.slice(1));
-  const byDate = new Map<string, string[]>();
-  varketiliBlocks
-    .filter((b) => b.status !== "delivered")
-    .forEach((b) => byDate.set(b.delivery, [...(byDate.get(b.delivery) ?? []), b.id.slice(1)]));
-  const list = (ids: string[]) => (ka ? ids.map((i) => `მე-${i}`).join(" და ") : ids.join(" and "));
-  const soon = [...byDate].map(([d, ids]) => (ka ? `${list(ids)} — ${quarter(d, true)}` : `${ids.length > 1 ? "blocks" : "block"} ${list(ids)} ${quarter(d, false)}`));
-  return ka
-    ? `SEU ვარკეთილის ${list(done)} კორპუსი უკვე ჩაბარებულია. დანარჩენები ასე ჩაბარდება: ${soon.join("; ")}.`
-    : `At SEU Varketili, block ${list(done)} is already delivered. The others follow: ${soon.join("; ")}.`;
-};
-
-export const ANSWERS: Answer[] = [
-  {
-    id: "price",
-    stems: ["ფას", "ღირ", "გადახდ", "განვადებ", "იპოთეკ", "ფასდაკ", "price", "cost", "how much", "pay", "installment", "mortgage", "discount", "$", "₾", "usd", "gel"],
-    line: {
-      ka: "პირობებს ჩატში არ ვასახელებთ: ყველა ბინაზე ჩვენი კონსულტანტი ინდივიდუალურად გესაუბრებათ. დატოვეთ ნომერი და გადმოგირეკავთ.",
-      en: "We don't discuss terms in the chat: a consultant will talk you through each apartment personally. Leave your number and we will call you back.",
-    },
-    form: true,
-  },
-  {
-    id: "contact",
-    stems: ["ტელეფ", "ნომერ", "დარეკ", "დაგირეკ", "მეილ", "ფოსტ", "კონტაქტ", "phone", "number", "call", "email", "e-mail", "contact"],
-    line: {
-      ka: "დაგვირეკეთ +995 596 70 70 70 ნომერზე ან მოგვწერეთ info@seudevelopment.ge-ზე. შეგიძლიათ ნომერიც დატოვოთ და გადმოგირეკავთ.",
-      en: "Call us on +995 596 70 70 70 or write to info@seudevelopment.ge. You can also leave your number and we will call you back.",
-    },
-    form: true,
-  },
-  {
-    id: "delivery",
-    stems: ["ჩაბარ", "როდის", "დასრულ", "მშენებლობ", "შესახლ", "when", "deliver", "ready", "finish", "complet", "construction", "move in"],
-    line: { ka: deliveries(true), en: deliveries(false) },
-  },
-  {
-    id: "sizes",
-    stems: ["ოთახ", "საძინებ", "სტუდიო", "კვადრ", "კვ.მ", "მ²", "ფართ", "ზომ", "bedroom", "studio", "room", "size", "m2", "m²", "sqm", "square", "area"],
-    line: {
-      ka: "SEU ვარკეთილში სტუდიოებიც გვაქვს და ერთ-, ორ- და სამსაძინებლიანი ბინებიც, 43-დან 116 კვ.მ-მდე. აირჩიეთ სართული მაკეტზე და თითოეული ბინის გეგმას გაჩვენებთ.",
-      en: "At SEU Varketili we have studios and one-, two- and three-bedroom apartments, from 43 to 116 m². Choose a floor on the model and I'll show you each apartment's plan.",
-    },
-  },
-  {
-    id: "card",
-    stems: ["ბარათ", "card"],
-    line: {
-      ka: "ჩვენი პროექტების მაცხოვრებლები პერსონალურ SEU ბარათს იღებენ: მასით პარტნიორ დაწესებულებებში განსაკუთრებული პირობები მოქმედებს.",
-      en: "Residents of our projects receive a personal SEU card, which brings exclusive conditions at our partner establishments.",
-    },
-  },
-  { id: "green-yard", stems: ["green", "გრინ", "იარდ", "ჯიქია", "jikia"], act: "green-yard" },
-  { id: "vasilisko", stems: ["ვასილ", "vasil"], act: "vasilisko" },
-  {
-    id: "location",
-    stems: ["სად ", "მდებარ", "მისამართ", "ლოკაცი", "ზღვ", "ჰუალინგ", "მეტრო", "where", "locat", "address", "sea", "hualing", "metro"],
-    line: {
-      ka: "SEU ვარკეთილი ვიქტორ კუპრაძის ქუჩა 22-შია, თბილისის ზღვასთან და ჰუალინგის პარკთან ახლოს. ახლოსაა სავაჭრო ცენტრებიც და ვარკეთილის მეტროც.",
-      en: "SEU Varketili is at 22 Viktor Kupradze Street, close to the Tbilisi Sea and Hualing Park, with shopping centres and Varketili metro nearby.",
-    },
-  },
-  { id: "floor", stems: ["ვარკეთ", "varketil", "სართულ", "გეგმ", "კორპუს", "floor", "plan", "block"], act: "varketili" },
-  { id: "visit", stems: ["ვიზიტ", "შეხვედრ", "ოფის", "მოსვლ", "ნახვა მინდა", "visit", "meet", "office", "book", "appointment"], act: "visit" },
-  { id: "buy", stems: ["ყიდ", "შეძენ", "ბინ", "buy", "purchase", "apartment", "flat"], act: "buy" },
-  { id: "projects", stems: ["პროექტ", "მაკეტ", "შოურუმ", "project", "model", "showroom", "show me"], act: "projects" },
-  {
-    id: "hello",
-    stems: ["გამარჯ", "სალამ", "hello", "hi", "hey", "good morning", "good afternoon"],
-    line: {
-      ka: "გამარჯობა! შემიძლია პროექტები გაჩვენოთ, ბინა შეგირჩიოთ ან ვიზიტი დაგიჯავშნოთ. რა გაინტერესებთ?",
-      en: "Hello! I can show you our projects, help you choose an apartment or book you a visit. What would you like?",
-    },
-  },
-  {
-    id: "thanks",
-    stems: ["მადლობ", "გმადლობ", "thank", "thx"],
-    line: { ka: "არაფრის! კიდევ თუ რამე გაინტერესებთ, მკითხეთ.", en: "You're welcome! Ask me if there is anything else." },
-  },
-];
-
-/** When nothing matches: a consultant takes it from here. */
-export const NO_ANSWER: Answer = {
-  id: "other",
-  stems: [],
-  line: {
-    ka: "ამაზე ზუსტ პასუხს ჩვენი კონსულტანტი გაგცემთ. დატოვეთ ნომერი და გადმოგირეკავთ, ან აირჩიეთ ქვემოთ.",
-    en: "A consultant will give you the exact answer to that. Leave your number and we will call you back, or choose below.",
-  },
-  form: true,
-};
-
-/** Georgian letters mean a Georgian question, whatever language the page is in. */
-export const questionLang = (q: string): Lang | null => (/[\u10A0-\u10FF]/.test(q) ? "ka" : /[a-z]/i.test(q) ? "en" : null);
-
-export function answerFor(question: string): Answer {
-  const q = ` ${question.toLowerCase().replace(/\s+/g, " ")} `;
-  const word = (stem: string) => (/^[a-z]{1,3}$/.test(stem) ? new RegExp(`\\b${stem}\\b`).test(q) : q.includes(stem));
-  return ANSWERS.find((a) => a.stems.some(word)) ?? NO_ANSWER;
-}
-
-/** "Block 7, floor 5" or "მე-7 კორპუსის მე-5 სართული": the floor a question names, if it names one. */
-export function floorIn(question: string): { block: string; floor: number } | null {
-  const q = question.toLowerCase();
-  // Georgian and English put the number before the noun ("მე-5 სართული", "5th floor") or after
-  // it ("სართული 5", "floor 5"); a number right after the other noun belongs to that noun.
-  const near = (word: string, other: string) =>
-    q.match(new RegExp(`(?<!${other}\\S*\\s*)(?:მე-)?(\\d+)(?:-?ე|st|nd|rd|th)?\\s*${word}`))?.[1] ??
-    q.match(new RegExp(`${word}\\S*\\s*(?:მე-|#|№)?(\\d+)`))?.[1];
-  const b = near("(?:კორპუს|block)", "(?:სართულ|floor)");
-  const f = near("(?:სართულ|floor)", "(?:კორპუს|block)");
-  const block = b && varketiliBlocks.find((x) => x.id === `v${b}`);
-  if (!block || !f || +f < 2 || +f > block.floors) return null;
-  return { block: block.id, floor: +f };
-}

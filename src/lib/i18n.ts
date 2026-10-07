@@ -10,10 +10,11 @@ export type Text = Record<Lang, string>;
 /** The language a path is in (paths come without the base path). */
 export const langOf = (path: string | null | undefined): Lang => (path && /^\/ka(\/|$)/.test(path) ? "ka" : "en");
 
-/** A site path in the given language. The assistant and anything off-site keep their path. */
+/** A site path in the given language (the assistant too); anything off-site keeps its address. */
 export function localize(href: string, lang: Lang): string {
   const plain = href.replace(/^\/ka(?=\/|$)/, "") || "/";
-  if (lang === "en" || !plain.startsWith("/") || plain.startsWith("/assistant")) return plain;
+  // The assistant's printable presentation carries its language in `?lang=` instead.
+  if (lang === "en" || !plain.startsWith("/") || plain.startsWith("/assistant/presentation")) return plain;
   return plain === "/" ? "/ka/" : `/ka${plain}`;
 }
 

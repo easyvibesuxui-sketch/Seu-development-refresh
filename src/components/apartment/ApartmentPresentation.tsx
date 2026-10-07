@@ -25,7 +25,7 @@ const TEXT = {
     tagline: ["ევროპული საცხოვრებელი", "კომპლექსი"],
     project: "SEU ვარკეთილი",
     apartment: "ბინა N",
-    block: "კორპუსი",
+    block: "ბლოკი",
     floor: "სართული",
     total: "სულ",
     floorPlan: "სართულის გეგმა",

@@ -2,18 +2,21 @@
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { withBase } from "@/data/projects";
-import { blockById, unitsOn, varketiliBlocks } from "@/data/inventory";
+import { blockById, unitById, unitsOn, varketiliBlocks } from "@/data/inventory";
 import VOICE from "@/data/voice.json";
-import { answerFor, ASSISTANT_NAME, FACADES, facadeFloors, floorIn, facadeLabel, lineId, LINES, MAQUETTE, MODELS, questionLang, REPLIES, UI, type ChatAction, type Lang, type Line, type Model, type Reply } from "@/data/assistant";
+import { ASSISTANT_NAME, FACADES, facadeFloors, facadeLabel, lineId, LINES, MAQUETTE, MODELS, REPLIES, SYNCED_GREETING, UI, VIEW, type Lang, type Line, type Model, type Reply } from "@/data/assistant";
+import { questionLang, SUGGESTIONS, templateEngine, type ChatAct, type ChatEngine, type ChatReply, type SuggestionId } from "@/data/chat";
+import { langOf, localize } from "@/lib/i18n";
 import LogoMark from "@/components/brand/LogoMark";
 import Icon from "@/components/ui/Icon";
 import Select from "@/components/ui/Select";
 import AssistantFloorDrawer from "./AssistantFloorDrawer";
 
 type Scene = "door" | "entry" | "greet" | "showroom" | "zoom" | "block" | "finished";
-type Message = { from: "mariam" | "you"; text: Line };
-type Pick = { block: string; floor: number };
+type Message = { from: "mariam" | "you"; text?: Line; units?: string[]; suggest?: SuggestionId[] };
+type Pick = { block: string; floor: number; unit?: string };
 
 // Showroom and model close-up share one frame size; hotspots and floors sit in percent of it.
 const RATIO = 5504 / 3072;
@@ -27,13 +30,21 @@ const onMotionPref = (change: () => void) => {
 };
 
 /**
- * The assistant's showroom, stage 1, self-contained: walk in, Mariam greets you, click a model,
- * the camera dives into it, you point at a floor on the model, and its plan and apartments
- * open in a drawer. Every button, hotspot and (later) AI answer goes through `act`, so they
- * all play the same way.
+ * The assistant's showroom, self-contained: walk in, Mariam greets you, click a model, the
+ * camera dives into it, you point at a floor on the model, and its plan and apartments open in
+ * a drawer; a finished project plays its presentation film. Buttons, hotspots and chat answers
+ * all go through `perform`, so they play the same way. The language is the path's (/assistant/
+ * English, /ka/assistant/ Georgian); switching rewrites the address without leaving the room.
+ * The chat answers through `engine`: the templates today, an AI later (see data/chat.ts).
  */
-export default function AssistantExperience() {
-  const [lang, setLang] = useState<Lang>("ka");
+export default function AssistantExperience({ engine = templateEngine }: { engine?: ChatEngine }) {
+  const pathname = usePathname();
+  const lang: Lang = langOf(pathname);
+  const setLang = (l: Lang) => {
+    if (l !== lang) window.history.replaceState(null, "", withBase(localize(pathname, l)));
+  };
+  const [offer, setOffer] = useState<ChatAct | undefined>(undefined);
+  const [filmEnded, setFilmEnded] = useState(false);
   const [scene, setScene] = useState<Scene>("door");
   const [line, setLine] = useState<Line>(LINES.greet);
   const [model, setModel] = useState<Model | null>(null);
@@ -140,7 +151,8 @@ export default function AssistantExperience() {
       setModel(m);
       setScene("zoom");
       const varketili = m.project === "varketili";
-      say(varketili ? LINES.varketili : LINES.finished);
+      setFilmEnded(false);
+      say(varketili ? LINES.varketili : LINES.done);
       window.setTimeout(() => setScene(varketili ? "block" : "finished"), still.current ? 0 : 1900);
     },
     [say],
@@ -157,54 +169,77 @@ export default function AssistantExperience() {
     [say],
   );
 
-  // One entry point for replies, hotspots and typed questions (and, later, an AI's tool calls).
-  const run = (reply: ChatAction) => {
-    if (reply === "projects") {
+  /** A floor (and maybe one of its apartments) on the Varketili model, flying there first if needed. */
+  const showFloor = (p: Pick) => {
+    setFormBlock(p.block);
+    setFormFloor(String(p.floor));
+    if (window.innerWidth < 768) setChatOpen(false);
+    if (scene === "block") openFloor(p);
+    else {
+      goToModel(varketili);
+      window.setTimeout(() => openFloor(p), still.current ? 0 : 2100);
+    }
+  };
+
+  // One entry point for replies, hotspots and chat answers (and, later, an AI's tool calls).
+  const perform = (a: ChatAct) => {
+    if (a.type === "floor") return showFloor({ block: a.block, floor: a.floor });
+    if (a.type === "unit") {
+      const u = unitById(a.id);
+      return u && showFloor({ block: u.block, floor: u.floor, unit: u.id });
+    }
+    if (a.to === "projects") {
       setModel(null);
       setScene("showroom");
       say(LINES.showroom);
-    } else if (reply === "buy") {
+    } else if (a.to === "buy") {
       say(LINES.buy);
       afterSpeech(() => goToModel(varketili), still.current ? 0 : 2200);
-    } else if (reply === "visit") say(LINES.visit);
-    else goToModel(MODELS.find((m) => m.id === reply) ?? varketili);
+    } else if (a.to === "visit") say(LINES.visit);
+    else goToModel(MODELS.find((m) => m.id === a.to) ?? varketili);
   };
   const act = (reply: Reply["id"]) => {
     const r = REPLIES.find((x) => x.id === reply);
     if (r) setMessages((m) => [...m, { from: "you", text: r.label }]);
-    run(reply);
+    perform({ type: "scene", to: reply });
   };
 
-  // A typed question: Mariam answers in the language it was asked in, after a short pause.
-  const ask = (e: React.FormEvent) => {
-    e.preventDefault();
-    const q = draft.trim();
+  /** Mariam's answer: her words in the chat (spoken when recorded), then what it shows. */
+  const answer = (r: ChatReply) => {
+    setOffer(r.offer);
+    if (r.text && !r.act) say(r.text, !!r.form);
+    else if (r.text) setMessages((m) => [...m, { from: "mariam", text: r.text }]);
+    if (r.units?.length || r.suggest?.length) setMessages((m) => [...m, { from: "mariam", units: r.units, suggest: r.suggest }]);
+    if (r.act) perform(r.act);
+  };
+
+  // A question, typed or from a chip: Mariam answers in the language it was asked in, after a short pause.
+  const askText = async (q: string) => {
     if (!q || typing) return;
-    setDraft("");
     setMessages((m) => [...m, { from: "you", text: { ka: q, en: q } }]);
     const asked = questionLang(q);
-    if (asked && asked !== lang) setLang(asked);
-    const a = answerFor(q);
-    const spot = floorIn(q);
+    const replyLang = asked ?? lang;
+    if (replyLang !== lang) setLang(replyLang);
     setTyping(true);
+    let r: ChatReply;
+    try {
+      r = await engine.reply(q, { lang: replyLang, offer });
+    } catch {
+      r = { form: true, text: { ka: "ბოდიში, ახლა ვერ გიპასუხებთ. დატოვეთ ნომერი და გადმოგირეკავთ.", en: "Sorry, I can't answer right now. Leave your number and we will call you back." } };
+    }
     window.setTimeout(
       () => {
         setTyping(false);
-        if (spot) {
-          // A named floor opens straight away, on the model if she isn't there yet.
-          setFormBlock(spot.block);
-          setFormFloor(String(spot.floor));
-          if (window.innerWidth < 768) setChatOpen(false);
-          if (scene === "block") openFloor(spot);
-          else {
-            goToModel(varketili);
-            window.setTimeout(() => openFloor(spot), still.current ? 0 : 2100);
-          }
-        } else if (a.act) run(a.act);
-        else if (a.line) say(a.line, a.form);
+        answer(r);
       },
       still.current ? 0 : 700,
     );
+  };
+  const ask = (e: React.FormEvent) => {
+    e.preventDefault();
+    const q = draft.trim();
+    setDraft("");
+    askText(q);
   };
 
   // The newest message stays in view.
@@ -238,6 +273,7 @@ export default function AssistantExperience() {
   };
 
   const backToShowroom = () => {
+    setOffer(undefined);
     setModel(null);
     setPick(null);
     setScene("showroom");
@@ -327,7 +363,7 @@ export default function AssistantExperience() {
         >
           <img src={withBase("/assistant/showroom.jpg")} alt={lang === "ka" ? "შოურუმი მაკეტებით" : "Showroom with scale models"} className="absolute inset-0 h-full w-full object-cover" />
           {scene === "entry" && <Clip name="entry" onEnd={toGreet} />}
-          {scene === "greet" && <Clip name="greet" onEnd={toShowroom} />}
+          {scene === "greet" && <Clip name={SYNCED_GREETING[lang] ?? "greet"} onEnd={toShowroom} />}
           {(scene === "showroom" || scene === "greet") &&
             MODELS.map((m) => (
               <button
@@ -351,6 +387,38 @@ export default function AssistantExperience() {
 
       {/* The zoom lands on the model close-up; there you point at a floor on the model itself. */}
       {scene === "zoom" && model?.closeup && <img src={withBase(model.closeup)} alt="" className="assistant-fade-in absolute inset-0 h-full w-full object-cover" />}
+      {/* A finished project: the zoom lands in its presentation film, with the facts beside it. */}
+      {scene === "finished" && model?.film && (
+        <div className="assistant-fade-in absolute inset-0 bg-seu-ink">
+          <video
+            key={`${model.id}-${filmEnded}`}
+            autoPlay
+            muted
+            playsInline
+            preload="auto"
+            poster={withBase(`${model.film}.jpg`)}
+            onEnded={() => setFilmEnded(true)}
+            aria-label={`${t(UI.film)}: ${t(model.name)}`}
+            className="absolute inset-0 h-full w-full object-cover"
+          >
+            <source src={withBase(`${model.film}.webm`)} type="video/webm" />
+            <source src={withBase(`${model.film}.mp4`)} type="video/mp4" />
+          </video>
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-seu-ink/60 via-transparent to-seu-ink/70" />
+          {model.facts && (
+            <div className="glass glass-dark absolute right-4 top-20 z-10 max-w-[min(360px,calc(100vw-2rem))] rounded-[22px] p-5 md:right-8 md:top-28">
+              <p className="eyebrow text-white">
+                {t(UI.finishedIn)} · {model.facts.year}
+              </p>
+              <h2 className="title-m mt-3 text-[clamp(24px,2.4vw,34px)]">{t(model.name)}</h2>
+              <p className="mt-2 text-[14px] text-white/85">{t(model.facts.address)}</p>
+              <p className="mt-1 text-[14px] text-white/85">
+                {model.facts.floors} {t(UI.floorsCount)}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
       {scene === "block" && (
         <img src={withBase(MAQUETTE)} alt="" className="absolute inset-0 h-full w-full scale-110 object-cover opacity-60 blur-2xl md:hidden" />
       )}
@@ -406,7 +474,7 @@ export default function AssistantExperience() {
 
       {/* Top bar: back to the gate, logo, language. */}
       <header className="absolute inset-x-0 top-0 z-20 flex items-center justify-between gap-3 p-4 md:p-8">
-        <Link href={lang === "ka" ? "/ka/" : "/"} className="btn btn-glass btn-sm">
+        <Link href={localize("/", lang)} className="btn btn-glass btn-sm">
           <Icon name="arrow" size={16} className="rotate-180" /> {t(UI.back)}
         </Link>
         <span className="pointer-events-none hidden items-center gap-2.5 sm:flex" aria-hidden>
@@ -464,8 +532,8 @@ export default function AssistantExperience() {
             {scene === "block" || scene === "finished" ? (
               <>
                 {scene === "finished" && (
-                  <button type="button" onClick={() => goToModel(varketili)} className="btn btn-primary btn-sm shrink-0">
-                    {t(UI.showVarketili)} <Icon name="arrow" size={14} />
+                  <button type="button" onClick={() => setFilmEnded((e) => !e)} className="btn btn-primary btn-sm shrink-0">
+                    <Icon name="reset" size={14} /> {t(UI.replay)}
                   </button>
                 )}
                 <button type="button" onClick={backToShowroom} className="btn btn-glass btn-sm shrink-0">
@@ -546,11 +614,49 @@ export default function AssistantExperience() {
                 </button>
               </div>
               <ol tabIndex={0} aria-label={t(UI.chat)} className="min-h-0 flex-1 space-y-3 overflow-y-auto rounded-[12px] pr-1 outline-none focus-visible:outline-2 focus-visible:outline-white" data-lenis-prevent>
-                {messages.map((m, i) => (
-                  <li key={i} className={`max-w-[85%] rounded-[16px] px-4 py-3 text-[14px] leading-relaxed ${m.from === "you" ? "ml-auto bg-seu-accent text-white" : "bg-white/10 text-white"}`}>
-                    {t(m.text)}
-                  </li>
-                ))}
+                {messages.map((m, i) =>
+                  m.text ? (
+                    <li key={i} className={`max-w-[85%] rounded-[16px] px-4 py-3 text-[14px] leading-relaxed ${m.from === "you" ? "ml-auto bg-seu-accent text-white" : "bg-white/10 text-white"}`}>
+                      {t(m.text)}
+                    </li>
+                  ) : (
+                    <li key={i} className="space-y-2">
+                      {m.units?.map((id) => {
+                        const u = unitById(id);
+                        if (!u) return null;
+                        return (
+                          <button
+                            key={id}
+                            type="button"
+                            onClick={() => perform({ type: "unit", id })}
+                            className="block w-full rounded-[16px] border border-white/15 bg-white/5 px-4 py-3 text-left text-[13px] transition hover:border-white/40 hover:bg-white/10"
+                          >
+                            <span className="flex items-baseline justify-between gap-3">
+                              <span className="title-m text-[18px]">
+                                {t(UI.apartment)} {u.number}
+                              </span>
+                              <span className="text-white/75">
+                                {t(UI.block)} {u.block.slice(1)} · {t(UI.floor)} {u.floor}
+                              </span>
+                            </span>
+                            <span className="mt-1 block text-white/85">
+                              {u.bedrooms === 0 ? t(UI.studio) : `${u.bedrooms} ${t(UI.bedrooms).toLowerCase()}`} · {u.totalArea} {lang === "ka" ? "მ²" : "m²"} · {u.views.map((v) => t(VIEW[v])).join(", ")}
+                            </span>
+                          </button>
+                        );
+                      })}
+                      {i === messages.length - 1 && m.suggest && (
+                        <span className="flex flex-wrap gap-2 pt-1">
+                          {m.suggest.map((s) => (
+                            <button key={s} type="button" onClick={() => askText(t(SUGGESTIONS[s]))} className="chip ctl-sm rounded-full border-white/40 px-3 text-[12px] text-white">
+                              {t(SUGGESTIONS[s])}
+                            </button>
+                          ))}
+                        </span>
+                      )}
+                    </li>
+                  ),
+                )}
                 {typing && (
                   <li className="w-fit rounded-[16px] bg-white/10 px-4 py-3 text-[13px] text-white/80">
                     <span className="speaking mr-2" data-on aria-hidden>

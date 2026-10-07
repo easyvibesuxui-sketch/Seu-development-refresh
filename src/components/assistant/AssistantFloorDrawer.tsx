@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { withBase } from "@/data/projects";
-import { blockById, unitsOn, type Unit } from "@/data/inventory";
+import { blockById, unitById, unitsOn, type Unit } from "@/data/inventory";
 import { PLAN, PLAN_RATIO, UNIT_SHAPES, centre } from "@/data/floorplan";
 import { ROOM, STATUS, UI, VIEW, type Lang } from "@/data/assistant";
 import Sheet from "@/components/ui/Sheet";
@@ -37,7 +37,8 @@ export default function AssistantFloorDrawer({
   onClose,
   onUnit,
 }: {
-  pick: { block: string; floor: number } | null;
+  /** The floor to show, and the apartment to open on it straight away (from the chat). */
+  pick: { block: string; floor: number; unit?: string } | null;
   lang: Lang;
   onClose: () => void;
   onUnit?: (unit: Unit) => void;
@@ -48,12 +49,12 @@ export default function AssistantFloorDrawer({
   const [view, setView] = useState<"3D" | "2D" | "plan">("3D");
   const t = (l: { ka: string; en: string }) => l[lang];
 
-  // A new floor starts on its plan.
-  const floorKey = pick ? `${pick.block}-${pick.floor}` : "";
+  // A new floor starts on its plan, or on the apartment the chat asked for.
+  const floorKey = pick ? `${pick.block}-${pick.floor}-${pick.unit ?? ""}` : "";
   const [shownFloor, setShownFloor] = useState(floorKey);
   if (shownFloor !== floorKey) {
     setShownFloor(floorKey);
-    setUnit(null);
+    setUnit((pick?.unit && unitById(pick.unit)) || null);
     setCalling(false);
     setSent(false);
   }

@@ -61,15 +61,44 @@ close-up means re-measuring them.
 All buttons, hotspots and (later) AI answers dispatch the same actions
 (`goToModel`, `openFloor`, `say`…), so the chat and the clicks always play the same way.
 
-## Typed questions (no server)
+## Chat (templates now, AI later)
 
-"Ask Mariam" takes free text. `answerFor` in `src/data/assistant.ts` matches the question's
-stems (Georgian and English) against `ANSWERS`, first match wins, so order matters: price
-before apartment, Green Yard and Vasilisko before location. A topic either runs an action
-(Mariam then says that scene's recorded line) or answers in words only; `floorIn` reads
-"block 7, floor 5" / "მე-7 კორპუსის მე-5 სართული" and opens that floor. Mariam answers in the
-language the question was typed in. Prices are never named: price questions, and anything
-unmatched, end with the call form. Text-only answers have no recording; the subtitles carry them.
+`src/data/chat.ts` holds the chat. Every answer is one `ChatReply`: Mariam's words, an
+action on the showroom (`ChatAct`: a scene, a floor, or one apartment, the same actions as the
+buttons), apartment cards, the call form, follow-up chips and an `offer` that a plain "yes"
+accepts. `templateEngine` builds these from the site's own data:
+
+- topics matched by Georgian and English stems, first match wins (prices before apartments,
+  project names before places);
+- apartment search from the words of the question: bedrooms (also "3 ოთახიანი"), view, size
+  ("70 კვ.მ", large, small), high or low floor, block; the best matches come back as cards that
+  open the apartment in the drawer;
+- an apartment by number ("ბინა 801 ბლოკი 7") or a floor ("მე-7 ბლოკის მე-5 სართული");
+- facts computed, not typed: delivery dates per block, size ranges per type, free flats per
+  view, distances to the metro, parks and malls.
+
+Mariam answers in the language the question was typed in. Prices are never named: price
+questions, finishing details and anything unmatched end with the call form. Text-only answers
+have no recording; the subtitles carry them.
+
+To plug in an AI, implement `ChatEngine.reply` with a request to a server that returns a
+`ChatReply` and pass it as `<AssistantExperience engine={...} />`; nothing else changes.
+
+## Finished projects
+
+Green Yard and Vasilisko have no apartments for sale, so their zoom lands in a presentation
+film (`public/assistant/film-*.mp4|webm|jpg`, Kling, made from close-ups of the same showroom
+models) with the project's facts. Mariam says only that the project is finished and lived in;
+she does not send the visitor elsewhere.
+
+## Media jobs (voice-dependent)
+
+The voice CDN is unreachable from the development container, so work that needs the
+recordings runs on GitHub Actions: edit `media/job.json` (`probe`, `trim`, `lipsync`, see
+`scripts/media.py`) and push; `.github/workflows/media.yml` commits the results back
+(`media/out/probe.json`, cut lines in `public/assistant/voice/`, synced clips in
+`public/assistant/`). Lip sync is Wav2Lip (GAN weights) on the greeting clip; a language with
+a synced clip is listed in `SYNCED_GREETING`.
 
 ## Stage 2: AI chat
 

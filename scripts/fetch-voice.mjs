@@ -13,6 +13,8 @@ const fetched = [];
 const missing = [];
 
 for (const [id, url] of Object.entries(sources)) {
+  // "local": a line cut or edited by media/job.json, committed in public/assistant/voice/.
+  if (!url.startsWith("http")) continue;
   const file = new URL(`${id}.mp3`, dir);
   try {
     await access(file);
