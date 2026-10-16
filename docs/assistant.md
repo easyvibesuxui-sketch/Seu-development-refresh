@@ -100,6 +100,21 @@ recordings runs on GitHub Actions: edit `media/job.json` (`probe`, `trim`, `lips
 `public/assistant/`). Lip sync is Wav2Lip (GAN weights) on the greeting clip; a language with
 a synced clip is listed in `SYNCED_GREETING`.
 
+## Virtual tour (apartment profile)
+
+The "Tour" tab next to 3D / 2D / Plan on the apartment profile is a Matterport-style tour of
+one sample apartment (`src/data/tour.ts`, `src/components/apartment/VirtualTour.tsx`): six
+places to look around in, rings on the floor that walk you on, a dollhouse and a top-down
+plan, and wall colours. All media in `public/tour/` comes from Kling:
+
+- places: Gemini 3 Pro image edits in the style of the living-room panorama (21:9);
+- walk clips `walk-<from>-<to>.mp4|webm`: Kling 2.6 with first and last frames, which are 16:9
+  crops of the two places (`media/tour/frames/`), so still, clip and still meet;
+- wall masks `<place>-walls.png`: the place repainted with flat magenta walls, the mask cut
+  from that copy; the page multiplies the chosen colour through it over the white paint.
+
+Kling reads its inputs from `raw.githubusercontent.com` (`media/tour/ref/`, `frames/`).
+
 ## Stage 2: AI chat
 
 `POST /chat` on a Cloudflare Worker holding the Anthropic API key. The model gets the

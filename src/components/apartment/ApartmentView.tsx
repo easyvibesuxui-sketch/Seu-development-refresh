@@ -14,6 +14,7 @@ import { Benefits } from "@/components/project/ProjectDetails";
 import Icon, { type IconName } from "@/components/ui/Icon";
 import FloorPlanSheet from "./FloorPlanSheet";
 import Compass from "./Compass";
+import VirtualTour from "./VirtualTour";
 
 // The sun study brings MapLibre; load it only when asked for.
 const SunStudy = dynamic(() => import("@/components/project/SunStudy"), { ssr: false });
@@ -38,7 +39,7 @@ const viewIcon: Record<ViewId, IconName> = {
   panorama: "panorama",
 };
 
-type Tab = "3D" | "2D" | "Plan";
+type Tab = "3D" | "2D" | "Plan" | "Tour";
 
 export default function ApartmentView({ unit }: { unit: Unit }) {
   const [tab, setTab] = useState<Tab>("3D");
@@ -58,7 +59,7 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
   const closeSun = useCallback(() => setSun(false), []);
 
   useEffect(() => {
-    if (!stageRef.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!stageRef.current || tab === "Tour" || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     gsap.fromTo(stageRef.current.querySelector("[data-tab-img]"), { opacity: 0, scale: 0.94 }, { opacity: 1, scale: 1, duration: 0.7, ease: "expo.out" });
   }, [tab]);
 
@@ -153,43 +154,51 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
               <span className="sr-only">{t("(opens in a new tab)", "(იხსნება ახალ ჩანართში)")}</span>
             </a>
           </div>
-          <div ref={stageRef} className="relative mt-4 aspect-[4/3.3] overflow-hidden rounded-[24px] bg-seu-paper">
+          <div ref={stageRef} className={`relative mt-4 aspect-[4/3.3] overflow-hidden rounded-[24px] bg-seu-paper ${tab === "Tour" ? "max-sm:aspect-[4/5]" : ""}`}>
             <div className="vars-light absolute left-4 top-4 z-10 flex gap-2" role="tablist" aria-label={t("Layout view", "განლაგების ხედი")}>
-              {(["3D", "2D", "Plan"] as Tab[]).map((v) => (
+              {(["3D", "2D", "Plan", "Tour"] as Tab[]).map((v) => (
                 <button
                   key={v}
                   type="button"
                   role="tab"
                   aria-selected={tab === v}
+                  aria-label={v === "Tour" ? t("Virtual tour", "ვირტუალური ტური") : undefined}
                   onClick={() => setTab(v)}
-                  className="chip ctl-sm rounded-full px-4"
+                  className={`chip ctl-sm rounded-full px-4 ${v === "Tour" && tab !== v ? "bg-white/80 backdrop-blur" : ""}`}
                 >
-                  {v === "Plan" ? t("Plan", "გეგმა") : v}
+                  {v === "Tour" ? <Icon name="walk" size={15} /> : null}
+                  {v === "Plan" ? t("Plan", "გეგმა") : v === "Tour" ? t("Tour", "ტური") : v}
                 </button>
               ))}
             </div>
-            <Compass label={t("North arrow", "ჩრდილოეთის ისარი")} />
-            <div className="absolute inset-0 grid place-items-center p-12">
-              {tab === "3D" ? (
-                <img data-tab-img src={withBase("/images/apartment-3d.webp")} alt={t(`Apartment ${unit.number}, 3D layout`, `ბინა ${unit.number}, 3D განლაგება`)} className="max-h-full w-[92%] object-contain drop-shadow-[0_30px_40px_rgb(19_33_29/0.25)]" />
-              ) : (
-                <img
-                  data-tab-img
-                  src={withBase("/images/apartment-plan.png")}
-                  alt={t(`Apartment ${unit.number}, floor plan`, `ბინა ${unit.number}, გეგმა`)}
-                  className={`max-h-full w-[75%] object-contain ${tab === "2D" ? "[filter:sepia(.35)_saturate(1.4)_hue-rotate(-12deg)]" : ""}`}
-                />
-              )}
-            </div>
-            {/* The whole floor opens from a centred button, in a bottom sheet. */}
-            <div className="vars-light absolute inset-x-0 bottom-5 z-10 flex flex-wrap justify-center gap-3 px-4">
-              <button type="button" aria-haspopup="dialog" onClick={() => setSheet(true)} className="btn btn-primary">
-                <Icon name="plan" size={18} /> {t("Floor plan", "სართულის გეგმა")}
-              </button>
-              <button type="button" aria-haspopup="dialog" onClick={() => setSun(true)} className="btn bg-white/70 backdrop-blur">
-                <Icon name="sun" size={18} /> {t("Sun study", "მზის კვლევა")}
-              </button>
-            </div>
+            {tab === "Tour" ? (
+              <VirtualTour label={t(`Virtual tour of a sample apartment like ${unit.number}`, `ბინის ${unit.number}-ის მსგავსი სანიმუშო ბინის ვირტუალური ტური`)} />
+            ) : (
+              <>
+                <Compass label={t("North arrow", "ჩრდილოეთის ისარი")} />
+                <div className="absolute inset-0 grid place-items-center p-12">
+                  {tab === "3D" ? (
+                    <img data-tab-img src={withBase("/images/apartment-3d.webp")} alt={t(`Apartment ${unit.number}, 3D layout`, `ბინა ${unit.number}, 3D განლაგება`)} className="max-h-full w-[92%] object-contain drop-shadow-[0_30px_40px_rgb(19_33_29/0.25)]" />
+                  ) : (
+                    <img
+                      data-tab-img
+                      src={withBase("/images/apartment-plan.png")}
+                      alt={t(`Apartment ${unit.number}, floor plan`, `ბინა ${unit.number}, გეგმა`)}
+                      className={`max-h-full w-[75%] object-contain ${tab === "2D" ? "[filter:sepia(.35)_saturate(1.4)_hue-rotate(-12deg)]" : ""}`}
+                    />
+                  )}
+                </div>
+                {/* The whole floor opens from a centred button, in a bottom sheet. */}
+                <div className="vars-light absolute inset-x-0 bottom-5 z-10 flex flex-wrap justify-center gap-3 px-4">
+                  <button type="button" aria-haspopup="dialog" onClick={() => setSheet(true)} className="btn btn-primary">
+                    <Icon name="plan" size={18} /> {t("Floor plan", "სართულის გეგმა")}
+                  </button>
+                  <button type="button" aria-haspopup="dialog" onClick={() => setSun(true)} className="btn bg-white/70 backdrop-blur">
+                    <Icon name="sun" size={18} /> {t("Sun study", "მზის კვლევა")}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
           <p className="mt-3 text-[12px] text-seu-muted">{t("Layout images are illustrative for this concept.", "განლაგების სურათები საილუსტრაციოა.")}</p>
         </div>
