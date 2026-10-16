@@ -1,5 +1,16 @@
 @import "tailwindcss";
 
+/* Georgian: Helvetica Neue LT GEO 45 Light (Monotype), only the Georgian letters (subset
+   from the client's file); Latin keeps Urbanist / Sofia Sans. One weight, so bolder
+   Georgian text is synthesised from it. */
+@font-face {
+  font-family: "Helvetica Neue LT GEO";
+  src: url("../fonts/helvetica-neue-geo-45-light.woff2") format("woff2");
+  font-weight: 300;
+  font-display: swap;
+  unicode-range: U+10A0-10FF, U+1C90-1CBF, U+2D00-2D2F;
+}
+
 @font-face {
   font-family: "BPG Rioni Contrast";
   src: url("../fonts/bpg-rioni-contrast.woff2") format("woff2");
@@ -163,8 +174,8 @@
   --color-seu-accent-lo: var(--seu-accent-lo);
   --spacing-gutter: var(--gutter);
   --spacing-section: var(--section-y);
-  --font-sans: "Urbanist Variable", "Noto Sans Georgian Variable", "BPG Rioni Contrast", system-ui, sans-serif;
-  --font-display: "Sofia Sans Semi Condensed Variable", "Noto Sans Georgian Variable", "BPG Rioni Contrast", "Helvetica Neue", sans-serif;
+  --font-sans: "Urbanist Variable", "Helvetica Neue LT GEO", "Noto Sans Georgian Variable", "BPG Rioni Contrast", system-ui, sans-serif;
+  --font-display: "Sofia Sans Semi Condensed Variable", "Helvetica Neue LT GEO", "Noto Sans Georgian Variable", "BPG Rioni Contrast", "Helvetica Neue", sans-serif;
 }
 
 html {
