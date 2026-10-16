@@ -43,7 +43,7 @@ export default function AboutScreen({ lang }: { lang: Lang }) {
   const t = tr(lang);
   return (
     <main>
-      <section data-tone="dark" data-no-out className="tone-dark relative h-[100svh] min-h-[680px] overflow-hidden">
+      <section data-tone="dark" className="tone-dark relative h-[100svh] min-h-[680px] overflow-hidden">
         <div className="absolute inset-0" data-zoom>
           <img src={withBase("/images/office.jpg")} alt={t("SEU Development office", "SEU Development-ის ოფისი")} className="h-full w-full object-cover" />
         </div>

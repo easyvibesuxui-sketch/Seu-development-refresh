@@ -279,7 +279,7 @@ export default function HeroMap() {
       ref={rootRef}
       className={`${styles.root} vars-light`}
       data-tone="light"
-      data-no-out
+     
       data-mode={mode}
       data-landed={landed}
       data-active={active.id}

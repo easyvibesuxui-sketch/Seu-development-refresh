@@ -39,7 +39,7 @@ export default function ApartmentCard({ unit, className = "" }: { unit: Unit; cl
     <>
       <div className="relative -mx-2 -mt-2 aspect-[3/2] overflow-hidden rounded-[18px] bg-[radial-gradient(80%_70%_at_50%_45%,rgb(246_241_232/0.08),transparent_70%)]">
         <img
-          src={withBase("/images/apartment-3d.webp")}
+          src={withBase("/tour/dollhouse-cut.webp")}
           alt=""
           loading="lazy"
           className={`h-full w-full object-contain p-3 transition-transform duration-700 ${sold ? "opacity-50 grayscale" : "group-hover:scale-105"}`}

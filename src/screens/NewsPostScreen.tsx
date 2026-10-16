@@ -43,7 +43,7 @@ export default function NewsPostScreen({ lang, slug }: { lang: Lang; slug: strin
 
   return (
     <main>
-      <section data-tone="dark" data-no-out className="tone-dark relative h-[86svh] min-h-[560px] overflow-hidden">
+      <section data-tone="dark" className="tone-dark relative h-[86svh] min-h-[560px] overflow-hidden">
         <div className="absolute inset-0" data-zoom>
           <img src={src(item.image)} alt="" className="h-full w-full object-cover" />
         </div>

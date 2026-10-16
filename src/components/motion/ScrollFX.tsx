@@ -17,8 +17,6 @@ gsap.registerPlugin(ScrollTrigger, SplitText);
  *   data-stagger          direct children rise in sequence on enter
  *   data-window           clip opens from a rounded inset window to full bleed on enter
  *   data-drift="-0.3"     row slides sideways by that share of its width across the viewport
- *   [data-tone] sections  lag slightly as they leave, so the next slides over (desktop;
- *                         data-no-out opts a pinned or sticky section out)
  * Lenis provides the inertial scroll (one instance for the whole visit); the attribute
  * effects are rebuilt on every route change.
  */
@@ -29,7 +27,7 @@ export default function ScrollFX() {
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) return;
-    const lenis = new Lenis({ lerp: 0.09, smoothWheel: true });
+    const lenis = new Lenis({ lerp: 0.12, smoothWheel: true });
     lenisRef.current = lenis;
     const raf = (time: number) => lenis.raf(time * 1000);
     lenis.on("scroll", ScrollTrigger.update);
@@ -65,7 +63,6 @@ export default function ScrollFX() {
     lenisRef.current?.scrollTo(0, { immediate: true });
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    const mm = gsap.matchMedia();
     const ctx = gsap.context(() => {
       gsap.utils.toArray<HTMLElement>("[data-split]").forEach((el) => {
         const split = SplitText.create(el, { type: "words,lines", mask: "lines", linesClass: "split-line" });
@@ -131,27 +128,6 @@ export default function ScrollFX() {
         );
       });
 
-      // Leaving sections fall behind: each toned section lags a little as it scrolls away,
-      // so the next one (painted later, on a solid ground) slides up over it. Sections that pin
-      // or hold sticky stages opt out with data-no-out. Desktop pointers only.
-      mm.add("(min-width: 1024px) and (pointer: fine)", () => {
-        gsap.utils.toArray<HTMLElement>("main [data-tone]:not([data-no-out])").forEach((el) => {
-          // A short section would open a gap above itself while it lags; only full-height ones move.
-          if (el.offsetHeight < window.innerHeight) return;
-          el.dataset.out = "";
-          gsap.fromTo(
-            el,
-            { y: 0 },
-            {
-              y: () => window.innerHeight * 0.1,
-              ease: "none",
-              scrollTrigger: { trigger: el, start: "bottom bottom", end: "bottom top", scrub: 0.6 },
-            },
-          );
-        });
-        return () => document.querySelectorAll<HTMLElement>("[data-out]").forEach((el) => delete el.dataset.out);
-      });
-
       gsap.utils.toArray<HTMLElement>("[data-stagger]").forEach((el) => {
         // fromTo, not from: a second pass over the same nodes must still end fully visible.
         gsap.fromTo(el.children, { y: 60, opacity: 0 }, {
@@ -173,7 +149,6 @@ export default function ScrollFX() {
 
     return () => {
       ctx.revert();
-      mm.revert();
       window.clearTimeout(timer);
       window.removeEventListener("load", refresh);
     };

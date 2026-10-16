@@ -6,7 +6,7 @@ import { withBase } from "@/data/projects";
 import { MAP_READY_EVENT, mapIsReady, startIntro } from "@/lib/intro";
 import { useLang } from "@/lib/useLang";
 
-const MAX_WAIT_MS = 9000;
+const MAX_WAIT_MS = 5000;
 // Module state survives client-side navigation, so returning to the home page skips the loader.
 let played = false;
 /** Fallback pacing when the video can't play (autoplay blocked, low-power mode). */

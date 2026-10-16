@@ -130,7 +130,7 @@ export default function Interior360() {
   }, []);
 
   return (
-    <section ref={rootRef} data-tone="dark" data-no-out className="tone-dark relative h-[260vh]" aria-labelledby="inside-title">
+    <section ref={rootRef} data-tone="dark" className="tone-dark relative h-[260vh]" aria-labelledby="inside-title">
       <div className="sticky top-0 h-[100svh] overflow-hidden">
         <div
           ref={stageRef}

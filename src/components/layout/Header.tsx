@@ -19,11 +19,10 @@ const same = (a: string, b: string) => a.replace(/\/$/, "") === b.replace(/\/$/,
 
 /**
  * Glass navigation pill. It reads the tone of the section beneath it (`data-tone`) and
- * switches between light-on-dark and dark-on-light, hides while scrolling down, and opens a
- * full-screen menu on small screens.
+ * switches between light-on-dark and dark-on-light, stays in view the whole way down, and opens
+ * a full-screen menu on small screens.
  */
 export default function Header() {
-  const [hidden, setHidden] = useState(false);
   const [light, setLight] = useState(false);
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
@@ -34,13 +33,9 @@ export default function Header() {
   const burgerRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    let lastY = window.scrollY;
     let frame = 0;
     const update = () => {
       frame = 0;
-      const y = window.scrollY;
-      setHidden(y > lastY && y > window.innerHeight * 0.6);
-      lastY = y;
       // The tone of whichever section is under the bar's middle line.
       const probe = 44;
       const sections = document.querySelectorAll<HTMLElement>("[data-tone]");
@@ -68,6 +63,13 @@ export default function Header() {
     };
   }, [pathname]);
 
+  // After a client-side navigation the clicked header link would keep focus (and show its focus
+  // ring once the page is scrolled with the keyboard); hand focus to the new page instead.
+  useEffect(() => {
+    const active = document.activeElement;
+    if (active instanceof HTMLElement && active.closest("header")) document.getElementById("main")?.focus({ preventScroll: true });
+  }, [pathname]);
+
   // Escape closes the menu and returns focus to the burger; following a link closes it too.
   useEffect(() => {
     if (!open) return;
@@ -93,9 +95,7 @@ export default function Header() {
         {t("Skip to content", "კონტენტზე გადასვლა")}
       </a>
       <header
-        className={`pointer-events-none fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-5 transition-transform duration-500 ${
-          hidden && !open ? "-translate-y-[130%]" : ""
-        } ${tone}`}
+        className={`pointer-events-none fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-5 ${tone}`}
       >
         <div className="pointer-events-auto flex items-stretch gap-2">
           <nav

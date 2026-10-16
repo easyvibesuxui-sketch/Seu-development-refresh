@@ -83,7 +83,7 @@ function Dialog({ unit, open, onClose }: { unit?: Unit; open: boolean; onClose: 
         {unit && (
           <div className="rc-unit hidden flex-col rounded-[20px] border border-seu-line bg-white p-5 md:flex">
             <p className="title-display text-[18px] uppercase">{t("Apartment", "ბინა")} {unit.number}</p>
-            <img src={withBase("/images/apartment-3d.webp")} alt="" className="my-4 w-full object-contain" />
+            <img src={withBase("/tour/dollhouse-cut.webp")} alt="" className="my-4 w-full object-contain" />
             <div className="flex flex-wrap gap-2 [&>span]:border [&>span]:border-seu-ink/15">
               <Chip>{t("Varketili", "ვარკეთილი")}</Chip>
               <Chip>{block && blockNameIn(block, lang)}</Chip>

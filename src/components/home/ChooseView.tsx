@@ -119,7 +119,7 @@ export default function ChooseView() {
   const toggleRoom = (r: string) => setRooms((cur) => (cur.includes(r) ? cur.filter((x) => x !== r) : [...cur, r]));
 
   return (
-    <Section id="choose-view" tone="light" data-no-out>
+    <Section id="choose-view" tone="light">
       <Container className="grid gap-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-24">
         <div>
           <SectionHeader index="04" eyebrow={t("Find yours", "იპოვეთ თქვენი")} title={t("Choose a view", "აირჩიეთ ხედი")} className="lg:grid-cols-1" />

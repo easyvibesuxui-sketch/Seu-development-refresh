@@ -188,14 +188,13 @@ export default function AssistantFloorDrawer({
             </div>
             <Compass label={t(UI.north)} className="absolute right-3 top-2 z-10" />
             <div className="absolute inset-0 grid place-items-center p-10 pt-14">
+              {/* The same sample apartment as the virtual tour on the apartment profile. */}
               {view === "3D" ? (
-                <img src={withBase("/images/apartment-3d.webp")} alt={`${t(UI.apartment)} ${unit.number}, 3D`} className="max-h-full w-[92%] object-contain drop-shadow-[0_24px_30px_rgb(19_33_29/0.25)]" />
+                <img src={withBase("/tour/dollhouse-cut.webp")} alt={`${t(UI.apartment)} ${unit.number}, 3D`} className="max-h-full w-[96%] object-contain drop-shadow-[0_24px_30px_rgb(19_33_29/0.25)]" />
+              ) : view === "2D" ? (
+                <img src={withBase("/tour/plan.jpg")} alt={`${t(UI.apartment)} ${unit.number}, 2D`} className="max-h-full w-full object-contain" />
               ) : (
-                <img
-                  src={withBase("/images/apartment-plan.png")}
-                  alt={`${t(UI.apartment)} ${unit.number}, ${t(UI.floorPlan)}`}
-                  className={`max-h-full w-[75%] object-contain ${view === "2D" ? "[filter:sepia(.35)_saturate(1.4)_hue-rotate(-12deg)]" : ""}`}
-                />
+                <img src={withBase("/images/apartment-plan.png")} alt={`${t(UI.apartment)} ${unit.number}, ${t(UI.floorPlan)}`} className="max-h-full w-[75%] object-contain" />
               )}
             </div>
           </div>

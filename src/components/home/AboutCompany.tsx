@@ -90,7 +90,7 @@ export default function AboutCompany() {
   return (
     // The last screen of the track lies under the next section (negative margin), which slides
     // up over the held stage.
-    <section id="about" ref={rootRef} data-tone="light" data-no-out className="tone-light relative z-0 mb-[-100svh] h-[360svh]">
+    <section id="about" ref={rootRef} data-tone="light" className="tone-light relative z-0 mb-[-100svh] h-[360svh]">
       <div className="ac-sticky sticky top-0 isolate h-[100svh] min-h-[640px] origin-top overflow-hidden">
         <div className="relative z-10 mx-auto flex max-w-[1680px] items-start justify-between px-gutter pt-28 md:pt-32">
           <div>

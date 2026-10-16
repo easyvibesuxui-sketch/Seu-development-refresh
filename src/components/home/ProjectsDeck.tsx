@@ -33,6 +33,16 @@ export default function ProjectsDeck() {
         const st = { trigger: next, start: "top bottom", end: "top top", scrub: 0.6 };
         gsap.to(card.querySelector(".deck-inner"), { scale: 0.94, yPercent: -2, ease: "power1.in", scrollTrigger: st });
         gsap.to(card.querySelector(".deck-shade"), { opacity: 0.35, ease: "power1.in", scrollTrigger: st });
+        // A covered card is still "on screen" (it is sticky), so its film would keep playing
+        // under the next one; pause it once covered and resume when it is uncovered.
+        const film = card.querySelector("video");
+        if (film)
+          ScrollTrigger.create({
+            trigger: next,
+            start: "top top",
+            onEnter: () => film.pause(),
+            onLeaveBack: () => film.play().catch(() => {}),
+          });
       });
       gsap.utils.toArray<HTMLElement>(".deck-media").forEach((media) => {
         gsap.fromTo(media, { yPercent: -8 }, {
@@ -46,7 +56,7 @@ export default function ProjectsDeck() {
   }, []);
 
   return (
-    <Section id="projects" tone="dark" className="pb-0" data-no-out>
+    <Section id="projects" tone="dark" className="pb-0">
       <Container>
         <SectionHeader
           index="02"
