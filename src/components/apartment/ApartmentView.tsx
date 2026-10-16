@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import gsap from "gsap";
 import { withBase } from "@/data/projects";
+import { WALL_COLOURS, type TourPlace } from "@/data/tour";
 import { roomIn, unitStatusIn, units, viewIn, type RoomKind, type Unit, type ViewId } from "@/data/inventory";
 import { useHref, useLang } from "@/lib/useLang";
 import { Container, Section, SectionHeader } from "@/components/ui/Section";
@@ -14,7 +15,7 @@ import { Benefits } from "@/components/project/ProjectDetails";
 import Icon, { type IconName } from "@/components/ui/Icon";
 import FloorPlanSheet from "./FloorPlanSheet";
 import Compass from "./Compass";
-import VirtualTour from "./VirtualTour";
+import VirtualTour, { TourModel } from "./VirtualTour";
 
 // The sun study brings MapLibre; load it only when asked for.
 const SunStudy = dynamic(() => import("@/components/project/SunStudy"), { ssr: false });
@@ -43,6 +44,9 @@ type Tab = "3D" | "2D" | "Plan" | "Tour";
 
 export default function ApartmentView({ unit }: { unit: Unit }) {
   const [tab, setTab] = useState<Tab>("3D");
+  // The tour's room and wall colour live here, so the 3D and 2D markers can open it in a room.
+  const [tourAt, setTourAt] = useState<TourPlace>("hall");
+  const [wall, setWall] = useState(WALL_COLOURS[0].id);
   const [asking, setAsking] = useState(false);
   const [sheet, setSheet] = useState(false);
   const [sun, setSun] = useState(false);
@@ -154,7 +158,7 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
               <span className="sr-only">{t("(opens in a new tab)", "(იხსნება ახალ ჩანართში)")}</span>
             </a>
           </div>
-          <div ref={stageRef} className={`relative mt-4 aspect-[4/3.3] overflow-hidden rounded-[24px] bg-seu-paper ${tab === "Tour" ? "max-sm:aspect-[4/5]" : ""}`}>
+          <div ref={stageRef} className="relative mt-4 aspect-[4/3.3] overflow-hidden rounded-[24px] bg-seu-paper max-sm:aspect-[4/5]">
             <div className="vars-light absolute left-4 top-4 z-10 flex gap-2" role="tablist" aria-label={t("Layout view", "განლაგების ხედი")}>
               {(["3D", "2D", "Plan", "Tour"] as Tab[]).map((v) => (
                 <button
@@ -172,24 +176,33 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
               ))}
             </div>
             {tab === "Tour" ? (
-              <VirtualTour label={t(`Virtual tour of a sample apartment like ${unit.number}`, `ბინის ${unit.number}-ის მსგავსი სანიმუშო ბინის ვირტუალური ტური`)} />
+              <VirtualTour
+                label={t(`Virtual tour of a sample apartment like ${unit.number}`, `ბინის ${unit.number}-ის მსგავსი სანიმუშო ბინის ვირტუალური ტური`)}
+                start={tourAt}
+                onPlace={setTourAt}
+                colour={wall}
+                onColour={setWall}
+              />
             ) : (
               <>
-                <Compass label={t("North arrow", "ჩრდილოეთის ისარი")} />
-                <div className="absolute inset-0 grid place-items-center p-12">
-                  {tab === "3D" ? (
-                    <img data-tab-img src={withBase("/images/apartment-3d.webp")} alt={t(`Apartment ${unit.number}, 3D layout`, `ბინა ${unit.number}, 3D განლაგება`)} className="max-h-full w-[92%] object-contain drop-shadow-[0_30px_40px_rgb(19_33_29/0.25)]" />
-                  ) : (
-                    <img
-                      data-tab-img
-                      src={withBase("/images/apartment-plan.png")}
-                      alt={t(`Apartment ${unit.number}, floor plan`, `ბინა ${unit.number}, გეგმა`)}
-                      className={`max-h-full w-[75%] object-contain ${tab === "2D" ? "[filter:sepia(.35)_saturate(1.4)_hue-rotate(-12deg)]" : ""}`}
-                    />
-                  )}
-                </div>
+                <Compass label={t("North arrow", "ჩრდილოეთის ისარი")} className="absolute right-5 top-4 z-10 max-sm:hidden" />
+                {tab === "Plan" ? (
+                  <div className="absolute inset-0 grid place-items-center p-12">
+                    <img data-tab-img src={withBase("/images/apartment-plan.png")} alt={t(`Apartment ${unit.number}, floor plan`, `ბინა ${unit.number}, გეგმა`)} className="max-h-full w-[75%] object-contain" />
+                  </div>
+                ) : (
+                  <TourModel
+                    view={tab === "3D" ? "3d" : "2d"}
+                    alt={tab === "3D" ? t(`Apartment ${unit.number}, 3D layout`, `ბინა ${unit.number}, 3D განლაგება`) : t(`Apartment ${unit.number}, 2D top view`, `ბინა ${unit.number}, 2D ზედხედი`)}
+                    current={tourAt}
+                    onPick={(p) => {
+                      setTourAt(p);
+                      setTab("Tour");
+                    }}
+                  />
+                )}
                 {/* The whole floor opens from a centred button, in a bottom sheet. */}
-                <div className="vars-light absolute inset-x-0 bottom-5 z-10 flex flex-wrap justify-center gap-3 px-4">
+                <div className="stage-actions vars-light absolute inset-x-0 bottom-5 z-10 flex justify-center gap-3 px-4">
                   <button type="button" aria-haspopup="dialog" onClick={() => setSheet(true)} className="btn btn-primary">
                     <Icon name="plan" size={18} /> {t("Floor plan", "სართულის გეგმა")}
                   </button>

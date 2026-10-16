@@ -1596,6 +1596,16 @@ body:has(.presentation) .cursor {
   }
 }
 
+/* Apartment stage: on phones the floor-plan and sun-study buttons share one compact row. */
+@media (max-width: 639px) {
+  .stage-actions .btn {
+    --ctl-h: var(--ctl-sm);
+    padding: 0 14px;
+    font-size: 12px;
+    gap: 6px;
+  }
+}
+
 /* Virtual tour (apartment profile): rings on the floor, room dots, wall-colour swatches. */
 .tour-ring {
   display: grid;

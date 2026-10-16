@@ -102,10 +102,12 @@ a synced clip is listed in `SYNCED_GREETING`.
 
 ## Virtual tour (apartment profile)
 
-The "Tour" tab next to 3D / 2D / Plan on the apartment profile is a Matterport-style tour of
-one sample apartment (`src/data/tour.ts`, `src/components/apartment/VirtualTour.tsx`): six
-places to look around in, rings on the floor that walk you on, a dollhouse and a top-down
-plan, and wall colours. All media in `public/tour/` comes from Kling:
+The apartment stage on the profile has one switcher, 3D / 2D / Plan / Tour, for a
+Matterport-style tour of one sample apartment (`src/data/tour.ts`,
+`src/components/apartment/VirtualTour.tsx`): 3D is its dollhouse and 2D its top-down view, both
+with room markers that open the tour in that room; Plan is the line drawing; Tour has six places
+to look around in, rings on the floor that walk you on, and wall colours. All media in
+`public/tour/` comes from Kling:
 
 - places: Gemini 3 Pro image edits in the style of the living-room panorama (21:9);
 - walk clips `walk-<from>-<to>.mp4|webm`: Kling 2.6 with first and last frames, which are 16:9
