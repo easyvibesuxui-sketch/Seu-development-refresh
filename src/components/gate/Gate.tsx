@@ -57,22 +57,22 @@ export default function Gate() {
         <AmbientVideo name="assistant-loop" className="absolute inset-0 h-full w-full object-cover" />
         <div className="gate-shade pointer-events-none absolute inset-0" aria-hidden />
         <Link href={h("/assistant/")} onClick={(e) => enter(e, "assistant", h("/assistant/"))} className="group absolute inset-0 z-10 outline-none" aria-labelledby="gate-assistant">
-          <div className="gate-copy gate-copy--shaded absolute inset-x-0 bottom-0 z-10 isolate p-8 pb-14 md:p-14">
+          <div className="gate-copy gate-copy--shaded absolute inset-x-0 bottom-0 z-10 isolate p-8 pb-8 md:p-14">
             <p className="eyebrow text-white">
               {t("Mariam", "მარიამი")} · <span lang="ka">ქართ</span> / EN
             </p>
-            <h2 id="gate-assistant" className="page-title mt-6 text-[clamp(40px,5vw,88px)]">
+            <h2 id="gate-assistant" className="page-title mt-4 text-[clamp(34px,5vw,88px)] md:mt-6">
               {t("Virtual", "ვირტუალური")}
               <br />
               {t("assistant", "ასისტენტი")}<span className="text-seu-accent-hi">.</span>
             </h2>
-            <p className="body-copy mt-5 max-w-sm text-white/85">
+            <p className="body-copy mt-3 max-w-sm text-white/85 md:mt-5">
               {t(
                 "A video guide in Georgian or English: the projects, apartments and views, and a visit booked for you.",
                 "ვიდეოგიდი ქართულად ან ინგლისურად: პროექტები, ბინები და ხედები, და ვიზიტის დაჯავშნა.",
               )}
             </p>
-            <span className="btn btn-light btn-lg mt-8 group-focus-visible:outline group-focus-visible:outline-2 group-focus-visible:outline-offset-4 group-focus-visible:outline-white">
+            <span className="btn btn-light btn-lg mt-5 md:mt-8 group-focus-visible:outline group-focus-visible:outline-2 group-focus-visible:outline-offset-4 group-focus-visible:outline-white">
               {t("Talk to the assistant", "ესაუბრეთ ასისტენტს")} <Icon name="arrow" size={18} />
             </span>
           </div>
@@ -84,17 +84,17 @@ export default function Gate() {
         <div className="gate-shade pointer-events-none absolute inset-0" aria-hidden />
         {/* The link covers the half; the map stays outside it so its credits are links of their own. */}
         <Link href={h("/home/")} onClick={(e) => enter(e, "site", h("/home/"))} className="group absolute inset-0 z-10 outline-none" aria-labelledby="gate-site">
-          <div className="gate-copy gate-copy--shaded absolute inset-x-0 bottom-0 z-10 isolate p-8 pb-14 md:p-14">
+          <div className="gate-copy gate-copy--shaded absolute inset-x-0 bottom-0 z-10 isolate p-8 pb-8 md:p-14">
             <p className="eyebrow text-white">SEU Development</p>
-            <h2 id="gate-site" className="page-title mt-6 text-[clamp(40px,5vw,88px)]">
+            <h2 id="gate-site" className="page-title mt-4 text-[clamp(34px,5vw,88px)] md:mt-6">
               {t("Explore", "ნახეთ")}
               <br />
               {t("the website", "ვებსაიტი")}<span className="text-seu-accent-hi">.</span>
             </h2>
-            <p className="body-copy mt-5 max-w-sm text-white/85">
+            <p className="body-copy mt-3 max-w-sm text-white/85 md:mt-5">
               {t("Projects, apartments and the visual search, on a live map of Tbilisi.", "პროექტები, ბინები და ვიზუალური ძებნა თბილისის ცოცხალ რუკაზე.")}
             </p>
-            <span className="btn btn-primary btn-lg mt-8 group-focus-visible:outline group-focus-visible:outline-2 group-focus-visible:outline-offset-4 group-focus-visible:outline-white">
+            <span className="btn btn-primary btn-lg mt-5 md:mt-8 group-focus-visible:outline group-focus-visible:outline-2 group-focus-visible:outline-offset-4 group-focus-visible:outline-white">
               {t("Enter", "შესვლა")} <Icon name="arrow" size={18} />
             </span>
           </div>

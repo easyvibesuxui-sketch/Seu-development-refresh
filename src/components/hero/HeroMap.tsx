@@ -294,7 +294,8 @@ export default function HeroMap() {
         {mode === "project" ? (
           <div key={active.id} className={styles.captionInner}>
             <p className={styles.status}>
-              <FlagIcon /> {statusIn(active.status, lang).toUpperCase()} <span>{active.date}</span>
+              {/* Georgian has no upper case for this (toUpperCase would give Mtavruli, which the font lacks). */}
+              <FlagIcon /> {lang === "ka" ? statusIn(active.status, lang) : statusIn(active.status, lang).toUpperCase()} <span>{active.date}</span>
             </p>
             <h1 className={styles.title}>{nameIn(active, lang)}</h1>
           </div>

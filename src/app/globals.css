@@ -865,6 +865,29 @@ body::before {
   letter-spacing: 0.01em;
 }
 
+/*
+ * Georgian. The type was set for Latin capitals, which all sit between the same two lines.
+ * Mkhedruli letters rise above and drop below the line (ბ, ღ, ფ, ქ), so in Georgian the
+ * headings get room between lines, labels lose the wide tracking, and nothing is uppercased:
+ * some browsers turn uppercase Georgian into Mtavruli, which Helvetica Neue LT GEO lacks, and
+ * those letters would fall back to another font.
+ */
+html:lang(ka) * {
+  text-transform: none;
+}
+
+:lang(ka) :is(h1, h2, .page-title, .section-title, .title-display, .scroll-words) {
+  line-height: 1.16;
+}
+
+:lang(ka) .title-m {
+  line-height: 1.22;
+}
+
+:lang(ka) :is(.eyebrow, [class*="tracking-"]) {
+  letter-spacing: 0.03em;
+}
+
 /* SplitText line masks need a little room for descenders. */
 .split-line {
   padding-bottom: 0.08em;
