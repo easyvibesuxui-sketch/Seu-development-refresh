@@ -45,8 +45,9 @@ export default function ApartmentCard({ unit, className = "" }: { unit: Unit; cl
           // The chip has its own band above the picture, so it never sits on the flat.
           className={`h-full w-full object-contain px-3 pb-2 pt-14 transition-transform duration-700 ${sold ? "opacity-50 grayscale" : "group-hover:scale-105"}`}
         />
-        {/* Number and status as one chip in the corner, so the picture leads the card. */}
-        <p className="absolute left-3 top-3 inline-flex items-center gap-2.5 rounded-full bg-[#fffcf7]/95 py-1.5 pl-3.5 pr-3 text-[#13211d] shadow-[0_4px_14px_rgb(19_33_29/0.14)] ring-1 ring-[rgb(19_33_29/0.08)] backdrop-blur-md">
+        {/* Number and status as one chip in the corner, so the picture leads the card: 12px from
+            both edges of the card, concentric with its 24px corner. */}
+        <p className="absolute left-0 top-0 inline-flex items-center gap-2.5 rounded-full bg-[#fffcf7]/95 py-1.5 pl-3.5 pr-3 text-[#13211d] shadow-[0_4px_14px_rgb(19_33_29/0.14)] ring-1 ring-[rgb(19_33_29/0.08)] backdrop-blur-md">
           <span className="text-[14px] font-semibold tabular-nums">
             <span className="sr-only">{t("Apartment", "ბინა")} </span>
             {unit.number}
