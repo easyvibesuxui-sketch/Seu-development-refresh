@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useHref } from "@/lib/useLang";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 
-type Variant = "primary" | "ghost" | "light" | "glass";
+type Variant = "primary" | "ghost" | "light" | "glass" | "copper" | "orb";
 type Size = "sm" | "md" | "lg" | "icon";
 
 type Common = { variant?: Variant; size?: Size; className?: string; children: ReactNode };

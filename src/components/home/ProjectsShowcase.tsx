@@ -96,11 +96,12 @@ export default function ProjectsShowcase() {
           index="02"
           eyebrow={t("Portfolio", "პორტფოლიო")}
           title={t("Our projects", "ჩვენი პროექტები")}
+          spread={[{ text: t("Our", "ჩვენი") }, { text: t("projects.", "პროექტები."), at: "end", accent: true }]}
           intro={t(
             "From finished homes in Saburtalo to the new district rising in Varketili — every project funded from day one and delivered on time.",
             "საბურთალოს დასრულებული სახლებიდან ვარკეთილის ახალ უბნამდე — ყველა პროექტი პირველივე დღიდან დაფინანსებულია და დროულად სრულდება.",
           )}
-          action={<ButtonLink href="/projects/">{t("All projects", "ყველა პროექტი")}</ButtonLink>}
+          action={<ButtonLink href="/projects/" variant="orb">{t("All projects", "ყველა პროექტი")}</ButtonLink>}
         />
       </Container>
 
@@ -170,7 +171,7 @@ export default function ProjectsShowcase() {
                         <dd className="title-m mt-1 normal-case">{p.floors}</dd>
                       </div>
                     </dl>
-                    <ButtonLink href={`/projects/${p.id}/`} variant={p.status === "ongoing" ? "primary" : "glass"} size="lg" tabIndex={i === index ? 0 : -1}>
+                    <ButtonLink href={`/projects/${p.id}/`} variant={p.status === "ongoing" ? "copper" : "glass"} size="lg" tabIndex={i === index ? 0 : -1}>
                       {t("Explore", "დაათვალიერეთ")} {nameIn(p, lang).replace("SEU ", "")}
                     </ButtonLink>
                   </div>

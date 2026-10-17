@@ -1,5 +1,6 @@
 import type { ElementType, ReactNode } from "react";
 import LogoLines from "@/components/brand/LogoLines";
+import LightStreak from "./LightStreak";
 
 type Tone = "dark" | "light";
 
@@ -47,10 +48,17 @@ export function Container({ className = "", children }: { className?: string; ch
   return <div className={`mx-auto w-full max-w-[1680px] px-gutter ${className}`}>{children}</div>;
 }
 
+/** One line of a spread title: where it sits across the width, and whether it carries the copper accent. */
+export type SpreadLine = { text: string; at?: "start" | "center" | "end"; accent?: boolean };
+
 /**
  * Section opening used on every page: an eyebrow with its index, the display title (the
  * full stop in the accent colour, as in the brand), and an optional intro and action
  * aligned to the right on wide screens.
+ *
+ * With `spread`, the title is set the way era.estate sets its own: very large and light,
+ * its lines pushed to either side of the column, one of them in the copper gradient, and a
+ * streak of light drawn through it as it arrives. `title` then only names it for the index.
  */
 export function SectionHeader({
   index,
@@ -60,6 +68,7 @@ export function SectionHeader({
   action,
   as: Heading = "h2",
   size = "section",
+  spread,
   className = "",
 }: {
   index?: string;
@@ -69,8 +78,36 @@ export function SectionHeader({
   action?: ReactNode;
   as?: ElementType;
   size?: "section" | "page";
+  spread?: SpreadLine[];
   className?: string;
 }) {
+  if (spread)
+    return (
+      <header className={`relative ${className}`}>
+        {(eyebrow || index) && (
+          <p className="eyebrow mb-6 md:mb-8">
+            {index && <span className="text-seu-accent-hi">{index}</span>}
+            {eyebrow}
+          </p>
+        )}
+        <div className="relative">
+          <Heading className="spread-title" aria-label={title} data-split>
+            {spread.map((l, i) => (
+              <span key={i} aria-hidden className={`spread-title__line spread-title__line--${l.at ?? "start"} ${l.accent ? "text-copper" : ""}`}>
+                {l.text}
+              </span>
+            ))}
+          </Heading>
+          <LightStreak />
+        </div>
+        {(intro || action) && (
+          <div className="mt-10 flex flex-col items-start gap-8 md:mt-12 lg:ml-auto lg:max-w-[46ch]" data-stagger>
+            {intro && <div className="lead">{intro}</div>}
+            {action}
+          </div>
+        )}
+      </header>
+    );
   return (
     <header className={`grid gap-10 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:items-end ${className}`}>
       <div>

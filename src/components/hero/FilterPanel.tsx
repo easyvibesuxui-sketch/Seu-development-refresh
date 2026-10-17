@@ -77,7 +77,7 @@ export default function FilterPanel({ className = "", tone = "light" }: { classN
       </fieldset>
 
       <div className="mt-6 flex items-center gap-3">
-        <button type="submit" className="btn btn-primary flex-1">
+        <button type="submit" className="btn btn-copper flex-1">
           <Icon name="search" size={16} strokeWidth={2} />
           {t("Search", "ძებნა")}
         </button>

@@ -19,7 +19,7 @@ export default function ContactSection({ split = false }: { split?: boolean }) {
     <Section id="contact" tone="dark">
       <Container className="grid gap-20 lg:grid-cols-2 lg:gap-28">
         <div>
-          <SectionHeader index={split ? undefined : "08"} eyebrow={t("Talk to sales", "გაყიდვების განყოფილება")} title={t("Request a call", "მოითხოვე ზარი")} className="lg:grid-cols-1" />
+          <SectionHeader index={split ? undefined : "08"} eyebrow={t("Talk to sales", "გაყიდვების განყოფილება")} title={t("Request a call", "მოითხოვე ზარი")} spread={[{ text: t("Request", "მოითხოვე") }, { text: t("a call.", "ზარი."), at: "end", accent: true }]} />
           {sent ? (
             <p role="status" className="lead mt-12 text-seu-accent-hi">
               {t("Thank you! A sales manager will call you shortly.", "მადლობა! გაყიდვების მენეჯერი მალე დაგიკავშირდებათ.")}
@@ -44,7 +44,7 @@ export default function ContactSection({ split = false }: { split?: boolean }) {
                 </Reveal>
               ))}
               <Reveal delay={260}>
-                <button type="submit" className="btn btn-primary btn-lg mt-4">
+                <button type="submit" className="btn btn-copper btn-lg mt-4">
                   {t("Request a call", "ზარის მოთხოვნა")}
                 </button>
               </Reveal>

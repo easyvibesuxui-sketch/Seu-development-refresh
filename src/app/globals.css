@@ -2064,3 +2064,167 @@ body:has(.presentation) .cursor {
     animation: none;
   }
 }
+
+/* ---------- ERA-style display (home first) ---------- */
+
+/* Spread title: very large and light, lines pushed to either side of the column. */
+.spread-title {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(44px, 8.2vw, 148px);
+  line-height: 0.92;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+:lang(ka) .spread-title {
+  font-size: clamp(38px, 6.6vw, 120px);
+  line-height: 1.12;
+  letter-spacing: 0;
+}
+
+.spread-title__line {
+  display: block;
+}
+
+.spread-title__line--center {
+  text-align: center;
+}
+
+.spread-title__line--end {
+  text-align: right;
+}
+
+/* Copper: the brand terracotta run from a sunlit highlight to its shade. Inner word wrappers
+   (the split reveal) carry the same fill so the text never turns transparent. */
+.text-copper,
+.text-copper * {
+  background: linear-gradient(100deg, #f3c29b 0%, #d98a57 34%, var(--seu-accent) 66%, #7c3b17 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Light streak drawn through a title. */
+.light-streak {
+  position: absolute;
+  left: -3%;
+  top: 22%;
+  width: 106%;
+  height: 62%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.light-streak {
+  clip-path: inset(0 100% 0 0);
+}
+
+.light-streak path {
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+}
+
+.light-streak__line {
+  stroke-width: 1.4;
+}
+
+.light-streak__glow {
+  stroke-width: 7;
+  filter: blur(5px);
+  opacity: 0.55;
+}
+
+/* Drawn from left to right as it arrives (the stroke stays hairline at any width). */
+.light-streak.is-lit {
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 1.8s cubic-bezier(0.65, 0, 0.35, 1) 0.35s;
+}
+
+/* Copper buttons: the primary fill as a gradient, and a large round call to action. */
+.btn-copper {
+  --btn-bg: linear-gradient(110deg, #e0975f 0%, var(--seu-accent) 52%, var(--seu-accent-lo) 100%);
+  --btn-fg: #fff;
+  --btn-border: transparent;
+  --btn-fill: var(--seu-accent-lo);
+  --btn-fill-fg: #fff;
+  box-shadow: 0 12px 30px rgb(168 84 31 / 0.28), inset 0 1px 0 rgb(255 255 255 / 0.25);
+}
+
+.btn-orb {
+  --btn-bg: radial-gradient(circle at 32% 26%, #f6c7a2 0%, #dd8c55 30%, var(--seu-accent) 62%, var(--seu-accent-lo) 100%);
+  --btn-fg: #fff;
+  --btn-border: transparent;
+  --btn-fill: radial-gradient(circle at 32% 26%, #f1b68a 0%, var(--seu-accent) 55%, var(--seu-accent-lo) 100%);
+  --btn-fill-fg: #fff;
+  width: clamp(116px, 10vw, 148px);
+  height: clamp(116px, 10vw, 148px);
+  min-height: 0;
+  padding: 0 18px;
+  border-radius: 50%;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.3;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  box-shadow: 0 20px 50px rgb(168 84 31 / 0.35), inset 0 1px 0 rgb(255 255 255 / 0.3);
+  transition:
+    color 0.45s var(--ease-out),
+    transform 0.5s var(--ease-out);
+}
+
+.btn-orb:hover {
+  transform: scale(1.05) rotate(-4deg);
+}
+
+.btn-orb::before {
+  border-radius: 50%;
+}
+
+/* Arch reveal (home): a picture opens from an arch to the full screen as it is scrolled. */
+.arch-reveal {
+  clip-path: inset(24% 30% 0% 30% round 50% 50% 0% 0% / 42% 42% 0% 0%);
+  will-change: clip-path;
+}
+
+@media (max-width: 767px) {
+  .arch-reveal {
+    clip-path: inset(22% 10% 0% 10% round 50% 50% 0% 0% / 34% 34% 0% 0%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .light-streak {
+    clip-path: none;
+    transition: none;
+  }
+  .btn-orb:hover {
+    transform: none;
+  }
+}
+
+/* A spread title that has to share its screen (the sticky About stage). */
+.spread-title--compact {
+  font-size: clamp(40px, 6vw, 104px);
+}
+
+:lang(ka) .spread-title--compact {
+  font-size: clamp(34px, 4.8vw, 84px);
+}
+
+/* Copper on a photograph or on the dark forest: lighter, so it holds its contrast. */
+.text-copper-light,
+.text-copper-light *,
+.tone-dark .text-copper,
+.tone-dark .text-copper * {
+  background: linear-gradient(100deg, #ffe3c9 0%, #f3b98d 45%, #e08a52 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arch-reveal {
+    clip-path: none;
+  }
+}

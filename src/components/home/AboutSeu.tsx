@@ -59,7 +59,7 @@ export default function AboutSeu() {
     <Section tone="light" className="overflow-hidden">
       <Container className="grid items-center gap-20 md:grid-cols-2">
         <div>
-          <SectionHeader index="07" eyebrow={ka ? "დეველოპერი" : "Developer"} title={ka ? "SEU-ს შესახებ" : "About SEU"} className="lg:grid-cols-1" />
+          <SectionHeader index="07" eyebrow={ka ? "დეველოპერი" : "Developer"} title={ka ? "SEU-ს შესახებ" : "About SEU"} spread={[{ text: ka ? "SEU-ს" : "About" }, { text: ka ? "შესახებ." : "SEU.", at: "end", accent: true }]} />
           <div className="mt-12 max-w-[52ch] space-y-5" data-stagger>
             {(ka ? paragraphsKa : paragraphs).map((p, i) => (
               <p key={i} className={i === 0 ? "lead" : "body-copy"}>
@@ -67,7 +67,7 @@ export default function AboutSeu() {
               </p>
             ))}
             <div className="flex flex-wrap gap-3 pt-6">
-              <ButtonLink href="/about/" variant="primary">
+              <ButtonLink href="/about/" variant="copper">
                 {ka ? "ჩვენი ისტორია" : "Our story"}
               </ButtonLink>
               <ButtonLink href="#contact">{ka ? "მოითხოვე ზარი" : "Request a call"}</ButtonLink>

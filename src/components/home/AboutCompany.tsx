@@ -97,8 +97,9 @@ export default function AboutCompany() {
             <p className="eyebrow mb-5">
               <span className="text-seu-accent-hi">01</span>{t("Since 2014", "2014 წლიდან")}
             </p>
-            <h2 className="section-title" data-split>
-              {t("About company", "კომპანიის შესახებ")}<span className="text-seu-accent-hi">.</span>
+            <h2 className="spread-title spread-title--compact" aria-label={t("About company", "კომპანიის შესახებ")} data-split>
+              <span aria-hidden className="spread-title__line">{t("About", "კომპანიის")}</span>
+              <span aria-hidden className="spread-title__line text-copper md:pl-[1.4em]">{t("company.", "შესახებ.")}</span>
             </h2>
           </div>
           <span className="group hidden md:block">

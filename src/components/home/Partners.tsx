@@ -36,7 +36,7 @@ export default function Partners({ variant = "marquee", subtitle }: { variant?: 
   return (
     <Section tone="dark" className="overflow-hidden">
       <Container>
-        <SectionHeader index="06" eyebrow={t("Together with", "ერთად")} title={t("Partners", "პარტნიორები")} />
+        <SectionHeader index="06" eyebrow={t("Together with", "ერთად")} title={t("Partners", "პარტნიორები")} spread={[{ text: t("Partners.", "პარტნიორები."), at: "center", accent: true }]} />
       </Container>
       <div className="marquee relative mt-20 flex w-max gap-6">
         {row.map((p, i) => (

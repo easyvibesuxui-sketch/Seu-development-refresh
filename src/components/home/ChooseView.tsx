@@ -96,7 +96,7 @@ export default function ChooseView() {
     <Section id="choose-view" tone="light">
       <Container className="grid gap-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-24">
         <div>
-          <SectionHeader index="04" eyebrow={t("Find yours", "იპოვეთ თქვენი")} title={t("Choose a view", "აირჩიეთ ხედი")} className="lg:grid-cols-1" />
+          <SectionHeader index="04" eyebrow={t("Find yours", "იპოვეთ თქვენი")} title={t("Choose a view", "აირჩიეთ ხედი")} spread={[{ text: t("Choose", "აირჩიეთ") }, { text: t("a view.", "ხედი."), at: "end", accent: true }]} />
           <p className="lead mt-10 max-w-[44ch] text-seu-muted">
             {t(
               "Start from what you want to see every morning — the park, the city or the Tbilisi Sea — then pick the size.",
@@ -155,7 +155,7 @@ export default function ChooseView() {
             </fieldset>
 
             <div>
-              <button type="submit" className="btn btn-primary btn-lg max-sm:w-full max-sm:whitespace-normal max-sm:py-3 max-sm:text-center max-sm:leading-snug">
+              <button type="submit" className="btn btn-copper btn-lg max-sm:w-full max-sm:whitespace-normal max-sm:py-3 max-sm:text-center max-sm:leading-snug">
                 <Icon name="search" size={18} strokeWidth={2} />
                 {t("Show apartments with this view", "ამ ხედის მქონე ბინების ჩვენება")}
               </button>
