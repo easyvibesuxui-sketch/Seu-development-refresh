@@ -2237,3 +2237,29 @@ body:has(.presentation) .cursor {
 .logo-lines.is-lit .logo-lines__glow {
   opacity: 1;
 }
+
+/* Choose a view: picture cards; the chosen one gets an ink frame and a check. */
+.view-card {
+  transition: box-shadow 0.2s var(--ease-out), transform 0.2s var(--ease-out);
+}
+.view-card:active {
+  transform: scale(0.985);
+}
+.view-card.is-on {
+  box-shadow: 0 0 0 2px var(--fg);
+}
+.view-card__check {
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.2s var(--ease-out), transform 0.2s var(--ease-out);
+}
+.view-card.is-on .view-card__check {
+  opacity: 1;
+  transform: scale(1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .view-card,
+  .view-card__check {
+    transition: none;
+  }
+}

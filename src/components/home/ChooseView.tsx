@@ -1,7 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
-import gsap from "gsap";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { withBase } from "@/data/projects";
 import { viewIn, type ViewId } from "@/data/inventory";
@@ -9,169 +8,101 @@ import { useHref, useLang } from "@/lib/useLang";
 import { Container, Section, SectionHeader } from "@/components/ui/Section";
 import Icon, { type IconName } from "@/components/ui/Icon";
 
-type View = { id: IconName; label: string; image: string };
-
-const VIEWS: View[] = [
-  {
-    id: "park",
-    label: "Hualing Park",
-    image: "/images/choose-varketili.jpg",
-  },
-  {
-    id: "city",
-    label: "City",
-    image: "/images/varketili-panorama.jpg",
-  },
-  {
-    id: "sea",
-    label: "Tbilisi Sea",
-    image: "/images/upcoming-2.jpg",
-  },
-  {
-    id: "mountains",
-    label: "Mountains",
-    image: "/images/upcoming-1.jpg",
-  },
-  {
-    id: "courtyard",
-    label: "Courtyard",
-    image: "/images/finished-vaja.jpg",
-  },
-  {
-    id: "panorama",
-    label: "Panorama",
-    image: "/images/varketili-panorama.jpg",
-  },
-];
+// Each view is shown as it looks from a window (Kling, golden hour).
+const VIEWS: (ViewId & IconName)[] = ["park", "city", "sea", "mountains", "courtyard", "panorama"];
 
 const BEDROOMS = ["Studio", "1 bedroom", "2 bedrooms", "3 bedrooms", "4 bedrooms", "5+ bedrooms"];
 const BEDROOMS_KA = ["სტუდიო", "1 საძინებელი", "2 საძინებელი", "3 საძინებელი", "4 საძინებელი", "5+ საძინებელი"];
 
+/*
+ * Choose a view: one large picture card per view (what you would see from the window),
+ * then the number of bedrooms as a light row of pills, then one button to the results.
+ */
 export default function ChooseView() {
-  // `view` is the choice (chips, form, phone picture); `shown` is the big picture on wide
-  // screens, which catches up once its wipe has finished.
-  const [view, setView] = useState(VIEWS[0]);
-  const [shown, setShown] = useState(VIEWS[0]);
+  const [view, setView] = useState<ViewId>(VIEWS[0]);
   const [rooms, setRooms] = useState<string[]>([]);
-  const stageRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const lang = useLang();
   const h = useHref();
   const t = (en: string, ka: string) => (lang === "ka" ? ka : en);
-  const label = (v: View) => viewIn(v.id as ViewId, lang);
-  // Chips are narrow: the short Georgian name there, the full one under the picture.
-  const chip = (v: View) => (lang === "ka" ? ((({ park: "პარკი", sea: "ზღვა" }) as Record<string, string>)[v.id] ?? label(v)) : label(v));
-
-  const pickView = (next: View) => {
-    if (next.id === view.id) return;
-    setView(next);
-    const stage = stageRef.current;
-    // The wide-screen stage is hidden on phones: nothing to animate there.
-    if (!stage || stage.offsetParent === null) return setShown(next);
-    // New image wipes in over the current one, then becomes the base layer.
-    const incoming = stage.querySelector<HTMLImageElement>(".cv-incoming");
-    if (incoming) {
-      incoming.src = withBase(next.image);
-      gsap.fromTo(
-        incoming,
-        { clipPath: "inset(0 0 0 100%)", scale: 1.08 },
-        {
-          clipPath: "inset(0 0 0 0%)",
-          scale: 1,
-          duration: 1.1,
-          ease: "expo.inOut",
-          overwrite: true,
-          onComplete: () => {
-            setShown(next);
-            gsap.set(incoming, { clipPath: "inset(0 0 0 100%)" });
-          },
-        },
-      );
-    } else setShown(next);
-  };
 
   const toggleRoom = (r: string) => setRooms((cur) => (cur.includes(r) ? cur.filter((x) => x !== r) : [...cur, r]));
 
   return (
     <Section id="choose-view" tone="light">
-      <Container className="grid gap-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-24">
-        <div>
+      <Container>
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)] lg:items-end lg:gap-24">
           <SectionHeader index="04" eyebrow={t("Find yours", "იპოვეთ თქვენი")} title={t("Choose a view", "აირჩიეთ ხედი")} spread={[{ text: t("Choose", "აირჩიეთ") }, { text: t("a view.", "ხედი."), at: "end", accent: true }]} />
-          <p className="lead mt-10 max-w-[44ch] text-seu-muted">
+          <p className="lead max-w-[44ch] text-seu-muted">
             {t(
               "Start from what you want to see every morning — the park, the city or the Tbilisi Sea — then pick the size.",
               "დაიწყეთ იმით, რისი დანახვაც ყოველ დილით გსურთ — პარკი, ქალაქი თუ თბილისის ზღვა — შემდეგ კი ზომა აირჩიეთ.",
             )}
           </p>
+        </div>
 
-          {/* On phones the picture sits above the controls; on wide screens it stays pinned beside them. */}
-          <div className="relative mt-12 aspect-[4/3] overflow-hidden rounded-[20px] lg:hidden">
-            <img loading="lazy" decoding="async" src={withBase(view.image)} alt={t(`${label(view)} view render`, `ხედი: ${label(view)}, რენდერი`)} className="absolute inset-0 h-full w-full object-cover" />
-          </div>
-
-          <form
-            className="mt-14 flex flex-col gap-12"
-            onSubmit={(e) => {
-              e.preventDefault();
-              const q = new URLSearchParams({ project: "varketili", view: view.id });
-              const picked = rooms.map((r) => Math.min(BEDROOMS.indexOf(r), 3));
-              if (picked.length) q.set("rooms", [...new Set(picked)].sort().join(","));
-              router.push(h(`/search/?${q}`));
-            }}
-          >
-            <fieldset>
-              <legend className="field-label mb-4">
-                <Icon name="eye" size={14} />
-                {t("View", "ხედი")}
-              </legend>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3" data-stagger>
-                {VIEWS.map((v) => (
+        <form
+          className="mt-16 md:mt-20"
+          onSubmit={(e) => {
+            e.preventDefault();
+            const q = new URLSearchParams({ project: "varketili", view });
+            const picked = rooms.map((r) => Math.min(BEDROOMS.indexOf(r), 3));
+            if (picked.length) q.set("rooms", [...new Set(picked)].sort().join(","));
+            router.push(h(`/search/?${q}`));
+          }}
+        >
+          <fieldset>
+            <legend className="sr-only">{t("View", "ხედი")}</legend>
+            <div className="grid grid-cols-2 gap-3 md:gap-5 lg:grid-cols-3" data-stagger>
+              {VIEWS.map((v) => {
+                const on = view === v;
+                return (
                   <button
-                    key={v.id}
+                    key={v}
                     type="button"
-                    aria-pressed={view.id === v.id}
-                    onClick={() => pickView(v)}
-                    className="chip ctl-lg"
+                    aria-pressed={on}
+                    onClick={() => setView(v)}
+                    className={`view-card group relative aspect-[4/5] overflow-hidden rounded-[18px] text-left outline-offset-4 sm:aspect-[4/3] md:rounded-[24px] ${on ? "is-on" : ""}`}
                   >
-                    <Icon name={v.id} size={18} />
-                    <span className="truncate">{chip(v)}</span>
+                    <img loading="lazy" decoding="async" src={withBase(`/images/view-${v}.webp`)} alt="" className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]" />
+                    <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-[#0c1613]/75 via-[#0c1613]/10 to-transparent" />
+                    <span className="absolute inset-x-0 bottom-0 flex items-center gap-2.5 p-4 text-white md:p-6">
+                      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white/15 ring-1 ring-white/40 backdrop-blur md:h-10 md:w-10">
+                        <Icon name={v} size={18} />
+                      </span>
+                      <span className="min-w-0 text-[14px] font-semibold leading-tight md:text-[18px]">{viewIn(v, lang)}</span>
+                    </span>
+                    {/* Chosen: a check in the corner and a frame in the page's ink, not the button's copper. */}
+                    <span aria-hidden className="view-card__check absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-full bg-[#fffcf7] text-[#13211d] shadow-[0_4px_14px_rgb(0_0_0/0.2)] md:right-4 md:top-4">
+                      <Icon name="check" size={16} strokeWidth={2} />
+                    </span>
                   </button>
-                ))}
-              </div>
-            </fieldset>
+                );
+              })}
+            </div>
+          </fieldset>
 
-            <fieldset>
+          <div className="mt-12 flex flex-col gap-8 md:mt-16 lg:flex-row lg:items-end lg:justify-between">
+            <fieldset className="min-w-0">
               <legend className="field-label mb-4">
                 <Icon name="bed" size={14} />
                 {t("Bedrooms", "საძინებლები")}
               </legend>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3" data-stagger>
-                {BEDROOMS.map((r) => (
-                  <button key={r} type="button" aria-pressed={rooms.includes(r)} onClick={() => toggleRoom(r)} className="chip ctl-lg">
-                    {lang === "ka" ? BEDROOMS_KA[BEDROOMS.indexOf(r)] : r}
+              <div className="flex flex-wrap gap-2">
+                {BEDROOMS.map((r, i) => (
+                  <button key={r} type="button" aria-pressed={rooms.includes(r)} onClick={() => toggleRoom(r)} className="chip rounded-full px-5 [--ctl-h:44px]">
+                    {lang === "ka" ? BEDROOMS_KA[i] : r}
                   </button>
                 ))}
               </div>
             </fieldset>
 
-            <div>
-              <button type="submit" className="btn btn-copper btn-lg max-sm:w-full max-sm:whitespace-normal max-sm:py-3 max-sm:text-center max-sm:leading-snug">
-                <Icon name="search" size={18} strokeWidth={2} />
-                {t("Show apartments with this view", "ამ ხედის მქონე ბინების ჩვენება")}
-              </button>
-            </div>
-          </form>
-        </div>
-
-        <div className="hidden lg:block">
-          <div ref={stageRef} className="sticky top-28 h-[calc(100svh-9rem)] overflow-hidden rounded-[24px]">
-            <img loading="lazy" decoding="async" src={withBase(shown.image)} alt={t(`${label(shown)} view render`, `ხედი: ${label(shown)}, რენდერი`)} className="absolute inset-0 h-full w-full object-cover" />
-            <img alt="" aria-hidden className="cv-incoming absolute inset-0 h-full w-full object-cover [clip-path:inset(0_0_0_100%)]" />
-            <div className="sunbeams sunbeams--soft" />
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0c1613]/70 via-transparent to-transparent" />
-            <p className="eyebrow absolute bottom-8 left-8 text-white [--muted:#fff]">{t("View", "ხედი")} · {label(shown)}</p>
+            <button type="submit" className="btn btn-copper btn-lg shrink-0 max-sm:w-full max-sm:whitespace-normal max-sm:py-3 max-sm:text-center max-sm:leading-snug">
+              <Icon name="search" size={18} strokeWidth={2} />
+              {t("Show apartments with this view", "ამ ხედის მქონე ბინების ჩვენება")}
+            </button>
           </div>
-        </div>
+        </form>
       </Container>
     </Section>
   );

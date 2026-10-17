@@ -37,12 +37,13 @@ export default function ApartmentCard({ unit, className = "" }: { unit: Unit; cl
 
   const body = (
     <>
-      <div className="relative -mx-2 -mt-2 aspect-[3/2] overflow-hidden rounded-[18px] bg-[radial-gradient(80%_70%_at_50%_45%,rgb(246_241_232/0.08),transparent_70%)]">
+      <div className="relative -mx-2 -mt-2 aspect-[4/3] overflow-hidden rounded-[18px] bg-[radial-gradient(80%_70%_at_50%_45%,rgb(246_241_232/0.08),transparent_70%)]">
         <img
           src={withBase("/tour/dollhouse-cut.webp")}
           alt=""
           loading="lazy"
-          className={`h-full w-full object-contain p-3 transition-transform duration-700 ${sold ? "opacity-50 grayscale" : "group-hover:scale-105"}`}
+          // The chip has its own band above the picture, so it never sits on the flat.
+          className={`h-full w-full object-contain px-3 pb-2 pt-14 transition-transform duration-700 ${sold ? "opacity-50 grayscale" : "group-hover:scale-105"}`}
         />
         {/* Number and status as one chip in the corner, so the picture leads the card. */}
         <p className="absolute left-3 top-3 inline-flex items-center gap-2.5 rounded-full bg-[#fffcf7]/95 py-1.5 pl-3.5 pr-3 text-[#13211d] shadow-[0_4px_14px_rgb(19_33_29/0.14)] ring-1 ring-[rgb(19_33_29/0.08)] backdrop-blur-md">
