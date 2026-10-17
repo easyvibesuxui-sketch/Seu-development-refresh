@@ -60,7 +60,7 @@
 
   /* ---- Rhythm ---- */
   --gutter: clamp(20px, 5vw, 96px);
-  --section-y: clamp(96px, 10vw, 168px);
+  --section-y: clamp(120px, 13vw, 224px);
   --radius: 10px;
   /* Control scale: every field, select, chip, toggle and button is one of these heights. */
   --ctl-sm: 40px;

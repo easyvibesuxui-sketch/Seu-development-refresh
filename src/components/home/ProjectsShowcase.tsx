@@ -112,7 +112,7 @@ export default function ProjectsShowcase() {
 
       <div
         ref={viewportRef}
-        className="show-viewport relative mt-16 touch-pan-y select-none md:mt-20"
+        className="show-viewport relative mt-20 touch-pan-y select-none md:mt-28"
         role="region"
         aria-roledescription={t("carousel", "კარუსელი")}
         aria-label={t("Our projects", "ჩვენი პროექტები")}

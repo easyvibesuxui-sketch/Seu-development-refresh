@@ -1,5 +1,4 @@
 import type { ElementType, ReactNode } from "react";
-import LogoLines from "@/components/brand/LogoLines";
 import LightStreak from "./LightStreak";
 
 type Tone = "dark" | "light";
@@ -7,17 +6,13 @@ type Tone = "dark" | "light";
 /**
  * Every content block of the site sits in one of these: a tone (dark forest or light paper),
  * the shared gutter, and the shared vertical rhythm. `flush` drops the vertical padding for
- * full-bleed media sections. Behind the content runs the SEU line drawing, as era.estate runs
- * its own mark through its pages: on the right of dark blocks and the left of light ones by
- * default, sized to the viewport; `pattern="none"` leaves a block plain.
+ * full-bleed media sections. Backgrounds stay plain: the space does the work.
  */
 export function Section({
   as: Tag = "section",
   tone = "dark",
   flush = false,
   className = "",
-  pattern,
-  patternAt,
   children,
   ...rest
 }: {
@@ -25,19 +20,10 @@ export function Section({
   tone?: Tone;
   flush?: boolean;
   className?: string;
-  pattern?: "left" | "right" | "none";
-  /** Fine placement of the drawing: centre as shares of the block, and its relative size. */
-  patternAt?: { x?: number; y?: number; size?: number };
   children: ReactNode;
 } & Record<string, unknown>) {
-  const side = pattern ?? (flush ? "none" : tone === "dark" ? "right" : "left");
   return (
     <Tag data-tone={tone} className={`tone-${tone} relative isolate ${flush ? "" : "py-section"} ${className}`} {...rest}>
-      {side !== "none" && (
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[min(100%,110svh)] overflow-hidden">
-          <LogoLines tone={tone} x={side === "right" ? 0.82 : 0.18} size={0.8} {...patternAt} />
-        </div>
-      )}
       {children}
     </Tag>
   );
@@ -101,7 +87,7 @@ export function SectionHeader({
           <LightStreak />
         </div>
         {(intro || action) && (
-          <div className="mt-10 flex flex-col items-start gap-8 md:mt-12 lg:ml-auto lg:max-w-[46ch]" data-stagger>
+          <div className="mt-12 flex flex-col items-start gap-8 md:mt-16 lg:ml-auto lg:max-w-[46ch]" data-stagger>
             {intro && <div className="lead">{intro}</div>}
             {action}
           </div>

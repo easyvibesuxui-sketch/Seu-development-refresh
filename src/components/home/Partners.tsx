@@ -38,7 +38,7 @@ export default function Partners({ variant = "marquee", subtitle }: { variant?: 
       <Container>
         <SectionHeader index="06" eyebrow={t("Together with", "ერთად")} title={t("Partners", "პარტნიორები")} spread={[{ text: t("Partners.", "პარტნიორები."), at: "center", accent: true }]} />
       </Container>
-      <div className="marquee relative mt-20 flex w-max gap-6">
+      <div className="marquee relative mt-24 flex w-max gap-6 md:mt-32">
         {row.map((p, i) => (
           <div key={`${p.id}-${i}`} className="w-64 shrink-0">
             <Tile {...p} />

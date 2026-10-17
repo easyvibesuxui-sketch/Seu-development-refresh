@@ -122,7 +122,7 @@ export default function ApartmentSearch() {
 
   return (
     <main>
-      <Section tone="light" pattern="right" patternAt={{ x: 0.86, y: 0.3, size: 0.42 }} className="z-10 pb-10 pt-32 md:pb-12 md:pt-36">
+      <Section tone="light" className="z-10 pb-10 pt-32 md:pb-12 md:pt-36">
         <Container>
           <p className="eyebrow mb-4">{t("Search", "ძებნა")}</p>
           <h1 className="page-title text-[clamp(36px,4.2vw,64px)]" data-split>
