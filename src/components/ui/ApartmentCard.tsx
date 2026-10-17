@@ -55,7 +55,7 @@ export default function ApartmentCard({ unit, className = "" }: { unit: Unit; cl
           {unitStatusIn(unit.status, lang)}
         </span>
       </div>
-      <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2.5 border-t border-seu-line pt-4 text-[13px]">
+      <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2.5 border-t border-seu-line pt-4 text-[14px]">
         {facts.map((f) => (
           <div key={f.label} className="flex items-center gap-1.5">
             <dt className="shrink-0">

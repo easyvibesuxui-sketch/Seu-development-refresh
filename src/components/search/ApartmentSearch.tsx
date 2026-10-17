@@ -62,7 +62,8 @@ export default function ApartmentSearch() {
   useEffect(() => {
     const grid = gridRef.current;
     if (!grid || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    gsap.fromTo(grid.children, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "power3.out", stagger: 0.03 });
+    // 300ms ease-out, the whole stagger kept under 200ms however many cards there are.
+    gsap.fromTo(grid.children, { y: 8, opacity: 0 }, { y: 0, opacity: 1, duration: 0.3, ease: "power2.out", stagger: { amount: 0.18 } });
   }, [results]);
 
   const set = <K extends keyof Filters>(k: K, v: Filters[K]) => {
@@ -93,8 +94,14 @@ export default function ApartmentSearch() {
 
   const sizeFields = (
     <div className="grid grid-cols-2 gap-3">
-      <input className="field" inputMode="numeric" placeholder={t("From", "დან")} aria-label={t("Size from, m²", "ზომა დან, მ²")} value={f.sizeFrom} onChange={(e) => set("sizeFrom", e.target.value.replace(/\D/g, ""))} />
-      <input className="field" inputMode="numeric" placeholder={t("To", "მდე")} aria-label={t("Size to, m²", "ზომა მდე, მ²")} value={f.sizeTo} onChange={(e) => set("sizeTo", e.target.value.replace(/\D/g, ""))} />
+      <label className="grid gap-1.5">
+        <span className="text-[12px] font-semibold text-seu-muted">{t("From, m²", "დან, მ²")}</span>
+        <input className="field" inputMode="numeric" value={f.sizeFrom} onChange={(e) => set("sizeFrom", e.target.value.replace(/\D/g, ""))} />
+      </label>
+      <label className="grid gap-1.5">
+        <span className="text-[12px] font-semibold text-seu-muted">{t("To, m²", "მდე, მ²")}</span>
+        <input className="field" inputMode="numeric" value={f.sizeTo} onChange={(e) => set("sizeTo", e.target.value.replace(/\D/g, ""))} />
+      </label>
     </div>
   );
   const sizePresets = (
@@ -105,7 +112,7 @@ export default function ApartmentSearch() {
           type="button"
           aria-pressed={f.sizeFrom === a && f.sizeTo === b}
           onClick={() => setF((d) => ({ ...d, sizeFrom: a, sizeTo: b }))}
-          className="chip ctl-sm rounded-full px-3 text-[12px]"
+          className="chip rounded-full px-3.5 [--ctl-h:44px]"
         >
           {sizeText(a, b)}
         </button>
@@ -167,20 +174,20 @@ export default function ApartmentSearch() {
         {/* Quick filters stay at hand while scrolling the results. */}
         <div className="sticky top-[84px] z-20 border-b border-seu-line bg-seu-bg/90 backdrop-blur-xl">
           <Container className="flex items-center gap-3 py-3">
-            <p className="label shrink-0 text-[13px]" role="status">
+            <p className="label shrink-0 text-[14px]" role="status">
               {results.length} {t(results.length === 1 ? "apartment" : "apartments", "ბინა")}
             </p>
             <div className="no-scrollbar -my-1 flex min-w-0 flex-1 gap-2 overflow-x-auto py-1" role="group" aria-label={t("Quick filters", "სწრაფი ფილტრები")}>
               {[0, 1, 2, 3].map((r) => (
-                <button key={r} type="button" aria-pressed={f.rooms.includes(r)} onClick={() => toggleRoom(r)} className="chip ctl-sm shrink-0 rounded-full px-4">
+                <button key={r} type="button" aria-pressed={f.rooms.includes(r)} onClick={() => toggleRoom(r)} className="chip shrink-0 rounded-full px-4 [--ctl-h:44px]">
                   {roomText(r)}
                 </button>
               ))}
-              <button type="button" aria-pressed={f.available} onClick={() => set("available", !f.available)} className="chip ctl-sm shrink-0 rounded-full px-4">
+              <button type="button" aria-pressed={f.available} onClick={() => set("available", !f.available)} className="chip shrink-0 rounded-full px-4 [--ctl-h:44px]">
                 {t("Hide sold", "გაყიდულის დამალვა")}
               </button>
             </div>
-            <button type="button" onClick={() => setSheet(true)} aria-haspopup="dialog" className="chip ctl-sm relative shrink-0 rounded-full px-4">
+            <button type="button" onClick={() => setSheet(true)} aria-haspopup="dialog" data-tip={t("Filters", "ფილტრები")} className="chip tip sm:after:hidden relative shrink-0 rounded-full px-4 [--ctl-h:44px]">
               <FiltersGlyph />
               <span className="max-sm:sr-only">{t("Filters", "ფილტრები")}</span>
               {active > 0 && (
@@ -216,10 +223,18 @@ export default function ApartmentSearch() {
                 <path d="M73 73l30 30" strokeLinecap="round" />
                 <path d="M34 34l24 24M58 34L34 58" strokeWidth="5" strokeLinecap="round" />
               </svg>
-              <p className="mt-10 text-[20px] text-seu-muted">{t("Nothing found with these filters", "ფილტრის შესაბამისი ბინა ვერ მოიძებნა")}</p>
-              <button type="button" onClick={clear} className="btn btn-primary mt-8">
-                {t("Clear filters", "ფილტრის გასუფთავება")}
-              </button>
+              <h2 className="title-m mt-10 text-[clamp(20px,2vw,26px)]">{t("No apartments match these filters", "ამ ფილტრებით ბინა ვერ მოიძებნა")}</h2>
+              <p className="mt-3 max-w-[44ch] text-[16px] text-seu-muted">
+                {t("Try a wider size range, another view, or show sold apartments too.", "სცადეთ უფრო ფართო ზომა, სხვა ხედი ან გაყიდული ბინების ჩვენებაც.")}
+              </p>
+              <div className="mt-8 flex flex-wrap justify-center gap-3">
+                <button type="button" onClick={clear} className="btn btn-primary">
+                  {t("Clear filters", "ფილტრების გასუფთავება")}
+                </button>
+                <button type="button" onClick={() => setSheet(true)} aria-haspopup="dialog" className="btn">
+                  {t("Edit filters", "ფილტრების შეცვლა")}
+                </button>
+              </div>
             </div>
           )}
         </Container>
@@ -252,8 +267,8 @@ export default function ApartmentSearch() {
           </label>
         </div>
         <div className="sticky bottom-0 -mx-8 mt-10 flex items-center justify-between gap-4 border-t border-seu-line bg-[var(--popover)] px-8 py-4 sm:-mx-10 sm:px-10">
-          <button type="button" onClick={clear} className="label text-[13px] underline underline-offset-4">
-            {t("Clear all", "ყველას გასუფთავება")}
+          <button type="button" onClick={clear} className="label min-h-11 text-[14px] underline underline-offset-4">
+            {t("Clear all", "გასუფთავება")}
           </button>
           <button
             type="button"
@@ -330,7 +345,7 @@ function SearchPill({ segments, label, submitLabel, onSubmit, className = "" }: 
           )}
         </div>
       ))}
-      <button type="button" onClick={onSubmit} aria-label={submitLabel} title={submitLabel} className="ml-1 grid h-14 w-14 shrink-0 place-items-center self-center rounded-full bg-seu-accent text-white transition-colors hover:bg-seu-accent-hover">
+      <button type="button" onClick={onSubmit} aria-label={submitLabel} data-tip={submitLabel} className="tip ml-1 grid h-14 w-14 shrink-0 place-items-center self-center rounded-full bg-seu-accent text-white transition-colors hover:bg-seu-accent-hover">
         <SearchGlyph />
       </button>
     </div>

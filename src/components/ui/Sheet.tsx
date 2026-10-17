@@ -123,7 +123,7 @@ export default function Sheet({
         tabIndex={-1}
         aria-label={t("Close", "დახურვა")}
         onClick={onClose}
-        className={`absolute inset-0 cursor-default bg-seu-ink/60 backdrop-blur-sm transition-opacity duration-500 ${shown ? "opacity-100" : "opacity-0"}`}
+        className={`absolute inset-0 cursor-default bg-seu-ink/60 backdrop-blur-sm transition-opacity ${shown ? "duration-300 ease-out opacity-100" : "duration-200 ease-in opacity-0"}`}
       />
       <div
         ref={panelRef}
@@ -132,7 +132,7 @@ export default function Sheet({
         aria-labelledby={title ? `${id}-title` : undefined}
         aria-label={title ? undefined : label}
         tabIndex={-1}
-        className={`tone-${tone} absolute flex flex-col overflow-hidden border-white/10 bg-seu-bg shadow-[0_-30px_80px_rgb(0_0_0/0.45)] outline-none transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] ${place} ${className}`}
+        className={`tone-${tone} absolute flex flex-col overflow-hidden border-white/10 bg-seu-bg shadow-[0_-30px_80px_rgb(0_0_0/0.45)] outline-none transition-transform ${shown ? "duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)]" : "duration-200 ease-in"} ${place} ${className}`}
         style={tone === "light" ? { background: "var(--seu-paper)" } : undefined}
       >
         {bottom && (

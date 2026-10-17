@@ -70,6 +70,7 @@
   --popover: #1d2f2a;
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
   --ease-in-out: cubic-bezier(0.7, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
 }
 
 .tone-light,
@@ -445,13 +446,13 @@ body::before {
   border-radius: var(--radius);
   font-family: var(--font-sans);
   font-weight: 600;
-  font-size: 13px;
+  font-size: 14px;
   letter-spacing: 0.04em;
   color: var(--fg);
   transition:
-    background-color 0.3s,
-    border-color 0.3s,
-    color 0.3s;
+    background-color 0.2s,
+    border-color 0.2s,
+    color 0.2s;
 }
 
 .chip:hover {
@@ -1634,7 +1635,7 @@ body:has(.presentation) .cursor {
   background: #fffcf7;
   color: #13211d;
   box-shadow: 0 10px 30px rgb(19 33 29 / 0.1), 0 1px 2px rgb(19 33 29 / 0.08);
-  transition: background-color 0.25s;
+  transition: background-color 0.2s;
 }
 
 .search-pill--open {
@@ -1678,7 +1679,14 @@ body:has(.presentation) .cursor {
   border-radius: 24px;
   background: #fffcf7;
   box-shadow: 0 24px 60px rgb(19 33 29 / 0.18);
-  animation: select-in 0.18s var(--ease-out);
+  animation: pill-panel-in 0.15s var(--ease-out);
+}
+
+@keyframes pill-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
 }
 
 .search-pill__option {
@@ -1690,7 +1698,7 @@ body:has(.presentation) .cursor {
   padding: 11px 14px;
   border-radius: 12px;
   text-align: left;
-  font-size: 15px;
+  font-size: 16px;
 }
 
 .search-pill__option:hover,
@@ -1700,6 +1708,55 @@ body:has(.presentation) .cursor {
 
 .search-pill__option[aria-pressed="true"] {
   font-weight: 600;
+}
+
+/* Tooltip for icon buttons: the same words as the accessible name, on hover and keyboard focus. */
+.tip {
+  position: relative;
+}
+
+.tip::after {
+  content: attr(data-tip);
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  z-index: 50;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: #13211d;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.3;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -4px);
+  transition: opacity 0.1s var(--ease-in), transform 0.1s var(--ease-in);
+}
+
+.tip:focus-visible::after {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  transition: opacity 0.15s var(--ease-out) 0.1s, transform 0.15s var(--ease-out) 0.1s;
+}
+
+@media (hover: hover) {
+  .tip:hover::after {
+    opacity: 1;
+    transform: translate(-50%, 0);
+    transition: opacity 0.15s var(--ease-out) 0.3s, transform 0.15s var(--ease-out) 0.3s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .search-pill__panel {
+    animation: none;
+  }
+  .tip::after {
+    transform: translate(-50%, 0) !important;
+  }
 }
 
 /* Apartment stage: on phones the floor-plan and sun-study buttons share one compact row. */
