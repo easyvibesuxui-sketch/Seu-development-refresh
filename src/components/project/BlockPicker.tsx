@@ -16,6 +16,8 @@ const SunStudy = dynamic(() => import("./SunStudy"), { ssr: false });
 // SEU Varketili from the air: the developer's own photograph, cleaned up and relit with
 // Kling / Gemini 3 Pro (composition and buildings untouched). Source: media/aerial.
 const RENDER = "/images/varketili-aerial.jpg";
+// Sharper copy for the close-up of one block; fetched only when a block is opened.
+const RENDER_4K = "/images/varketili-aerial-4k.jpg";
 const RATIO = 5504 / 3072;
 // The photograph is a little taller than the screen and hangs from the top, so the empty
 // houses at its foot are cropped; FOCUS is the share of its width kept in the middle of the
@@ -63,6 +65,14 @@ const PINS: Record<string, { x: number; y: number }> = {
   v7: { x: 73.9, y: 34 },
 };
 
+/** A block's outline on the photo (its faces and pin), in percent: left, top, right, bottom. */
+function bounds(id: string) {
+  const pts = [...FACADES[id].flatMap((q) => [q.tl, q.tr, q.br, q.bl]), [PINS[id].x, PINS[id].y] as Pt];
+  const xs = pts.map((q) => q[0]);
+  const ys = pts.map((q) => q[1]);
+  return [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)];
+}
+
 const mix = (a: Pt, b: Pt, t: number): Pt => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
 
 /** Outline of one floor across one facade part, as SVG polygon points. */
@@ -74,7 +84,7 @@ function band(p: Part, floors: number, floor: number) {
 
 const floorHref = (b: Block, floor: number) => `/projects/varketili/${b.id}/?floor=${Math.max(2, floor)}`;
 
-type Hover = { block: Block; floor: number; match?: number };
+type Hover = { block: Block; floor: number; match?: number; docked?: boolean };
 
 /** The hero's own filter: it lights up matching floors on the render instead of leaving the page. */
 type Filter = { block: string; from: string; to: string; rooms: number[] };
@@ -91,6 +101,20 @@ export default function BlockPicker() {
   const h = useHref();
   const t = (en: string, ka: string) => (lang === "ka" ? ka : en);
   const [f, setF] = useState<Filter>(NONE);
+  // `peek`: the block whose pin is under the pointer (its card shows). `focus`: the block the
+  // camera has flown to, as era.estate opens one building from the overview.
+  const [peek, setPeek] = useState<Block | null>(null);
+  const [focus, setFocus] = useState<Block | null>(null);
+  const [camera, setCamera] = useState("none");
+  const [sharp, setSharp] = useState(false);
+  // Cards follow a real pointer only: on touch a tap opens the block or the floor directly.
+  const [canHover, setCanHover] = useState(false);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCanHover(window.matchMedia("(hover: hover) and (pointer: fine)").matches);
+  }, []);
+  const sectionRef = useRef<HTMLElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
   const active = !!(f.block || f.from || f.to || f.rooms.length);
 
   // Available flats that fit the filter, counted per floor ("v4-7") and per block ("v4").
@@ -123,11 +147,59 @@ export default function BlockPicker() {
     if (el && el.scrollWidth > el.clientWidth) el.scrollLeft = el.scrollWidth * FOCUS - el.clientWidth / 2;
   }, []);
 
+  /** Fly the camera to one block: it fills the space under the heading, the rest dims. */
+  const open = (b: Block) => {
+    const stage = stageRef.current;
+    const section = sectionRef.current;
+    if (!stage || !section) return;
+    const sr = section.getBoundingClientRect();
+    const r = stage.getBoundingClientRect();
+    const [x0, y0, x1, y1] = bounds(b.id);
+    const wide = sr.width >= 1024;
+    const top = wide ? 200 : 300;
+    const room = { w: wide ? sr.width * 0.42 : sr.width * 0.9, h: sr.height - top - 48 };
+    const box = { w: ((x1 - x0) / 100) * r.width, h: ((y1 - y0) / 100) * r.height };
+    const scale = Math.min(room.w / box.w, room.h / box.h, 3.2);
+    const cx = ((x0 + x1) / 200) * r.width;
+    const cy = ((y0 + y1) / 200) * r.height;
+    // Screen position of a stage point p: stage offset + translate + scale * p.
+    const tx = (wide ? sr.width * 0.4 : sr.width / 2) - (r.left - sr.left) - scale * cx;
+    const ty = top + room.h / 2 - (r.top - sr.top) - scale * cy;
+    setCamera(`translate(${tx}px, ${ty}px) scale(${scale})`);
+    setFocus(b);
+    setPeek(null);
+    setHover(null);
+    if (!sharp) {
+      const img = new Image();
+      img.onload = () => setSharp(true);
+      img.src = withBase(RENDER_4K);
+    }
+  };
+  const close = () => {
+    setFocus(null);
+    setCamera("none");
+    setHover(null);
+  };
+
+  useEffect(() => {
+    if (!focus) return;
+    const key = (e: KeyboardEvent) => e.key === "Escape" && close();
+    // The flight is worked out for this window size; a new size returns to the overview.
+    const resize = () => close();
+    window.addEventListener("keydown", key);
+    window.addEventListener("resize", resize);
+    return () => {
+      window.removeEventListener("keydown", key);
+      window.removeEventListener("resize", resize);
+    };
+  }, [focus]);
+
   return (
-    <section data-tone="dark" className="tone-dark relative h-[100svh] min-h-[680px] overflow-hidden bg-seu-ink">
-      <div ref={scrollerRef} className="absolute inset-0 overflow-x-auto overflow-y-hidden lg:overflow-hidden">
+    <section ref={sectionRef} data-tone="dark" className="tone-dark relative h-[100svh] min-h-[680px] overflow-hidden bg-seu-ink">
+      <div ref={scrollerRef} className={`absolute inset-0 overflow-y-hidden lg:overflow-hidden ${focus ? "overflow-x-hidden" : "overflow-x-auto"}`}>
         {/* The render covers the stage at its own aspect; floors and pins share its coordinate box. */}
         <div
+          ref={stageRef}
           // On phones the photo starts below the heading and the pill so roofs and pins stay clear.
           className="absolute left-0 top-[300px] [--stage-h:calc(max(100svh,680px)-300px)] lg:left-[calc(50%-var(--box-w)*var(--focus))] lg:top-0 lg:[--stage-h:max(100svh,680px)]"
           style={
@@ -136,19 +208,32 @@ export default function BlockPicker() {
               "--focus": FOCUS,
               aspectRatio: `${RATIO}`,
               width: "var(--box-w)",
+              transform: camera,
+              transformOrigin: "0 0",
+              transition: "transform 1.1s cubic-bezier(0.7, 0, 0.2, 1)",
             } as React.CSSProperties
           }
           onMouseLeave={() => setHover(null)}
         >
-          <img fetchPriority="high" src={withBase(RENDER)} alt={t("SEU Varketili from the air at golden hour: five residential blocks", "SEU ვარკეთილი ზემოდან, მზის ჩასვლისას: ხუთი საცხოვრებელი ბლოკი")} className="h-full w-full" />
+          <img fetchPriority="high" src={withBase(sharp && focus ? RENDER_4K : RENDER)} alt={t("SEU Varketili from the air at golden hour: five residential blocks", "SEU ვარკეთილი ზემოდან, მზის ჩასვლისას: ხუთი საცხოვრებელი ბლოკი")} className="h-full w-full" />
           {/* Phones: the sky melts into the dark band under the heading instead of a hard edge. */}
           <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[22%] bg-gradient-to-b from-seu-ink to-transparent lg:hidden" />
           <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" data-cursor="native">
+            {/* Close-up: everything but the open block sinks into shade. */}
+            <path
+              d={`M-50,-50H150V150H-50Z${focus ? FACADES[focus.id].map((q) => `M${[q.tl, q.tr, q.br, q.bl].map((pt) => pt.join(",")).join("L")}Z`).join("") : ""}`}
+              fillRule="evenodd"
+              fill="#0c1613"
+              fillOpacity={focus ? 0.5 : 0}
+              style={{ transition: "fill-opacity .8s ease-out" }}
+              pointerEvents="none"
+            />
             {varketiliBlocks.map((b) =>
               Array.from({ length: b.floors }, (_, i) => {
                 const floor = i + 1;
                 const on = hover?.block.id === b.id && hover.floor === floor;
-                const inBlock = hover?.block.id === b.id;
+                const inBlock = hover?.block.id === b.id || peek?.id === b.id;
+                const away = !!focus && focus.id !== b.id;
                 const match = hits.get(`${b.id}-${floor}`) ?? 0;
                 return (
                   <a
@@ -162,7 +247,7 @@ export default function BlockPicker() {
                       router.push(h(floorHref(b, floor)));
                     }}
                     // Mouse-only shortcut (keyboard goes through the pins): no focus ring on click.
-                    className="cursor-pointer outline-none"
+                    className={`cursor-pointer outline-none ${away ? "pointer-events-none opacity-0" : ""}`}
                   >
                     {FACADES[b.id].map((p, k) => (
                       <polygon
@@ -171,7 +256,7 @@ export default function BlockPicker() {
                         // Filtered: matching floors glow as light bands and the rest sink into a
                         // little shade; the floor under the pointer turns copper.
                         fill={on ? "#e07a3a" : match ? "#fff6ea" : active ? "#0c1613" : "#fff"}
-                        fillOpacity={on ? (match ? 0.65 : 0.5) : match ? 0.42 : active ? 0.22 : inBlock ? 0.06 : 0}
+                        fillOpacity={on ? (match ? 0.65 : 0.5) : match ? 0.42 : active ? 0.22 : inBlock ? 0.1 : 0}
                         stroke="#fffaf3"
                         strokeOpacity={match ? 0.9 : 0}
                         strokeWidth={1}
@@ -194,14 +279,20 @@ export default function BlockPicker() {
             const found = hits.get(b.id) ?? 0;
             // A badge on a hairline stem, its foot dot resting on the roof.
             return (
-              <Link
+              <button
                 key={b.id}
-                href={h(`/projects/varketili/${b.id}/`)}
+                type="button"
                 aria-label={
-                  t(`${b.name}, ${b.floors} floors: choose a floor`, `${blockNameIn(b, lang)}, ${b.floors} სართული: აირჩიეთ სართული`) +
+                  t(`${b.name}, ${b.floors} floors: open the block`, `${blockNameIn(b, lang)}, ${b.floors} სართული: ბლოკის გახსნა`) +
                   (active ? t(`. ${found} matching apartments`, `. ${found} შესაბამისი ბინა`) : "")
                 }
-                className="group absolute -translate-x-1/2 -translate-y-full"
+                onClick={() => open(b)}
+                onMouseEnter={() => setPeek(b)}
+                onMouseLeave={() => setPeek(null)}
+                onFocus={() => setPeek(b)}
+                onBlur={() => setPeek(null)}
+                tabIndex={focus ? -1 : 0}
+                className={`group absolute -translate-x-1/2 -translate-y-full transition-opacity duration-300 ${focus ? "pointer-events-none opacity-0" : ""}`}
                 style={{ left: `${pin.x}%`, top: `${pin.y}%` }}
               >
                 <span className="block-pin flex flex-col items-center" style={{ animationDelay: `${0.6 + i * 0.12}s` }}>
@@ -211,11 +302,12 @@ export default function BlockPicker() {
                   <span className="h-7 w-px bg-white/80" />
                   <span className="-mb-[3px] h-1.5 w-1.5 rounded-full bg-white shadow-[0_0_0_3px_rgb(255_255_255/0.25)]" />
                 </span>
-              </Link>
+              </button>
             );
           })}
 
-          {hover && <FloorCard {...hover} />}
+          {canHover && peek && !focus && <BlockCard block={peek} />}
+          {canHover && hover && !focus && <FloorCard {...hover} />}
         </div>
       </div>
       {/* Shade under the title and a short fade into the page below; the render stays bright between. */}
@@ -224,10 +316,13 @@ export default function BlockPicker() {
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[40%] bg-[radial-gradient(60%_80%_at_0%_10%,rgb(12_22_19/0.85),transparent_72%)] max-md:bg-[radial-gradient(130%_75%_at_0%_10%,rgb(12_22_19/0.85),transparent_78%)]" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-seu-bg to-transparent" />
 
+      {/* Close-up: the floor under the pointer is described in a card docked at the side. */}
+      {canHover && focus && hover && <FloorCard {...hover} docked />}
+
       {/* Compact heading, as on era.estate: the buildings carry the screen. */}
       <div className="pointer-events-none relative z-10 mx-auto max-w-[1680px] px-gutter pt-28 [&_a]:pointer-events-auto [&_button]:pointer-events-auto">
         {/* Navigation reads as a quiet text link. */}
-        <div className="flex flex-wrap items-center gap-6">
+        <div className={`flex flex-wrap items-center gap-6 ${focus ? "hidden" : ""}`}>
           <Link href={h("/projects/")} className="group inline-flex items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-white">
             <span className="grid h-10 w-10 place-items-center rounded-full border border-white/50 bg-seu-ink/55 backdrop-blur transition-colors group-hover:border-white group-hover:bg-seu-ink/80">
               <svg width="8" height="12" viewBox="0 0 8 12" fill="none" aria-hidden className="transition-transform group-hover:-translate-x-0.5">
@@ -237,10 +332,34 @@ export default function BlockPicker() {
             <span className="[text-shadow:0_1px_12px_rgb(0_0_0/0.6)]">{t("All projects", "ყველა პროექტი")}</span>
           </Link>
         </div>
-        <p className="eyebrow mt-8 text-white/85">{t("Visual search · Choose a floor", "ვიზუალური ძებნა · აირჩიეთ სართული")}</p>
-        <h1 className="title-display mt-3 text-[clamp(32px,3.4vw,56px)] uppercase leading-none" data-split>
+        {/* Close-up of one block: back to the overview, and the floor plans for keyboard users. */}
+        {focus && (
+          <div className="flex flex-wrap items-center gap-6">
+            <button type="button" onClick={close} className="group inline-flex items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-white">
+              <span className="grid h-10 w-10 place-items-center rounded-full border border-white/50 bg-seu-ink/55 backdrop-blur transition-colors group-hover:border-white group-hover:bg-seu-ink/80">
+                <svg width="8" height="12" viewBox="0 0 8 12" fill="none" aria-hidden className="transition-transform group-hover:-translate-x-0.5">
+                  <path d="M7 1L2 6l5 5" stroke="currentColor" strokeWidth="1.4" />
+                </svg>
+              </span>
+              <span className="[text-shadow:0_1px_12px_rgb(0_0_0/0.6)]">{t("All blocks", "ყველა ბლოკი")}</span>
+            </button>
+            <Link href={h(`/projects/varketili/${focus.id}/`)} className="text-[12px] font-semibold uppercase tracking-[0.16em] text-white underline decoration-white/40 underline-offset-[6px] transition-colors hover:decoration-white">
+              {t("Floor plans", "სართულების გეგმები")}
+            </Link>
+          </div>
+        )}
+        <p className="eyebrow mt-8 text-white/85">
+          {focus ? t("SEU Varketili · Choose a floor", "SEU ვარკეთილი · აირჩიეთ სართული") : t("Visual search · Choose a floor", "ვიზუალური ძებნა · აირჩიეთ სართული")}
+        </p>
+        <h1 className={`title-display mt-3 text-[clamp(32px,3.4vw,56px)] uppercase leading-none ${focus ? "hidden" : ""}`} data-split>
           {t("SEU Varketili", "SEU ვარკეთილი")}<span className="text-seu-accent-hi">.</span>
         </h1>
+        {focus && (
+          <p key={focus.id} className="barrel-in title-display mt-3 text-[clamp(32px,3.4vw,56px)] uppercase leading-none" aria-live="polite">
+            {blockNameIn(focus, lang)}
+            <span className="text-seu-accent-hi">.</span>
+          </p>
+        )}
 
         {/* One long pill in the sky above the roofs, as on the apartment search; it filters in place. */}
         <div className="pointer-events-auto mt-6 lg:absolute lg:right-gutter lg:top-[100px] lg:mt-0 lg:w-[min(720px,calc(100%-480px))]">
@@ -380,11 +499,49 @@ export default function BlockPicker() {
 }
 
 /**
+ * Block card, as era.estate shows over a pin: the free flats in large figures, their sizes,
+ * the number of floors and the completion date. Beside the pin, on whichever side has room.
+ */
+function BlockCard({ block }: { block: Block }) {
+  const pin = PINS[block.id];
+  const free = units.filter((u) => u.block === block.id && u.status === "available");
+  const sizes = free.map((u) => u.totalArea);
+  const flip = pin.x > 60;
+  const lang = useLang();
+  const t = (en: string, ka: string) => (lang === "ka" ? ka : en);
+
+  return (
+    <div
+      aria-hidden
+      className="barrel-in tone-light pointer-events-none absolute z-20 w-[280px] rounded-[20px] p-6 shadow-[0_30px_70px_rgb(0_0_0/0.35)]"
+      style={{ top: `${pin.y}%`, ...(flip ? { right: `calc(${100 - pin.x}% + 34px)` } : { left: `calc(${pin.x}% + 34px)` }), transform: "translateY(-30%)" }}
+    >
+      <div className="flex items-start gap-4">
+        <span className="title-display text-[64px] leading-[0.85]">{free.length}</span>
+        <span className="label mt-1 text-[12px] uppercase tracking-[0.16em]">{t("Apartments available", "ბინა ხელმისაწვდომია")}</span>
+      </div>
+      {sizes.length > 0 && (
+        <p className="mt-5 text-[16px] font-semibold">
+          {Math.round(Math.min(...sizes))}–{Math.round(Math.max(...sizes))} {t("m²", "მ²")}
+        </p>
+      )}
+      <p className="mt-1 text-[14px] text-seu-muted">
+        {blockNameIn(block, lang)} · {t(`${block.floors} floors`, `${block.floors} სართული`)}
+      </p>
+      <div className="mt-5 border-t border-seu-line pt-4">
+        <p className="text-[12px] uppercase tracking-[0.14em] text-seu-muted">{block.status === "delivered" ? t("Delivered", "ჩაბარდა") : t("Completion", "დასრულება")}</p>
+        <p className="mt-1 text-[14px] font-semibold">{deliveryIn(block.delivery, lang)}</p>
+      </div>
+    </div>
+  );
+}
+
+/**
  * Floor card, as on era.estate: the floor and block in large figures, delivery, then what is
  * still available on that floor by flat type. Sits beside the facade,
  * on whichever side has room.
  */
-function FloorCard({ block, floor, match }: Hover) {
+function FloorCard({ block, floor, match, docked }: Hover) {
   const parts = FACADES[block.id];
   const p = parts[parts.length - 1];
   const left = Math.min(...parts.flatMap((q) => [q.tl[0], q.bl[0]]));
@@ -402,13 +559,17 @@ function FloorCard({ block, floor, match }: Hover) {
   return (
     <div
       aria-hidden
-      className="tone-light pointer-events-none absolute z-20 w-[300px] rounded-[20px] p-6 shadow-[0_30px_70px_rgb(0_0_0/0.35)]"
-      style={{
-        // The box is ZOOM times the screen height: keep the card inside the visible part.
-        top: `clamp(12%, ${y}%, ${56 / ZOOM}%)`,
-        ...(flip ? { right: `${100 - left + 1.2}%` } : { left: `${right + 1.2}%` }),
-        transform: "translateY(-50%)",
-      }}
+      className={`tone-light pointer-events-none absolute z-20 w-[300px] rounded-[20px] p-6 shadow-[0_30px_70px_rgb(0_0_0/0.35)] ${docked ? "barrel-in right-gutter top-[calc(50%+60px)] max-lg:hidden" : ""}`}
+      style={
+        docked
+          ? { transform: "translateY(-50%)" }
+          : {
+              // The box is ZOOM times the screen height: keep the card inside the visible part.
+              top: `clamp(12%, ${y}%, ${56 / ZOOM}%)`,
+              ...(flip ? { right: `${100 - left + 1.2}%` } : { left: `${right + 1.2}%` }),
+              transform: "translateY(-50%)",
+            }
+      }
     >
       <div className="grid grid-cols-2 divide-x divide-seu-line">
         <p>
