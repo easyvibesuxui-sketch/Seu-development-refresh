@@ -13,8 +13,8 @@ import SearchPill, { OptionList } from "@/components/search/SearchPill";
 // The 3D sun study loads its map only when opened.
 const SunStudy = dynamic(() => import("./SunStudy"), { ssr: false });
 
-// SEU Varketili from the air: the developer's own photograph, cleaned up and relit with
-// Kling / Gemini 3 Pro (composition and buildings untouched). Source: media/aerial.
+// SEU Varketili from the air at dusk: the developer's own photograph, cleaned up and relit
+// with Kling / Gemini 3 Pro (composition and buildings untouched). Source: media/aerial.
 const RENDER = "/images/varketili-aerial.jpg";
 // Sharper copy for the close-up of one block; fetched only when a block is opened.
 const RENDER_4K = "/images/varketili-aerial-4k.jpg";
@@ -61,7 +61,41 @@ const FACADES: Record<string, Part[]> = {
  * once the camera has flown in. `faces` are measured on that picture like FACADES above.
  */
 type Closeup = { image: string; ratio: number; faces: Part[] };
-const CLOSEUPS: Partial<Record<string, Closeup>> = {};
+const CLOSEUPS: Partial<Record<string, Closeup>> = {
+  v2: {
+    image: "/images/closeup-v2.webp",
+    ratio: RATIO,
+    faces: [
+      { tl: [31.9, 26.5], tr: [61.25, 6.7], br: [61.25, 82.5], bl: [31.9, 80] },
+      { tl: [61.25, 6.7], tr: [68.1, 18.5], br: [68.1, 78.4], bl: [61.25, 82.5] },
+    ],
+  },
+  v3: { image: "/images/closeup-v3.webp", ratio: RATIO, faces: [{ tl: [28.7, 27.3], tr: [72.5, 27.3], br: [72.5, 78.5], bl: [28.7, 78.5] }] },
+  v4: {
+    image: "/images/closeup-v4.webp",
+    ratio: RATIO,
+    faces: [
+      { tl: [31.9, 18.8], tr: [46.1, 12.8], br: [46.1, 85], bl: [31.9, 79.5] },
+      { tl: [46.1, 9.5], tr: [67.2, 16.8], br: [67.2, 80], bl: [46.1, 88] },
+    ],
+  },
+  v6: {
+    image: "/images/closeup-v6.webp",
+    ratio: RATIO,
+    faces: [
+      { tl: [27.4, 21.5], tr: [40.9, 15.3], br: [40.6, 84.3], bl: [27.3, 83.2] },
+      { tl: [40.9, 15.3], tr: [72.5, 21.5], br: [72.5, 83.2], bl: [40.6, 84.3] },
+    ],
+  },
+  v7: {
+    image: "/images/closeup-v7.webp",
+    ratio: RATIO,
+    faces: [
+      { tl: [25.2, 21], tr: [56.3, 27], br: [56.3, 78.5], bl: [25.2, 81] },
+      { tl: [56.3, 27], tr: [75.3, 27], br: [75.3, 77.5], bl: [56.3, 78.5] },
+    ],
+  },
+};
 
 /** Where each block's pin stands: the highest point of its roof, in percent of the image. */
 const PINS: Record<string, { x: number; y: number }> = {
@@ -232,7 +266,7 @@ export default function BlockPicker() {
           }
           onMouseLeave={() => setHover(null)}
         >
-          <img fetchPriority="high" src={withBase(sharp && focus ? RENDER_4K : RENDER)} alt={t("SEU Varketili from the air at golden hour: five residential blocks", "SEU ვარკეთილი ზემოდან, მზის ჩასვლისას: ხუთი საცხოვრებელი ბლოკი")} className="h-full w-full" />
+          <img fetchPriority="high" src={withBase(sharp && focus ? RENDER_4K : RENDER)} alt={t("SEU Varketili from the air at dusk: five residential blocks", "SEU ვარკეთილი ზემოდან, საღამოს: ხუთი საცხოვრებელი ბლოკი")} className="h-full w-full" />
           {/* Phones: the sky melts into the dark band under the heading instead of a hard edge. */}
           <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[22%] bg-gradient-to-b from-seu-ink to-transparent lg:hidden" />
           <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" data-cursor="native">
@@ -329,8 +363,14 @@ export default function BlockPicker() {
       </div>
       {/* The open block's own evening close-up, over the zoomed photo, with its floors. */}
       {focus && shot && (
-        <div className={`absolute inset-0 overflow-hidden transition-opacity duration-700 ${landed ? "opacity-100" : "pointer-events-none opacity-0"}`} style={{ containerType: "size" }} onMouseLeave={() => setHover(null)}>
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" style={{ aspectRatio: `${shot.ratio}`, width: `max(100cqw, calc(100cqh * ${shot.ratio}))` }}>
+        <div className={`absolute inset-0 overflow-hidden bg-seu-ink transition-opacity duration-700 ${landed ? "opacity-100" : "pointer-events-none opacity-0"}`} style={{ containerType: "size" }} onMouseLeave={() => setHover(null)}>
+          <div
+            // Wide screens: the picture covers the stage with the building left of centre, clear of
+            // the floor card on the right (so it is at least 116% wide). Phones: a band under the
+            // search pill, wide enough to show the whole building.
+            className="absolute left-1/2 top-[330px] w-[200cqw] -translate-x-1/2 lg:left-[42%] lg:top-1/2 lg:w-[var(--cover)] lg:-translate-y-1/2"
+            style={{ aspectRatio: `${shot.ratio}`, "--cover": `max(116cqw, calc(100cqh * ${shot.ratio}))` } as React.CSSProperties}
+          >
             <img src={withBase(shot.image)} alt={t(`${focus.name} in the evening`, `${blockNameIn(focus, lang)} საღამოს`)} className="h-full w-full" />
             <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" data-cursor="native">
               {Array.from({ length: focus.floors }, (_, i) => {

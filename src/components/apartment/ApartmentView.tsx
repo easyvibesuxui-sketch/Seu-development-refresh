@@ -98,14 +98,16 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
                 ["bed", t("Bedrooms", "საძინებლები"), unit.bedrooms === 0 ? t("Studio", "სტუდიო") : String(unit.bedrooms)],
               ] as [IconName, string, string][]
             ).map(([icon, k, v]) => (
-              <div key={k} className="flex flex-col gap-3">
-                <dt className="field-label mb-0 flex flex-col gap-3">
+              // Icon, label and figure share one left edge.
+              <div key={k} className="flex flex-col items-start">
+                <dt className="flex flex-col items-start gap-4">
                   <span className="grid h-11 w-11 place-items-center rounded-full border border-seu-line text-seu-accent-hi">
                     <Icon name={icon} size={20} />
                   </span>
-                  {k}
+                  {/* Room for two lines, so every figure sits on the same baseline. */}
+                  <span className="min-h-[2.8em] text-[12px] font-semibold uppercase leading-[1.4] tracking-[0.14em] text-seu-muted">{k}</span>
                 </dt>
-                <dd className="title-m -mt-2 normal-case">{v}</dd>
+                <dd className="title-m normal-case">{v}</dd>
               </div>
             ))}
           </dl>
