@@ -1,14 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { withBase } from "@/data/projects";
 import { Container, Section, SectionHeader } from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
 import { useLang } from "@/lib/useLang";
-
-gsap.registerPlugin(ScrollTrigger);
 
 const paragraphs = [
   "SEU Development has been operating in the real estate market since 2014.",
@@ -22,38 +17,9 @@ const paragraphsKa = [
   "SEU Development-ის მიერ წარმატებით განხორციელებული პროექტები მოიცავს საქართველოს ეროვნული უნივერსიტეტი სეუ-ს ძველ და ახალ კორპუსებს, სადაც თანამედროვე საგანმანათლებლო და საგამოფენო სივრცეებია განთავსებული, ასევე ბიზნეს ცენტრს თბილისის გარეუბანში. SEU Development-ის ყველა სამშენებლო პროექტი ადრეულ ეტაპზეა სრულად დაფინანსებული, რაც მათ დროულ დასრულებას უზრუნველყოფს.",
 ];
 
-// The colour mark is three stacked slabs; each is a clipped copy of the same image.
-const SLABS = [
-  { clip: "inset(0 0 63% 0)", from: { xPercent: -70, yPercent: -20, rotate: -6 } },
-  { clip: "inset(30% 0 30% 0)", from: { xPercent: 70, yPercent: 0, rotate: 5 } },
-  { clip: "inset(62% 0 0 0)", from: { xPercent: -50, yPercent: 30, rotate: -4 } },
-];
 
 export default function AboutSeu() {
   const ka = useLang() === "ka";
-  const markRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const mark = markRef.current;
-    if (!mark || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const ctx = gsap.context(() => {
-      gsap.utils.toArray<HTMLElement>(".seu-slab").forEach((slab, i) => {
-        gsap.fromTo(
-          slab,
-          { ...SLABS[i].from, opacity: 0 },
-          {
-            xPercent: 0,
-            yPercent: 0,
-            rotate: 0,
-            opacity: 1,
-            ease: "power3.out",
-            scrollTrigger: { trigger: mark, start: "top 90%", end: "center 55%", scrub: 1 },
-          },
-        );
-      });
-    }, mark);
-    return () => ctx.revert();
-  }, []);
 
   return (
     <Section tone="light" className="overflow-hidden">
@@ -74,16 +40,9 @@ export default function AboutSeu() {
             </div>
           </div>
         </div>
-        <div ref={markRef} className="relative mx-auto aspect-[500/460] w-[min(480px,80%)]">
-          {SLABS.map((slab, i) => (
-            <img loading="lazy" decoding="async"
-              key={i}
-              src={withBase("/images/seu-s-color.png")}
-              alt={i === 0 ? (ka ? "SEU-ს ლოგო" : "SEU logo") : ""}
-              className="seu-slab absolute inset-0 h-full w-full"
-              style={{ clipPath: slab.clip }}
-            />
-          ))}
+        {/* The colour mark, still; it only settles in once as the section arrives. */}
+        <div className="relative mx-auto aspect-[500/460] w-[min(480px,80%)]" data-reveal>
+          <img loading="lazy" decoding="async" src={withBase("/images/seu-s-color.png")} alt={ka ? "SEU-ს ლოგო" : "SEU logo"} className="absolute inset-0 h-full w-full object-contain" />
         </div>
       </Container>
     </Section>

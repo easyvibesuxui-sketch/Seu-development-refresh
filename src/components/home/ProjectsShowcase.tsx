@@ -101,7 +101,12 @@ export default function ProjectsShowcase() {
             "From finished homes in Saburtalo to the new district rising in Varketili — every project funded from day one and delivered on time.",
             "საბურთალოს დასრულებული სახლებიდან ვარკეთილის ახალ უბნამდე — ყველა პროექტი პირველივე დღიდან დაფინანსებულია და დროულად სრულდება.",
           )}
-          action={<ButtonLink href="/projects/" variant="orb">{t("All projects", "ყველა პროექტი")}</ButtonLink>}
+          action={
+            <ButtonLink href="/projects/">
+              {t("All projects", "ყველა პროექტი")}
+              <Icon name="arrow" size={16} />
+            </ButtonLink>
+          }
         />
       </Container>
 

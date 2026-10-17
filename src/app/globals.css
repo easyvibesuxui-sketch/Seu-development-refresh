@@ -2141,7 +2141,7 @@ body:has(.presentation) .cursor {
   transition: clip-path 1.8s cubic-bezier(0.65, 0, 0.35, 1) 0.35s;
 }
 
-/* Copper buttons: the primary fill as a gradient, and a large round call to action. */
+/* Copper button: the primary fill as a gradient. */
 .btn-copper {
   --btn-bg: linear-gradient(110deg, #e0975f 0%, var(--seu-accent) 52%, var(--seu-accent-lo) 100%);
   --btn-fg: #fff;
@@ -2151,55 +2151,12 @@ body:has(.presentation) .cursor {
   box-shadow: 0 12px 30px rgb(168 84 31 / 0.28), inset 0 1px 0 rgb(255 255 255 / 0.25);
 }
 
-.btn-orb {
-  --btn-bg: radial-gradient(circle at 32% 26%, #f6c7a2 0%, #dd8c55 30%, var(--seu-accent) 62%, var(--seu-accent-lo) 100%);
-  --btn-fg: #fff;
-  --btn-border: transparent;
-  --btn-fill: radial-gradient(circle at 32% 26%, #f1b68a 0%, var(--seu-accent) 55%, var(--seu-accent-lo) 100%);
-  --btn-fill-fg: #fff;
-  width: clamp(116px, 10vw, 148px);
-  height: clamp(116px, 10vw, 148px);
-  min-height: 0;
-  padding: 0 18px;
-  border-radius: 50%;
-  white-space: normal;
-  text-align: center;
-  line-height: 1.3;
-  font-size: 12px;
-  letter-spacing: 0.1em;
-  box-shadow: 0 20px 50px rgb(168 84 31 / 0.35), inset 0 1px 0 rgb(255 255 255 / 0.3);
-  transition:
-    color 0.45s var(--ease-out),
-    transform 0.5s var(--ease-out);
-}
 
-.btn-orb:hover {
-  transform: scale(1.05) rotate(-4deg);
-}
-
-.btn-orb::before {
-  border-radius: 50%;
-}
-
-/* Arch reveal (home): a picture opens from an arch to the full screen as it is scrolled. */
-.arch-reveal {
-  clip-path: inset(24% 30% 0% 30% round 50% 50% 0% 0% / 42% 42% 0% 0%);
-  will-change: clip-path;
-}
-
-@media (max-width: 767px) {
-  .arch-reveal {
-    clip-path: inset(22% 10% 0% 10% round 50% 50% 0% 0% / 34% 34% 0% 0%);
-  }
-}
 
 @media (prefers-reduced-motion: reduce) {
   .light-streak {
     clip-path: none;
     transition: none;
-  }
-  .btn-orb:hover {
-    transform: none;
   }
 }
 
@@ -2221,10 +2178,4 @@ body:has(.presentation) .cursor {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .arch-reveal {
-    clip-path: none;
-  }
 }

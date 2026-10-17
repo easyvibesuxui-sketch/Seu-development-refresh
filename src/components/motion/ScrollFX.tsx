@@ -143,7 +143,7 @@ export default function ScrollFX() {
 
     // Light reveal for everything else worth noticing: headings, cards and marked blocks
     // settle in from a few pixels below; neighbours that arrive together follow each other.
-    const skip = "[data-stagger], [data-split], .arch-reveal, [data-parallax], [data-zoom], .deck-card, .show-card, .barrel-stage, #results, [data-no-reveal], [role=dialog]";
+    const skip = "[data-stagger], [data-split], [data-parallax], [data-zoom], .deck-card, .show-card, .barrel-stage, #results, [data-no-reveal], [role=dialog]";
     const targets = [...document.querySelectorAll<HTMLElement>("main section :is(h2, [data-reveal], article, figure)")].filter(
       (el) => !el.closest(skip) && !el.parentElement?.closest("main section :is(article, figure, [data-reveal])"),
     );
