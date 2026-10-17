@@ -2025,26 +2025,27 @@ body:has(.presentation) .cursor {
   display: grid;
   place-items: center;
   perspective: 1300px;
-  --w: min(28vw, 40svh);
+  --w: 26vw;
 }
 
 @media (max-width: 767px) {
   .barrel-stage {
     perspective: 800px;
-    --w: min(54vw, 34svh);
+    --w: 56vw;
   }
 }
 
 @media (min-width: 768px) and (max-width: 1199px) {
   .barrel-stage {
     perspective: 1100px;
-    --w: min(38vw, 40svh);
+    --w: 36vw;
   }
 }
 
 .barrel-ring {
   position: relative;
-  width: var(--w);
+  /* --fit (set from the stage height) keeps the drum clear of the heading and the caption. */
+  width: min(var(--w), var(--fit, 9999px));
   aspect-ratio: 3 / 4;
   transform-style: preserve-3d;
   transform: translateZ(calc(var(--r, 600px) * -1)) rotateY(var(--turn, 0deg));
