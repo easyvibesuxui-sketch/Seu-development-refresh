@@ -40,7 +40,7 @@ export default function Footer() {
           <ul className="mt-6 space-y-3">
             {nav.map((item) => (
               <li key={item.href}>
-                <Link href={h(item.href)} className="label text-[14px] uppercase tracking-[0.16em] transition-colors hover:text-seu-accent-hi">
+                <Link href={h(item.href)} className="label inline-block py-1.5 text-[14px] uppercase tracking-[0.16em] transition-colors hover:text-seu-accent-hi">
                   {item.label[lang]}
                 </Link>
               </li>

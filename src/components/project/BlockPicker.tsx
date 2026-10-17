@@ -91,11 +91,14 @@ export default function BlockPicker() {
       <div ref={scrollerRef} className="absolute inset-0 overflow-x-auto overflow-y-hidden lg:overflow-hidden">
         {/* The render covers the stage at its own aspect; floors and pins share its coordinate box. */}
         <div
-          className="absolute bottom-0 left-0 lg:left-1/2 lg:-translate-x-1/2"
-          style={{ aspectRatio: `${RATIO}`, width: `max(100%, calc(max(100svh, 680px) * ${RATIO}))` }}
+          // On phones the render starts lower so the roofs and pins stay clear of the heading.
+          className="absolute bottom-0 left-0 [--stage-h:calc(max(100svh,680px)-280px)] lg:left-1/2 lg:-translate-x-1/2 lg:[--stage-h:max(100svh,680px)]"
+          style={{ aspectRatio: `${RATIO}`, width: `max(100%, calc(var(--stage-h) * ${RATIO}))` }}
           onMouseLeave={() => setHover(null)}
         >
           <img src={withBase(RENDER)} alt={t("SEU Varketili at golden hour: five residential blocks", "SEU ვარკეთილი მზის ჩასვლისას: ხუთი საცხოვრებელი ბლოკი")} className="h-full w-full" />
+          {/* Phones: the sky melts into the dark band under the heading instead of a hard edge. */}
+          <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[22%] bg-gradient-to-b from-seu-ink to-transparent lg:hidden" />
           <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" data-cursor="native">
             {varketiliBlocks.map((b) =>
               Array.from({ length: b.floors }, (_, i) => {

@@ -129,7 +129,7 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
           <div ref={planRef}>
             {view === "plan" ? (
               <div className="relative mx-auto w-full max-w-[980px]">
-                <p className="label mb-2 text-center text-[11px] uppercase tracking-[0.2em] text-seu-muted">{t("North · Hualing", "ჩრდილოეთი · ჰუალინგი")}</p>
+                <p className="label mb-2 text-center text-[12px] uppercase tracking-[0.16em] text-seu-muted">{t("North · Hualing", "ჩრდილოეთი · ჰუალინგი")}</p>
                 <div className="relative" style={{ aspectRatio: `${PLAN_RATIO}` }}>
                   <img src={withBase(PLAN)} alt={t(`Typical floor plan of ${block.name}`, `${blockNameIn(block, lang)}: ტიპური სართულის გეგმა`)} className="h-full w-full rounded-[16px]" />
                   <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
@@ -172,8 +172,8 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
                         >
                           <span className="flex flex-col items-center leading-tight">
                             {sold && <Icon name="lock" size={14} className="mb-0.5 hidden md:block" />}
-                            <span className="label block text-[11px] font-semibold md:text-[14px]">{u.number}</span>
-                            {!sold && <span className="hidden text-[11px] md:block">{u.bedrooms === 0 ? t("Studio", "სტუდიო") : t(`${u.bedrooms} bd`, `${u.bedrooms} საძ.`)}</span>}
+                            <span className="label block text-[12px] font-semibold md:text-[14px]">{u.number}</span>
+                            {!sold && <span className="hidden text-[12px] md:block">{u.bedrooms === 0 ? t("Studio", "სტუდიო") : t(`${u.bedrooms} bd`, `${u.bedrooms} საძ.`)}</span>}
                           </span>
                         </span>
                         {on && (
@@ -213,7 +213,7 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
                     );
                   })}
                 </div>
-                <p className="label mt-3 text-center text-[11px] uppercase tracking-[0.2em] text-seu-muted">{t("South · Tbilisi Sea", "სამხრეთი · თბილისის ზღვა")}</p>
+                <p className="label mt-3 text-center text-[12px] uppercase tracking-[0.16em] text-seu-muted">{t("South · Tbilisi Sea", "სამხრეთი · თბილისის ზღვა")}</p>
                 {sun && (
                   <svg className="sun-path pointer-events-none absolute -inset-6" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
                     <path d="M-2 70 Q50 -40 102 70" fill="none" stroke="#ffd59a" strokeOpacity=".8" strokeDasharray="1 1.4" vectorEffect="non-scaling-stroke" />
@@ -270,7 +270,7 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
                   aria-label={`${blockNameIn(b, lang)}${here ? t(" (this block)", " (ეს ბლოკი)") : ""}`}
                   onMouseEnter={() => setHoverBlock(b.id)}
                   onMouseLeave={() => setHoverBlock(null)}
-                  className={`label absolute grid h-8 w-8 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full text-[12px] ring-1 transition-colors ${
+                  className={`tap-pad label absolute grid h-8 w-8 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full text-[12px] ring-1 transition-colors ${
                     here ? "bg-seu-accent text-white ring-white/70" : "bg-seu-ink/85 text-white ring-white/40 hover:bg-seu-accent"
                   }`}
                   style={{ left: `${cx}%`, top: `${cy}%` }}

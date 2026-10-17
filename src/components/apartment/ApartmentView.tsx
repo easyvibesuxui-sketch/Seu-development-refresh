@@ -130,14 +130,14 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
           </div>
 
           <h2 className="eyebrow mt-16">{t("Room by room", "ოთახები")}</h2>
-          <ul className="mt-6 grid grid-cols-2 gap-x-8 gap-y-5 text-[15px] sm:grid-cols-3" data-stagger>
+          <ul className="mt-6 grid grid-cols-1 gap-x-8 gap-y-5 text-[16px] min-[480px]:grid-cols-2 lg:grid-cols-3" data-stagger>
             {unit.rooms.map((r, i) => (
               <li key={i} className="flex items-center justify-between gap-3 border-b border-seu-line pb-3">
                 <span className="flex items-center gap-2.5 text-seu-muted">
                   <Icon name={roomIcon[r.kind]} size={18} className="text-seu-accent-hi" />
                   {roomIn(r.kind, lang)}
                 </span>
-                <span className="label">
+                <span className="label shrink-0 whitespace-nowrap">
                   {r.area} {t("m²", "მ²")}
                 </span>
               </li>

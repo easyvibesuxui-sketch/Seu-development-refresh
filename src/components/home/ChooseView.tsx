@@ -149,7 +149,7 @@ export default function ChooseView() {
             </fieldset>
 
             <div>
-              <button type="submit" className="btn btn-primary btn-lg">
+              <button type="submit" className="btn btn-primary btn-lg max-sm:w-full max-sm:whitespace-normal max-sm:py-3 max-sm:text-center max-sm:leading-snug">
                 <Icon name="search" size={18} strokeWidth={2} />
                 {t("Show apartments with this view", "ამ ხედის მქონე ბინების ჩვენება")}
               </button>

@@ -193,7 +193,7 @@ export default function ApartmentSearch() {
               <Icon name="filters" size={16} />
               <span className="max-sm:sr-only">{t("Filters", "ფილტრები")}</span>
               {active > 0 && (
-                <span className="absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-seu-accent px-1 text-[11px] text-white">
+                <span className="absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-seu-accent px-1 text-[12px] text-white">
                   {active}
                   <span className="sr-only">{t(" active", " აქტიური")}</span>
                 </span>

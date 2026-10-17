@@ -39,12 +39,12 @@ export default function Gate() {
         <LogoMark className="h-9 w-auto overflow-visible" />
         <span className="flex flex-col leading-none">
           <span className="label text-[14px] tracking-[0.3em]">SEU</span>
-          <span className="text-[11px] text-white/75">Development</span>
+          <span className="text-[12px] text-white/75">Development</span>
         </span>
       </div>
       {/* The gate in the other language: / is Georgian, /en/ English. */}
       <nav className="absolute right-6 top-6 z-30 md:right-14 md:top-10" aria-label={t("Language", "ენა")}>
-        <div className="segmented ctl-sm border-white/40 bg-seu-ink/50 backdrop-blur">
+        <div className="segmented border-white/40 bg-seu-ink/50 backdrop-blur [--ctl-h:44px]">
           {(["ka", "en"] as const).map((l) => (
             <Link key={l} href={l === "ka" ? "/" : "/en/"} lang={l} hrefLang={l} aria-current={lang === l ? "true" : undefined} className="grid place-items-center px-3 text-white">
               {l === "ka" ? "ქარ" : "EN"}

@@ -105,11 +105,11 @@ export default function Header() {
             }`}
             aria-label={t("Main", "მთავარი")}
           >
-            <Link href={h("/home/")} className="group mr-2 flex items-center gap-2.5 pr-2" aria-label={t("SEU Development home", "SEU Development — მთავარი")}>
+            <Link href={h("/home/")} className="group mr-2 flex min-h-11 min-w-11 items-center gap-2.5 pr-2" aria-label={t("SEU Development home", "SEU Development — მთავარი")}>
               <LogoMark className="h-8 w-auto overflow-visible" />
               <span className="hidden flex-col leading-none sm:flex">
                 <span className="label text-[12px] tracking-[0.3em]">SEU</span>
-                <span className="text-[10px] text-seu-muted">Development</span>
+                <span className="text-[12px] leading-none text-seu-muted">Development</span>
               </span>
             </Link>
             <ul className="hidden items-center xl:flex">
@@ -139,7 +139,7 @@ export default function Header() {
                     lang={l}
                     hrefLang={l}
                     aria-current={lang === l ? "true" : undefined}
-                    className="rounded-full px-1 py-2 text-seu-muted transition-colors hover:text-seu-accent-hi aria-[current=true]:text-seu-fg"
+                    className="grid min-h-11 min-w-9 place-items-center rounded-full px-1 text-seu-muted transition-colors hover:text-seu-accent-hi aria-[current=true]:text-seu-fg"
                   >
                     {l === "ka" ? "ქარ" : "EN"}
                   </Link>

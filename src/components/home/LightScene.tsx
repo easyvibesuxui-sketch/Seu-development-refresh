@@ -90,7 +90,7 @@ export default function LightScene() {
           </span>
         </h2>
 
-        <div className="ls-copy absolute inset-x-gutter bottom-[10vh] grid gap-8 md:grid-cols-[1.2fr_1fr] md:items-end">
+        <div className="ls-copy absolute inset-x-gutter bottom-[10vh] grid gap-8 lg:grid-cols-[1.2fr_1fr] lg:items-end">
           <p className="title-display text-[clamp(30px,3.4vw,56px)] uppercase leading-[0.98]">
             {t("Planned around", "დაგეგმილი")}
             <br />
@@ -103,14 +103,14 @@ export default function LightScene() {
                 "ღია განლაგება, მაღალი ფანჯრები და ფართო აივნები დილისა და საღამოს მზეს იმ ოთახებამდე უშვებს, სადაც რეალურად ცხოვრობთ.",
               )}
             </p>
-            <div className="mt-6 flex gap-10">
+            <div className="mt-6 flex flex-wrap gap-x-10 gap-y-4">
               {[
                 [t("3.5 ha", "3.5 ჰა"), t("district", "უბანი")],
                 [t("2 ha", "2 ჰა"), t("of recreation", "რეკრეაცია")],
                 [t("From 45 m²", "45 მ²-დან"), t("apartments", "ბინები")],
               ].map(([v, k]) => (
                 <p key={k}>
-                  <span className="title-display block text-[clamp(22px,2vw,30px)]">{v}</span>
+                  <span className="title-display block whitespace-nowrap text-[clamp(22px,2vw,30px)]">{v}</span>
                   <span className="text-[14px] text-seu-cream">{k}</span>
                 </p>
               ))}

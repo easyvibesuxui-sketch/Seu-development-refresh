@@ -1772,9 +1772,12 @@ body:has(.presentation) .cursor {
 /* Apartment stage: on phones the floor-plan and sun-study buttons share one compact row. */
 @media (max-width: 639px) {
   .stage-actions .btn {
-    --ctl-h: var(--ctl-sm);
-    padding: 0 14px;
+    --ctl-h: 44px;
+    flex: 0 1 auto;
+    min-width: 0;
+    padding: 0 12px;
     font-size: 12px;
+    letter-spacing: 0.04em;
     gap: 6px;
   }
 }
@@ -1828,6 +1831,7 @@ body:has(.presentation) .cursor {
 }
 
 .tour-dot {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1841,6 +1845,27 @@ body:has(.presentation) .cursor {
   white-space: nowrap;
   box-shadow: 0 8px 24px rgb(19 33 29 / 0.18);
   transition: transform 0.25s var(--ease-out);
+}
+
+@media (max-width: 400px) {
+  .stage-actions .btn svg {
+    display: none;
+  }
+}
+
+/* A small round control keeps a 44px tap area around it. */
+.tap-pad::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 999px;
+}
+
+/* The dot is small on phones; its tap area is not. */
+.tour-dot::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
 }
 
 .tour-dot:hover,
@@ -1975,6 +2000,13 @@ body:has(.presentation) .cursor {
   .barrel-stage {
     perspective: 800px;
     --w: min(54vw, 34svh);
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+  .barrel-stage {
+    perspective: 1100px;
+    --w: min(38vw, 40svh);
   }
 }
 
