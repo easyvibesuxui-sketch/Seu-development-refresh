@@ -1692,6 +1692,7 @@ body:has(.presentation) .cursor {
 }
 
 .search-pill__seg {
+  position: relative;
   display: block;
   width: 100%;
   min-width: 0;

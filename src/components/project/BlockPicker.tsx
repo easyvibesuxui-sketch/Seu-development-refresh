@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { withBase } from "@/data/projects";
-import { bedroomsIn, blockNameIn, deliveryIn, unitsOn, varketiliBlocks, type Block } from "@/data/inventory";
+import { bedroomsIn, blockNameIn, deliveryIn, units, unitsOn, varketiliBlocks, type Block } from "@/data/inventory";
 import { useHref, useLang } from "@/lib/useLang";
-import FilterPanel from "@/components/hero/FilterPanel";
+import Icon from "@/components/ui/Icon";
+import SearchPill, { OptionList } from "@/components/search/SearchPill";
 
 // The 3D sun study loads its map only when opened.
 const SunStudy = dynamic(() => import("./SunStudy"), { ssr: false });
@@ -68,7 +69,12 @@ function band(p: Part, floors: number, floor: number) {
 
 const floorHref = (b: Block, floor: number) => `/projects/varketili/${b.id}/?floor=${Math.max(2, floor)}`;
 
-type Hover = { block: Block; floor: number };
+type Hover = { block: Block; floor: number; match?: number };
+
+/** The hero's own filter: it lights up matching floors on the render instead of leaving the page. */
+type Filter = { block: string; from: string; to: string; rooms: number[] };
+const NONE: Filter = { block: "", from: "", to: "", rooms: [] };
+const SIZES: [string, string][] = [["", "50"], ["50", "70"], ["70", "90"], ["90", ""]];
 
 export default function BlockPicker() {
   const [hover, setHover] = useState<Hover | null>(null);
@@ -79,6 +85,32 @@ export default function BlockPicker() {
   const lang = useLang();
   const h = useHref();
   const t = (en: string, ka: string) => (lang === "ka" ? ka : en);
+  const [f, setF] = useState<Filter>(NONE);
+  const active = !!(f.block || f.from || f.to || f.rooms.length);
+
+  // Available flats that fit the filter, counted per floor ("v4-7") and per block ("v4").
+  const hits = useMemo(() => {
+    const map = new Map<string, number>();
+    if (!active) return map;
+    const from = f.from ? Number(f.from) : null;
+    const to = f.to ? Number(f.to) : null;
+    units.forEach((u) => {
+      if (u.project !== "varketili" || u.status !== "available") return;
+      if (f.block && u.block !== f.block) return;
+      if (f.rooms.length && !f.rooms.includes(Math.min(u.bedrooms, 3))) return;
+      if ((from !== null && u.totalArea < from) || (to !== null && u.totalArea > to)) return;
+      for (const k of [`${u.block}-${u.floor}`, u.block, ""]) map.set(k, (map.get(k) ?? 0) + 1);
+    });
+    return map;
+  }, [f, active]);
+  const total = hits.get("") ?? 0;
+  const floorsLit = [...hits.keys()].filter((k) => k.includes("-")).length;
+
+  const m2 = t("m²", "მ²");
+  const sizeText = (from: string, to: string) =>
+    from && to ? `${from}–${to} ${m2}` : from ? t(`From ${from} ${m2}`, `${from} ${m2}-დან`) : to ? t(`Up to ${to} ${m2}`, `${to} ${m2}-მდე`) : t("Any size", "ნებისმიერი");
+  const roomLabel = (r: number) => (r === 0 ? t("Studio", "სტუდიო") : r === 3 ? "3+" : String(r));
+  const blockOptions = [{ value: "", label: t("All blocks", "ყველა ბლოკი") }, ...varketiliBlocks.map((b) => ({ value: b.id, label: blockNameIn(b, lang) }))];
 
   // On narrow screens the render is wider than the viewport: start centred, let people swipe.
   useEffect(() => {
@@ -92,7 +124,7 @@ export default function BlockPicker() {
         {/* The render covers the stage at its own aspect; floors and pins share its coordinate box. */}
         <div
           // On phones the render starts lower so the roofs and pins stay clear of the heading.
-          className="absolute bottom-0 left-0 [--stage-h:calc(max(100svh,680px)-280px)] lg:left-1/2 lg:-translate-x-1/2 lg:[--stage-h:max(100svh,680px)]"
+          className="absolute bottom-0 left-0 [--stage-h:calc(max(100svh,680px)-300px)] lg:left-1/2 lg:-translate-x-1/2 lg:[--stage-h:max(100svh,680px)]"
           style={{ aspectRatio: `${RATIO}`, width: `max(100%, calc(var(--stage-h) * ${RATIO}))` }}
           onMouseLeave={() => setHover(null)}
         >
@@ -105,13 +137,14 @@ export default function BlockPicker() {
                 const floor = i + 1;
                 const on = hover?.block.id === b.id && hover.floor === floor;
                 const inBlock = hover?.block.id === b.id;
+                const match = hits.get(`${b.id}-${floor}`) ?? 0;
                 return (
                   <a
                     key={`${b.id}-${floor}`}
                     href={withBase(h(floorHref(b, floor)))}
                     tabIndex={-1}
                     aria-hidden
-                    onMouseEnter={() => setHover({ block: b, floor })}
+                    onMouseEnter={() => setHover({ block: b, floor, match: active ? match : undefined })}
                     onClick={(e) => {
                       e.preventDefault();
                       router.push(h(floorHref(b, floor)));
@@ -123,9 +156,17 @@ export default function BlockPicker() {
                       <polygon
                         key={k}
                         points={band(p, b.floors, floor).map((pt) => pt.join(",")).join(" ")}
-                        fill={on ? "#e07a3a" : "#fff"}
-                        fillOpacity={on ? 0.5 : inBlock ? 0.06 : 0}
-                        style={{ transition: "fill-opacity .25s, fill .25s" }}
+                        fill={on ? "#e07a3a" : match ? "#ffd7b5" : "#fff"}
+                        fillOpacity={on ? 0.5 : match ? 0.3 : inBlock ? 0.06 : 0}
+                        stroke="#fff8f0"
+                        strokeOpacity={match && !on ? 0.5 : 0}
+                        strokeWidth={1}
+                        vectorEffect="non-scaling-stroke"
+                        // Matching floors light up block by block, bottom to top; hover answers at once.
+                        style={{
+                          transition: "fill-opacity .3s ease-out, fill .3s ease-out, stroke-opacity .3s ease-out",
+                          transitionDelay: match && !hover ? `${varketiliBlocks.indexOf(b) * 50 + floor * 15}ms` : "0ms",
+                        }}
                       />
                     ))}
                   </a>
@@ -136,18 +177,27 @@ export default function BlockPicker() {
 
           {varketiliBlocks.map((b, i) => {
             const pin = PINS[b.id];
+            const found = hits.get(b.id) ?? 0;
             // A badge on a hairline stem, its foot dot resting on the roof.
             return (
               <Link
                 key={b.id}
                 href={h(`/projects/varketili/${b.id}/`)}
-                aria-label={t(`${b.name}, ${b.floors} floors: choose a floor`, `${blockNameIn(b, lang)}, ${b.floors} სართული: აირჩიეთ სართული`)}
-                className="group absolute -translate-x-1/2 -translate-y-full"
+                aria-label={
+                  t(`${b.name}, ${b.floors} floors: choose a floor`, `${blockNameIn(b, lang)}, ${b.floors} სართული: აირჩიეთ სართული`) +
+                  (active ? t(`. ${found} matching apartments`, `. ${found} შესაბამისი ბინა`) : "")
+                }
+                className={`group absolute -translate-x-1/2 -translate-y-full transition-opacity duration-300 ${active && !found ? "opacity-40" : ""}`}
                 style={{ left: `${pin.x}%`, top: `${pin.y}%` }}
               >
                 <span className="block-pin flex flex-col items-center" style={{ animationDelay: `${0.6 + i * 0.12}s` }}>
-                  <span className="label grid h-10 w-10 place-items-center rounded-full bg-seu-ink/85 text-[14px] text-white ring-1 ring-white/60 backdrop-blur transition-colors group-hover:bg-seu-accent group-focus-visible:bg-seu-accent">
+                  <span className="label relative grid h-10 w-10 place-items-center rounded-full bg-seu-ink/85 text-[14px] text-white ring-1 ring-white/60 backdrop-blur transition-colors group-hover:bg-seu-accent group-focus-visible:bg-seu-accent">
                     {b.id.slice(1)}
+                    {active && found > 0 && (
+                      <span aria-hidden className="pin-count absolute -right-2 -top-2 grid h-5 min-w-5 place-items-center rounded-full bg-[#fffcf7] px-1 text-[12px] font-semibold text-seu-ink">
+                        {found}
+                      </span>
+                    )}
                   </span>
                   <span className="h-7 w-px bg-white/80" />
                   <span className="-mb-[3px] h-1.5 w-1.5 rounded-full bg-white shadow-[0_0_0_3px_rgb(255_255_255/0.25)]" />
@@ -185,9 +235,115 @@ export default function BlockPicker() {
         <h1 className="title-display mt-3 text-[clamp(32px,3.4vw,56px)] uppercase leading-none" data-split>
           {t("SEU Varketili", "SEU ვარკეთილი")}<span className="text-seu-accent-hi">.</span>
         </h1>
+
+        {/* One long pill in the sky above the roofs, as on the apartment search; it filters in place. */}
+        <div className="pointer-events-auto mt-6 lg:absolute lg:right-gutter lg:top-[100px] lg:mt-0 lg:w-[min(720px,calc(100%-480px))]">
+          <SearchPill
+            className="vars-light flex"
+            label={t("Find an apartment in SEU Varketili", "ბინის ძებნა SEU ვარკეთილში")}
+            segments={[
+              {
+                id: "block",
+                icon: "building",
+                label: t("Block", "ბლოკი"),
+                value: blockOptions.find((o) => o.value === f.block)?.label ?? "",
+                set: !!f.block,
+                className: "max-xl:hidden",
+                panel: (close) => (
+                  <OptionList
+                    options={blockOptions}
+                    value={f.block}
+                    onPick={(v) => {
+                      setF((d) => ({ ...d, block: v }));
+                      close();
+                    }}
+                  />
+                ),
+              },
+              {
+                id: "size",
+                icon: "area",
+                label: t("Size", "ზომა"),
+                value: sizeText(f.from, f.to),
+                set: !!(f.from || f.to),
+                // Phones: panels hang from the whole pill so they stay on screen.
+                className: "max-md:static",
+                panel: () => (
+                  <div className="w-[min(300px,calc(100vw-48px))] p-4">
+                    <div className="grid grid-cols-2 gap-3">
+                      <label className="grid gap-1.5">
+                        <span className="text-[12px] font-semibold text-seu-muted">{t("From, m²", "დან, მ²")}</span>
+                        <input className="field" inputMode="numeric" value={f.from} onChange={(e) => setF((d) => ({ ...d, from: e.target.value.replace(/\D/g, "") }))} />
+                      </label>
+                      <label className="grid gap-1.5">
+                        <span className="text-[12px] font-semibold text-seu-muted">{t("To, m²", "მდე, მ²")}</span>
+                        <input className="field" inputMode="numeric" value={f.to} onChange={(e) => setF((d) => ({ ...d, to: e.target.value.replace(/\D/g, "") }))} />
+                      </label>
+                    </div>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {SIZES.map(([a, b]) => (
+                        <button key={a + b} type="button" aria-pressed={f.from === a && f.to === b} onClick={() => setF((d) => ({ ...d, from: a, to: b }))} className="chip rounded-full px-3.5 [--ctl-h:44px]">
+                          {sizeText(a, b)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ),
+              },
+              {
+                id: "rooms",
+                icon: "bed",
+                label: t("Bedrooms", "საძინებლები"),
+                value: f.rooms.length ? [...f.rooms].sort().map(roomLabel).join(", ") : t("Any", "ნებისმიერი"),
+                set: f.rooms.length > 0,
+                className: "max-md:static",
+                panel: () => (
+                  <div className="grid w-[min(300px,calc(100vw-48px))] grid-cols-[1.5fr_1fr_1fr_1fr] gap-2 p-4">
+                    {[0, 1, 2, 3].map((r) => (
+                      <button
+                        key={r}
+                        type="button"
+                        aria-pressed={f.rooms.includes(r)}
+                        onClick={() => setF((d) => ({ ...d, rooms: d.rooms.includes(r) ? d.rooms.filter((x) => x !== r) : [...d.rooms, r] }))}
+                        className="chip px-0"
+                      >
+                        {roomLabel(r)}
+                      </button>
+                    ))}
+                  </div>
+                ),
+              },
+            ]}
+            end={
+              <span className="tip ml-1 shrink-0 self-center" data-tip={t("Clear filter", "ფილტრის გასუფთავება")}>
+                <button
+                  type="button"
+                  onClick={() => setF(NONE)}
+                  disabled={!active}
+                  aria-label={t("Clear filter", "ფილტრის გასუფთავება")}
+                  className="grid h-12 w-12 place-items-center rounded-full bg-seu-ink text-white transition-opacity hover:bg-seu-ink/85 disabled:bg-seu-ink/10 disabled:text-seu-ink/35 lg:h-14 lg:w-14"
+                >
+                  <Icon name="reset" size={18} />
+                </button>
+              </span>
+            }
+          />
+          {/* What the render now shows, in words (also read out). */}
+          <p role="status" className="mt-3 flex items-center gap-2 text-[14px] text-white/90 [text-shadow:0_1px_10px_rgb(0_0_0/0.55)] lg:justify-end">
+            {active ? (
+              <>
+                <span aria-hidden className={`h-2 w-2 shrink-0 rounded-full ${total ? "bg-[#ffd7b5] shadow-[0_0_0_3px_rgb(255_215_181/0.3)]" : "bg-white/40"}`} />
+                {total
+                  ? t(`${total} apartments on ${floorsLit} floors, lit on the buildings`, `${total} ბინა ${floorsLit} სართულზე — მონიშნულია შენობებზე`)
+                  : t("No free apartments match: try a wider range", "ამ ფილტრით თავისუფალი ბინა ვერ მოიძებნა — სცადეთ უფრო ფართო")}
+              </>
+            ) : (
+              t("Pick a size or bedrooms: matching floors light up", "აირჩიეთ ზომა ან საძინებლები — შესაბამისი სართულები განათდება")
+            )}
+          </p>
+        </div>
       </div>
 
-      <FilterPanel tone="dark" className="absolute bottom-10 right-gutter z-10 hidden lg:block" />
       {sun && (
         <SunStudy
           onClose={() => {
@@ -205,7 +361,7 @@ export default function BlockPicker() {
  * still available on that floor by flat type. Sits beside the facade,
  * on whichever side has room.
  */
-function FloorCard({ block, floor }: Hover) {
+function FloorCard({ block, floor, match }: Hover) {
   const parts = FACADES[block.id];
   const p = parts[parts.length - 1];
   const left = parts[0].xl;
@@ -242,6 +398,12 @@ function FloorCard({ block, floor }: Hover) {
       <p className="mt-5 border-t border-seu-line pt-4 text-[12px] uppercase tracking-[0.14em] text-seu-muted">
         {block.status === "delivered" ? t(`Delivered ${block.delivery}`, `ჩაბარდა ${deliveryIn(block.delivery, lang)}`) : t(`Completion ${block.delivery}`, `დასრულება: ${deliveryIn(block.delivery, lang)}`)}
       </p>
+      {match !== undefined && floor > 1 && (
+        <p className="mt-3 flex items-center gap-2 text-[14px] font-semibold text-seu-accent">
+          <Icon name="search" size={14} strokeWidth={2} />
+          {t(`${match} match your filter`, `${match} შეესაბამება ფილტრს`)}
+        </p>
+      )}
       {floor === 1 ? (
         <p className="mt-3 text-[14px]">{t("Lobby and retail", "ლობი და კომერციული ფართი")}</p>
       ) : types.length ? (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import gsap from "gsap";
 import { blockNameIn, units, varketiliBlocks, viewIn, viewText, type ViewId } from "@/data/inventory";
@@ -9,12 +9,12 @@ import ApartmentCard from "@/components/ui/ApartmentCard";
 import { Container, Section } from "@/components/ui/Section";
 import Select, { type Option } from "@/components/ui/Select";
 import Sheet from "@/components/ui/Sheet";
-import Icon, { type IconName } from "@/components/ui/Icon";
+import Icon from "@/components/ui/Icon";
+import SearchPill, { OptionList } from "./SearchPill";
 
 const PAGE = 24;
 
 type Filters = { project: string; block: string; view: ViewId | ""; rooms: number[]; sizeFrom: string; sizeTo: string; available: boolean };
-type Seg = "project" | "block" | "view" | "size";
 
 const empty: Filters = { project: "", block: "", view: "", rooms: [], sizeFrom: "", sizeTo: "", available: true };
 const SIZES: [string, string][] = [["", "50"], ["50", "70"], ["70", "90"], ["90", ""]];
@@ -134,8 +134,11 @@ export default function ApartmentSearch() {
           <SearchPill
             className="mt-8 hidden md:flex"
             label={t("Search apartments", "ბინების ძებნა")}
-            submitLabel={t("Show apartments", "ბინების ჩვენება")}
-            onSubmit={toResults}
+            end={
+              <button type="button" onClick={toResults} aria-label={t("Show apartments", "ბინების ჩვენება")} data-tip={t("Show apartments", "ბინების ჩვენება")} className="tip ml-1 grid h-14 w-14 shrink-0 place-items-center self-center rounded-full bg-seu-accent text-white transition-colors hover:bg-seu-accent-hover">
+                <Icon name="search" size={20} strokeWidth={2} />
+              </button>
+            }
             segments={[
               { id: "project", icon: "pin", label: t("Project", "პროექტი"), value: projectOptions.find((o) => o.value === f.project)?.label ?? "", set: !!f.project, panel: (close) => <OptionList options={projectOptions} value={f.project} onPick={(v) => { set("project", v); close(); }} /> },
               { id: "block", icon: "building", label: t("Block", "ბლოკი"), value: blockOptions.find((o) => o.value === f.block)?.label ?? "", set: !!f.block, panel: (close) => <OptionList options={blockOptions} value={f.block} onPick={(v) => { set("block", v); close(); }} /> },
@@ -293,90 +296,3 @@ export default function ApartmentSearch() {
     </main>
   );
 }
-
-type Segment = { id: Seg; icon: IconName; label: string; value: string; set: boolean; panel: (close: () => void) => ReactNode };
-
-/** The desktop search pill: labelled parts, each opening a small panel under it, and a round button. */
-function SearchPill({ segments, label, submitLabel, onSubmit, className = "" }: { segments: Segment[]; label: string; submitLabel: string; onSubmit: () => void; className?: string }) {
-  const id = useId();
-  const [open, setOpen] = useState<Seg | null>(null);
-  const rootRef = useRef<HTMLDivElement>(null);
-  const trigger = (seg: Seg) => document.getElementById(`${id}-${seg}-trigger`);
-
-  useEffect(() => {
-    if (!open) return;
-    // Into the panel: the chosen option, or its first control.
-    const panel = document.getElementById(`${id}-${open}`);
-    panel?.querySelector<HTMLElement>("[data-autofocus], button, input")?.focus();
-    const away = (e: PointerEvent) => {
-      if (!rootRef.current?.contains(e.target as Node)) setOpen(null);
-    };
-    const key = (e: KeyboardEvent) => {
-      if (e.key !== "Escape") return;
-      trigger(open)?.focus();
-      setOpen(null);
-    };
-    document.addEventListener("pointerdown", away);
-    document.addEventListener("keydown", key);
-    return () => {
-      document.removeEventListener("pointerdown", away);
-      document.removeEventListener("keydown", key);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open]);
-
-  const close = () => {
-    if (open) trigger(open)?.focus();
-    setOpen(null);
-  };
-
-  return (
-    <div ref={rootRef} role="search" aria-label={label} className={`search-pill relative items-stretch p-1.5 ${open ? "search-pill--open" : ""} ${className}`}>
-      {segments.map((s, i) => (
-        <div key={s.id} className="relative min-w-0 flex-1">
-          {i > 0 && <span aria-hidden className="search-pill__rule" />}
-          <button
-            id={`${id}-${s.id}-trigger`}
-            type="button"
-            aria-expanded={open === s.id}
-            aria-controls={open === s.id ? `${id}-${s.id}` : undefined}
-            onClick={() => setOpen(open === s.id ? null : s.id)}
-            className="search-pill__seg"
-          >
-            <span className="flex items-center gap-1.5 text-[12px] font-semibold">
-              <Icon name={s.icon} size={14} />
-              {s.label}
-            </span>
-            <span className={`block truncate text-[14px] ${s.set ? "text-seu-fg" : "text-seu-muted"}`}>{s.value}</span>
-          </button>
-          {open === s.id && (
-            <div id={`${id}-${s.id}`} role="dialog" aria-label={s.label} className={`search-pill__panel ${i === segments.length - 1 ? "right-0" : "left-0"}`} data-lenis-prevent>
-              {s.panel(close)}
-            </div>
-          )}
-        </div>
-      ))}
-      <button type="button" onClick={onSubmit} aria-label={submitLabel} data-tip={submitLabel} className="tip ml-1 grid h-14 w-14 shrink-0 place-items-center self-center rounded-full bg-seu-accent text-white transition-colors hover:bg-seu-accent-hover">
-        <Icon name="search" size={20} strokeWidth={2} />
-      </button>
-    </div>
-  );
-}
-
-/** A panel's choices: one button per option, the chosen one marked. */
-function OptionList<T extends string>({ options, value, onPick }: { options: Option<T>[]; value: T; onPick: (v: T) => void }) {
-  return (
-    <ul className="max-h-[320px] w-[280px] overflow-y-auto p-2">
-      {options.map((o) => (
-        <li key={o.value}>
-          <button type="button" aria-pressed={o.value === value} onClick={() => onPick(o.value)} className="search-pill__option" data-autofocus={o.value === value ? "" : undefined}>
-            {o.label}
-            {o.value === value && <Icon name="check" size={16} />}
-          </button>
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-
