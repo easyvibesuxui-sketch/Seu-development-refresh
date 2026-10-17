@@ -19,7 +19,7 @@ const dot: Record<Unit["status"], string> = {
 };
 
 /**
- * Apartment tile, kept quiet: the cut-out 3D layout, the number with its status, one row of
+ * Apartment tile, kept quiet: the cut-out 3D layout with the number and status in one corner chip, a grid of
  * facts as icons (bedrooms, size, block, floor). Sold flats stay visible for context but are
  * not links.
  */
@@ -44,16 +44,18 @@ export default function ApartmentCard({ unit, className = "" }: { unit: Unit; cl
           loading="lazy"
           className={`h-full w-full object-contain p-3 transition-transform duration-700 ${sold ? "opacity-50 grayscale" : "group-hover:scale-105"}`}
         />
-      </div>
-      <div className="mt-4 flex items-center justify-between gap-3">
-        <p className="title-m text-[20px]">
-          <span className="sr-only">{t("Apartment", "ბინა")} </span>
-          {unit.number}
+        {/* Number and status as one chip in the corner, so the picture leads the card. */}
+        <p className="absolute left-3 top-3 inline-flex items-center gap-2.5 rounded-full bg-[#fffcf7]/95 py-1.5 pl-3.5 pr-3 text-[#13211d] shadow-[0_4px_14px_rgb(19_33_29/0.14)] ring-1 ring-[rgb(19_33_29/0.08)] backdrop-blur-md">
+          <span className="text-[14px] font-semibold tabular-nums">
+            <span className="sr-only">{t("Apartment", "ბინა")} </span>
+            {unit.number}
+          </span>
+          <span aria-hidden className="h-3.5 w-px bg-[rgb(19_33_29/0.18)]" />
+          <span className="flex items-center gap-1.5 text-[12px] font-semibold uppercase tracking-[0.12em] text-[#13211d]">
+            {sold ? <Icon name="lock" size={12} /> : <span className="h-2 w-2 rounded-full" style={{ background: dot[unit.status] }} />}
+            {unitStatusIn(unit.status, lang)}
+          </span>
         </p>
-        <span className="label flex items-center gap-2 text-[12px] uppercase tracking-[0.12em]">
-          {sold ? <Icon name="lock" size={14} /> : <span className="h-2 w-2 rounded-full" style={{ background: dot[unit.status] }} />}
-          {unitStatusIn(unit.status, lang)}
-        </span>
       </div>
       <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2.5 border-t border-seu-line pt-4 text-[14px]">
         {facts.map((f) => (
