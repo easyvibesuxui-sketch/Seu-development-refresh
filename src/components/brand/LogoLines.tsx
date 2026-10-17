@@ -1,69 +1,48 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { LOGO_PATHS } from "./LogoMark";
 
 /*
- * Background drawing made from the SEU mark, as era.estate draws its own logo across its
- * sections: the wireframe "S" at architectural scale in the faintest hairlines. Where the
- * pointer moves over the section, the lines near it warm up a little (a soft spotlight that
- * fades when the pointer leaves). Purely decorative; still for reduced motion and touch.
+ * Background drawing from SEU's own brand frames (the blue Varketili stories): a pair of
+ * upright hairlines with a level line across, and two great arcs that bow in toward the
+ * uprights like a lens, plus a quarter arc rising from the foot. Drawn in the faintest
+ * hairlines; where the pointer moves over the section the lines near it warm up a little
+ * (a soft spotlight that fades when the pointer leaves). Purely decorative; still for
+ * reduced motion and touch.
  */
 
-type Pt = [number, number];
-
-// The mark's group is shifted by this in LogoMark's SVG.
-const ORIGIN: Pt = [-881.5, -19.807];
-
-/** Corner points of one strip from its path data (M/L/l/v/Z, with implicit repeats). */
-function corners(d: string, t: Pt): Pt[] {
-  const tokens = d.match(/[MLlVvHhZz]|-?\d*\.?\d+/g) ?? [];
-  const pts: Pt[] = [];
-  let cmd = "M";
-  let x = 0;
-  let y = 0;
-  for (let i = 0; i < tokens.length; ) {
-    const tok = tokens[i];
-    if (/[A-Za-z]/.test(tok)) {
-      cmd = tok;
-      i++;
-      if (cmd === "Z" || cmd === "z") continue;
-    }
-    const n = () => parseFloat(tokens[i++]);
-    if (cmd === "M" || cmd === "L") {
-      x = n();
-      y = n();
-      if (cmd === "M") cmd = "L";
-    } else if (cmd === "l") {
-      x += n();
-      y += n();
-    } else if (cmd === "v") y += n();
-    else if (cmd === "V") y = n();
-    else if (cmd === "h") x += n();
-    else if (cmd === "H") x = n();
-    else break;
-    pts.push([x + t[0] + ORIGIN[0], y + t[1] + ORIGIN[1]]);
-  }
-  return pts;
+/** The figure in units where the block is 100 tall and `w` wide, centred on `cx`. */
+function figure(w: number, cx: number) {
+  const m = 30; // gap between the uprights
+  const xl = cx - m / 2;
+  const xr = cx + m / 2;
+  const r = 62; // the lens arcs
+  const cy = 32; // height where each arc touches its upright
+  const a = (deg: number) => (deg * Math.PI) / 180;
+  const arc = (ox: number, from: number, to: number, sweep: 0 | 1) => {
+    const p = (d: number) => `${(ox + r * Math.cos(a(d))).toFixed(2)},${(cy + r * Math.sin(a(d))).toFixed(2)}`;
+    return `M${p(from)}A${r},${r} 0 0 ${sweep} ${p(to)}`;
+  };
+  const q = 34; // quarter arc at the foot, from the right upright out to the edge
+  return [
+    `M${xl},0V100`,
+    `M${xr},0V100`,
+    `M0,76H${w}`,
+    arc(xl - r, -80, 80, 1),
+    arc(xr + r, 260, 100, 0),
+    `M${xr},100A${q},${q} 0 0 1 ${xr + q},${100 - q}`,
+  ].join("");
 }
-
-const STRIPS = LOGO_PATHS.map((p) => corners(p.d, p.t));
-
-
-const outline = (pts: Pt[]) => `M${pts.map((p) => p.join(",")).join("L")}Z`;
-const STRIP_D = STRIPS.map(outline).join("");
 
 export default function LogoLines({
   className = "",
-  // Where the mark sits: share of the width for its centre, and its height relative to the block.
+  // Where the figure sits: share of the width for its centre.
   x = 0.75,
-  y = 0.5,
-  size = 0.78,
   tone = "dark",
 }: {
   className?: string;
   x?: number;
-  y?: number;
+  /** Kept for callers that size the old mark; the figure always spans the block's height. */
   size?: number;
   /** Cream hairlines on the dark forest, ink hairlines on paper. */
   tone?: "dark" | "light";
@@ -102,20 +81,19 @@ export default function LogoLines({
     };
   }, []);
 
-  // A view onto the mark with the block's own proportions; the mark is ~47 units tall.
-  const vh = 47.4 / size;
-  const vw = vh * aspect;
-  const vx = 26.5 - vw * x;
-  const vy = 23.7 - vh * y;
-  const view = `${vx} ${vy} ${vw} ${vh}`;
+  // One unit is a hundredth of the block's height, so arcs stay round at any proportion.
+  const w = 100 * aspect;
+  // On narrow blocks the figure moves to the middle so both uprights stay in view.
+  const d = figure(w, aspect < 1 ? w / 2 : w * x);
+  const view = `0 0 ${w} 100`;
 
   return (
     <div ref={ref} aria-hidden className={`logo-lines pointer-events-none absolute inset-0 ${className}`}>
-      <svg className="absolute inset-0 h-full w-full" viewBox={view} preserveAspectRatio="xMidYMid slice" fill="none">
-        <path d={STRIP_D} stroke={`rgb(${ink} / ${tone === "dark" ? 0.05 : 0.045})`} strokeWidth="1" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+      <svg className="absolute inset-0 h-full w-full" viewBox={view} preserveAspectRatio="none" fill="none">
+        <path d={d} stroke={`rgb(${ink} / ${tone === "dark" ? 0.07 : 0.06})`} strokeWidth="1" vectorEffect="non-scaling-stroke" />
       </svg>
-      <svg className="logo-lines__glow absolute inset-0 h-full w-full" viewBox={view} preserveAspectRatio="xMidYMid slice" fill="none">
-        <path d={STRIP_D} stroke={`rgb(${glow} / ${tone === "dark" ? 0.32 : 0.28})`} strokeWidth="1" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+      <svg className="logo-lines__glow absolute inset-0 h-full w-full" viewBox={view} preserveAspectRatio="none" fill="none">
+        <path d={d} stroke={`rgb(${glow} / ${tone === "dark" ? 0.38 : 0.32})`} strokeWidth="1" vectorEffect="non-scaling-stroke" />
       </svg>
     </div>
   );
