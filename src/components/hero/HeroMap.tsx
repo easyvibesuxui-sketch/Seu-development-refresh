@@ -3,8 +3,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { LngLatBoundsLike, Map as MapLibreMap, Marker } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+import { useRouter } from "next/navigation";
 import { distanceKm, highlights, mappedProjects, nameIn, statusIn, withBase, type MappedProject } from "@/data/projects";
-import { useLang } from "@/lib/useLang";
+import { useHref, useLang } from "@/lib/useLang";
 import { INTRO_EVENT, introStarted, markMapReady } from "@/lib/intro";
 import { createMapStyle, mapLocale, projectTowers, seuColor } from "./mapStyle";
 import { createTraffic } from "./traffic";
@@ -42,6 +43,13 @@ export default function HeroMap() {
   const [landed, setLanded] = useState(false);
   const lang = useLang();
   const t = (en: string, ka: string) => (lang === "ka" ? ka : en);
+  const router = useRouter();
+  const h = useHref();
+  // A project's pin opens its page; read through a ref so the map is not rebuilt on every render.
+  const openRef = useRef((project: MappedProject) => router.push(h(`/projects/${project.id}/`)));
+  useEffect(() => {
+    openRef.current = (project) => router.push(h(`/projects/${project.id}/`));
+  });
 
   const goToProject = useCallback((project: MappedProject) => {
     const map = mapRef.current;
@@ -232,7 +240,7 @@ export default function HeroMap() {
               .setLngLat(coords)
               .addTo(map),
           );
-        for (const project of mappedProjects) addMarker(createProjectPin(project, () => goToProject(project), lang), project.coords);
+        for (const project of mappedProjects) addMarker(createProjectPin(project, () => openRef.current(project), lang), project.coords);
         for (const highlight of highlights) {
           const owner = mappedProjects.find((p) => p.id === highlight.project);
           if (owner) addMarker(createHighlightPin(highlight, distanceKm(owner.coords, highlight.coords), lang), highlight.coords);

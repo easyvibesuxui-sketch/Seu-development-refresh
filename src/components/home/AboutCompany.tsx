@@ -31,39 +31,34 @@ export default function AboutCompany() {
       const tl = gsap.timeline({
         defaults: { ease: "power2.out" },
         // A tall track with a sticky stage (no JS pin): the scene holds while it plays, and is
-        // done by the time the next section starts sliding over it.
+        // done by the time the next section starts sliding over it. Nothing travels vertically
+        // once the stage is held, so the hold reads as a stop, not as more scrolling.
         scrollTrigger: {
           trigger: root,
-          // Starts while the section is still coming up, so it never arrives empty.
-          start: "top 65%",
+          // The rings draw in while the section comes up, so it never arrives empty.
+          start: "top 60%",
           end: () => `top+=${root.offsetHeight - 2 * window.innerHeight} top`,
           scrub: 0.8,
           invalidateOnRefresh: true,
         },
       });
 
+      // Rings open out from the centre in place, largest first.
       gsap.utils.toArray<HTMLElement>(".ac-ring").forEach((ring, i) => {
-        tl.fromTo(
-          ring,
-          { yPercent: 95, scale: 0.85, opacity: 0 },
-          { yPercent: 0, scale: 1, opacity: 1, duration: 1, ease: "power3.out" },
-          i * 0.5,
-        );
+        tl.fromTo(ring, { scale: 0.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.8, ease: "power3.out" }, i * 0.2);
       });
 
       tl.fromTo(
         ".ac-video",
         { clipPath: "inset(48% 48% 48% 48% round 40px)", scale: 1.15, opacity: 0 },
         { clipPath: "inset(0% 0% 0% 0% round 20px)", scale: 1, opacity: 1, duration: 1, ease: "power3.inOut" },
-        1.5,
+        1.1,
       )
-        .from(".ac-play", { scale: 0, opacity: 0, duration: 0.4, ease: "back.out(2)" }, 2.2)
-        .fromTo(".ac-left", { x: -80, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8 }, 1.9)
-        .fromTo(".ac-right", { x: 80, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8 }, 2.05)
-        // Asymmetric drift: the two text columns travel at different speeds and directions.
-        .to(".ac-left", { yPercent: -25, duration: 1.2, ease: "none" }, 2.7)
-        .to(".ac-right", { yPercent: 25, duration: 1.2, ease: "none" }, 2.7)
-        .to(".ac-ring", { rotate: (i: number) => (i % 2 ? -25 : 25), duration: 3.9, ease: "none" }, 0);
+        .from(".ac-play", { scale: 0, opacity: 0, duration: 0.4, ease: "back.out(2)" }, 1.8)
+        .fromTo(".ac-left", { x: -60, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8 }, 1.7)
+        .fromTo(".ac-right", { x: 60, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8 }, 1.85)
+        // The finished composition stays put for the rest of the hold; only the rings turn.
+        .to(".ac-ring", { rotate: (i: number) => (i % 2 ? -20 : 20), duration: 3.4, ease: "none" }, 0);
 
       // Held under the incoming section: the stage settles back and fades as it is covered.
       gsap.fromTo(
