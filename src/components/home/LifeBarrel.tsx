@@ -110,7 +110,7 @@ export default function LifeBarrel() {
             <ul className="no-scrollbar mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto px-gutter pb-2">
               {MOMENTS.map((x) => (
                 <li key={x.time} className="w-[72vw] max-w-[360px] shrink-0 snap-start">
-                  <img src={withBase(x.image)} alt="" className="aspect-[3/4] w-full rounded-[20px] object-cover" />
+                  <img loading="lazy" decoding="async" src={withBase(x.image)} alt="" className="aspect-[3/4] w-full rounded-[20px] object-cover" />
                   <p className="label mt-4 text-[14px] text-seu-accent-hi">{x.time}</p>
                   <p className="title-m mt-1 text-[20px]">{lang === "ka" ? x.ka[0] : x.en[0]}</p>
                   <p className="mt-1 text-[14px] text-seu-muted">{lang === "ka" ? x.ka[1] : x.en[1]}</p>
@@ -125,7 +125,7 @@ export default function LifeBarrel() {
                     const x = MOMENTS[i % MOMENTS.length];
                     return (
                       <figure key={i} className="barrel-panel" style={{ "--i": i } as React.CSSProperties}>
-                        <img src={withBase(x.image)} alt="" draggable={false} />
+                        <img loading="lazy" decoding="async" src={withBase(x.image)} alt="" draggable={false} />
                         <span className="barrel-shade" />
                       </figure>
                     );

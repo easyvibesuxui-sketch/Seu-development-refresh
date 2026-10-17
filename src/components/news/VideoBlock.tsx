@@ -18,7 +18,7 @@ export default function VideoBlock({ videoId, poster }: { videoId: string; poste
         />
       ) : (
         <button type="button" onClick={() => setPlaying(true)} className="group absolute inset-0" aria-label={t("Play video", "ვიდეოს ჩართვა")}>
-          <img src={poster} alt="" className="h-full w-full object-cover transition-transform duration-[1.2s] group-hover:scale-105" />
+          <img loading="lazy" decoding="async" src={poster} alt="" className="h-full w-full object-cover transition-transform duration-[1.2s] group-hover:scale-105" />
           <span className="absolute inset-0 bg-gradient-to-b from-seu-ink/70 via-transparent to-seu-ink/90" />
           <span className="absolute left-1/2 top-1/2 grid h-16 w-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-seu-accent/90 transition-transform duration-500 group-hover:scale-110">
             <svg width="22" height="24" viewBox="0 0 22 24" fill="none" className="ml-1" aria-hidden>

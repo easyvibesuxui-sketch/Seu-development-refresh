@@ -76,7 +76,7 @@ export default function AboutSeu() {
         </div>
         <div ref={markRef} className="relative mx-auto aspect-[500/460] w-[min(480px,80%)]">
           {SLABS.map((slab, i) => (
-            <img
+            <img loading="lazy" decoding="async"
               key={i}
               src={withBase("/images/seu-s-color.png")}
               alt={i === 0 ? (ka ? "SEU-ს ლოგო" : "SEU logo") : ""}

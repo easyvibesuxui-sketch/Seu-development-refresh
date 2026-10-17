@@ -14,7 +14,7 @@ export default function ProjectCard({ project, wide = false }: { project: Projec
       <Link href={h(`/projects/${project.id}/`)} className="block focus-visible:outline-none" aria-labelledby={`pc-${project.id}`}>
         <div className={`relative overflow-hidden rounded-[24px] ${wide ? "aspect-[16/9] lg:aspect-[21/9]" : "aspect-[4/3]"}`} data-window>
           <div className="absolute inset-0" data-zoom>
-            <img
+            <img loading="lazy" decoding="async"
               src={withBase(project.image)}
               alt=""
               style={{ objectPosition: project.imagePosition }}

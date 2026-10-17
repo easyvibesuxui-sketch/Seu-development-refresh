@@ -125,7 +125,7 @@ export default function AboutCompany() {
               ))}
 
               <div className="ac-video pointer-events-auto relative aspect-[16/9] w-[min(440px,74vw)] overflow-hidden rounded-[20px] shadow-[0_30px_80px_rgb(19_33_29/0.25)]">
-                <img src={withBase("/images/choose-varketili.jpg")} alt={t("SEU Varketili aerial render", "SEU ვარკეთილის რენდერი ზემოდან")} className="h-full w-full object-cover" />
+                <img loading="lazy" decoding="async" src={withBase("/images/choose-varketili.jpg")} alt={t("SEU Varketili aerial render", "SEU ვარკეთილის რენდერი ზემოდან")} className="h-full w-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-seu-ink/60 via-transparent to-transparent" />
                 {/* Centring lives on the wrapper so GSAP can scale the button freely. */}
                 <div className="absolute inset-0 grid place-items-center">

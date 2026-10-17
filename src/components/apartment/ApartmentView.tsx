@@ -188,7 +188,7 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
                 <Compass label={t("North arrow", "ჩრდილოეთის ისარი")} className="absolute right-5 top-4 z-10 max-sm:hidden" />
                 {tab === "Plan" ? (
                   <div className="absolute inset-0 grid place-items-center p-12">
-                    <img data-tab-img src={withBase("/images/apartment-plan.png")} alt={t(`Apartment ${unit.number}, floor plan`, `ბინა ${unit.number}, გეგმა`)} className="max-h-full w-[75%] object-contain" />
+                    <img loading="lazy" decoding="async" data-tab-img src={withBase("/images/apartment-plan.png")} alt={t(`Apartment ${unit.number}, floor plan`, `ბინა ${unit.number}, გეგმა`)} className="max-h-full w-[75%] object-contain" />
                   </div>
                 ) : (
                   <TourModel

@@ -77,7 +77,7 @@ export default function LightScene() {
           }}
           aria-hidden
         >
-          <img src={withBase("/images/arch-frame.webp")} alt="" className="h-full w-full" draggable={false} />
+          <img loading="lazy" decoding="async" src={withBase("/images/arch-frame.webp")} alt="" className="h-full w-full" draggable={false} />
         </div>
 
         <h2 className="pointer-events-none absolute inset-0 uppercase">

@@ -45,7 +45,7 @@ export default function AboutScreen({ lang }: { lang: Lang }) {
     <main>
       <section data-tone="dark" className="tone-dark relative h-[100svh] min-h-[680px] overflow-hidden">
         <div className="absolute inset-0" data-zoom>
-          <img src={withBase("/images/office.jpg")} alt={t("SEU Development office", "SEU Development-ის ოფისი")} className="h-full w-full object-cover" />
+          <img fetchPriority="high" src={withBase("/images/office.jpg")} alt={t("SEU Development office", "SEU Development-ის ოფისი")} className="h-full w-full object-cover" />
         </div>
         <div className="sunbeams sunbeams--soft" />
         <div className="absolute inset-0 bg-gradient-to-b from-seu-ink/95 via-seu-ink/50 to-seu-bg" />

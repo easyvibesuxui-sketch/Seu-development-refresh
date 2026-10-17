@@ -131,7 +131,7 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
               <div className="relative mx-auto w-full max-w-[980px]">
                 <p className="label mb-2 text-center text-[12px] uppercase tracking-[0.16em] text-seu-muted">{t("North · Hualing", "ჩრდილოეთი · ჰუალინგი")}</p>
                 <div className="relative" style={{ aspectRatio: `${PLAN_RATIO}` }}>
-                  <img src={withBase(PLAN)} alt={t(`Typical floor plan of ${block.name}`, `${blockNameIn(block, lang)}: ტიპური სართულის გეგმა`)} className="h-full w-full rounded-[16px]" />
+                  <img loading="lazy" decoding="async" src={withBase(PLAN)} alt={t(`Typical floor plan of ${block.name}`, `${blockNameIn(block, lang)}: ტიპური სართულის გეგმა`)} className="h-full w-full rounded-[16px]" />
                   <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
                     {floorUnits.map((u) => (
                       <polygon
@@ -244,7 +244,7 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
         <aside aria-label={t("Blocks", "ბლოკები")} className="lg:pt-24">
           <p className="title-display text-[22px] tracking-[0.08em]">{t("Blocks", "ბლოკები")}</p>
           <nav aria-label={t("Choose a block", "აირჩიეთ ბლოკი")} className="relative mt-3 overflow-hidden rounded-[16px] ring-1 ring-white/15" style={{ aspectRatio: `${SITE_RATIO}` }}>
-            <img src={withBase(SITE)} alt="" className="h-full w-full" />
+            <img loading="lazy" decoding="async" src={withBase(SITE)} alt="" className="h-full w-full" />
             <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
               {varketiliBlocks.map((b) => (
                 <polygon

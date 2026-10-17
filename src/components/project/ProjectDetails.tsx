@@ -88,7 +88,7 @@ export function AboutProject({ project, address, text, award }: { project: Proje
               rel="noreferrer"
               className="group relative mt-6 block h-72 overflow-hidden rounded-[24px] bg-seu-ink"
             >
-              <img
+              <img loading="lazy" decoding="async"
                 src={withBase("/images/choose-varketili.jpg")}
                 alt=""
                 className="h-full w-full object-cover opacity-70 transition duration-700 group-hover:scale-105 group-hover:opacity-90"
@@ -146,7 +146,7 @@ export function Benefits() {
           <div ref={trackRef} className="flex gap-[2%]">
             {SLIDES.map((src, i) => (
               <div key={src + i} className="relative aspect-[3/4] w-[53%] shrink-0 overflow-hidden rounded-[20px] md:aspect-[4/5]">
-                <img
+                <img loading="lazy" decoding="async"
                   src={withBase(src)}
                   alt=""
                   className={`h-full w-full object-cover transition-transform duration-[1.4s] ${i === index ? "scale-100" : "scale-110"}`}
@@ -208,7 +208,7 @@ export function VirtualTour({ videoId }: { videoId: string }) {
         ) : (
           <button type="button" onClick={() => setPlaying(true)} className="group absolute inset-0" aria-label={t("Play virtual tour", "ვირტუალური ტურის ჩართვა")}>
             <div className="absolute inset-0" data-zoom>
-              <img src={withBase("/images/sun-interior.jpg")} alt="" className="h-full w-full object-cover" />
+              <img loading="lazy" decoding="async" src={withBase("/images/sun-interior.jpg")} alt="" className="h-full w-full object-cover" />
             </div>
             <div className="sunbeams" />
             <div className="absolute inset-0 bg-gradient-to-b from-seu-ink/80 via-transparent to-seu-ink/80" />
@@ -250,7 +250,7 @@ export function ApartmentTypes({ projectId }: { projectId: string }) {
               className="group grid grid-cols-[72px_1fr_auto] items-center gap-6 border-b border-seu-line py-6 transition-colors hover:bg-seu-field md:grid-cols-[96px_1.2fr_1fr_1fr_auto]"
             >
               <span className="block aspect-square overflow-hidden rounded-[12px] bg-white">
-                <img src={withBase("/images/apartment-plan.png")} alt="" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                <img loading="lazy" decoding="async" src={withBase("/images/apartment-plan.png")} alt="" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
               </span>
               <span className="title-m">{bedroomsIn(t.bedrooms, lang)}</span>
               <span className="hidden text-[16px] md:block">

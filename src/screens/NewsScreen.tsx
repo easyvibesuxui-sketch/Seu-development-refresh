@@ -32,7 +32,7 @@ export default function NewsScreen({ lang }: { lang: Lang }) {
       <Section tone="dark" className="pb-0">
         <Link href={localize(`/news/${top.slug}/`, lang)} className="group relative mx-gutter block h-[78vh] min-h-[480px] overflow-hidden rounded-[28px]" data-window>
           <div className="absolute inset-0 animate-[kenburns_18s_ease-in-out_infinite_alternate]">
-            <img src={withBase(top.image)} alt="" className="h-full w-full object-cover" />
+            <img fetchPriority="high" src={withBase(top.image)} alt="" className="h-full w-full object-cover" />
           </div>
           <div className="absolute inset-0 bg-gradient-to-t from-seu-ink/95 via-seu-ink/55 to-seu-ink/20" />
           <div className="absolute inset-x-8 bottom-10 md:inset-x-12 md:bottom-14">

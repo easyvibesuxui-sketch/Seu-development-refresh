@@ -226,7 +226,7 @@ export default function VirtualTour({
         <div ref={sceneRef} className="absolute inset-0">
           <div ref={layerRef} className="absolute inset-y-0 left-0 will-change-transform" style={{ width: imgW || undefined }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={withBase(stop.src)} alt="" draggable={false} className="pointer-events-none absolute inset-0 h-full w-full" />
+            <img loading="lazy" decoding="async" src={withBase(stop.src)} alt="" draggable={false} className="pointer-events-none absolute inset-0 h-full w-full" />
             {stop.walls && (
               <div
                 aria-hidden
@@ -314,7 +314,7 @@ export function TourModel({ view, alt, current, onPick }: { view: "3d" | "2d"; a
     <div className="absolute inset-x-4 bottom-20 top-16 grid place-items-center [container-type:size]">
       <div data-tab-img className="relative aspect-[4/3]" style={{ width: "min(100cqw, calc(100cqh * 4 / 3))" }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={withBase(view === "3d" ? "/tour/dollhouse.jpg" : "/tour/plan.jpg")} alt={alt} className="absolute inset-0 h-full w-full" />
+        <img loading="lazy" decoding="async" src={withBase(view === "3d" ? "/tour/dollhouse.jpg" : "/tour/plan.jpg")} alt={alt} className="absolute inset-0 h-full w-full" />
         <ul aria-label={t("Rooms: open the tour", "ოთახები: ტურის გახსნა")}>
           {TOUR.map((s) => {
             const [x, y] = view === "3d" ? s.doll : s.plan;

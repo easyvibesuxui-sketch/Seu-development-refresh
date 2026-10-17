@@ -102,7 +102,7 @@ export default function Lifestyle() {
         <div className="grid gap-6 sm:grid-cols-[1.6fr_1fr]">
           <div className="relative aspect-[4/5] overflow-hidden rounded-[24px] sm:aspect-auto sm:min-h-[620px]">
             {TOPICS.map((t) => (
-              <img
+              <img loading="lazy" decoding="async"
                 key={t.id}
                 src={withBase(t.image)}
                 alt=""
@@ -114,7 +114,7 @@ export default function Lifestyle() {
           </div>
           <div className="relative hidden overflow-hidden rounded-[24px] sm:mt-24 sm:block">
             {TOPICS.map((t) => (
-              <img
+              <img loading="lazy" decoding="async"
                 key={t.id}
                 src={withBase(t.side)}
                 alt=""

@@ -75,7 +75,7 @@ export default function ProjectScreen({ lang, id }: { lang: Lang; id: string }) 
       ) : (
         <section data-tone="dark" className="tone-dark relative h-[92svh] min-h-[600px] overflow-hidden">
           <div className="absolute inset-0" data-zoom>
-            <img src={withBase(project.image)} alt={t(`${project.name} render`, `${name} — რენდერი`)} style={{ objectPosition: project.imagePosition }} className="h-full w-full object-cover" />
+            <img fetchPriority="high" src={withBase(project.image)} alt={t(`${project.name} render`, `${name} — რენდერი`)} style={{ objectPosition: project.imagePosition }} className="h-full w-full object-cover" />
           </div>
           <div className="sunbeams sunbeams--soft" />
           <div className="absolute inset-0 bg-gradient-to-b from-seu-ink/80 via-transparent to-seu-bg" />

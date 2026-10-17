@@ -47,7 +47,7 @@ export default function FloorPlanSheet({ unit, open, onClose }: { unit: Unit; op
         <div className="mx-auto max-w-[1180px]">
           <p className="label mt-0 text-center text-[12px] uppercase tracking-[0.16em] text-seu-muted">{t("North · Hualing", "ჩრდილოეთი · ჰუალინგი")}</p>
           <div className="relative mt-2" style={{ aspectRatio: `${PLAN_RATIO}` }}>
-            <img src={withBase(PLAN)} alt={t(`Plan of floor ${unit.floor}, ${blockName}`, `სართული ${unit.floor}-ის გეგმა, ${blockName}`)} className="h-full w-full rounded-[16px]" />
+            <img loading="lazy" decoding="async" src={withBase(PLAN)} alt={t(`Plan of floor ${unit.floor}, ${blockName}`, `სართული ${unit.floor}-ის გეგმა, ${blockName}`)} className="h-full w-full rounded-[16px]" />
             <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
               {floor.map((u) => (
                 <polygon

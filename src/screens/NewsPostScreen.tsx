@@ -45,7 +45,7 @@ export default function NewsPostScreen({ lang, slug }: { lang: Lang; slug: strin
     <main>
       <section data-tone="dark" className="tone-dark relative h-[86svh] min-h-[560px] overflow-hidden">
         <div className="absolute inset-0" data-zoom>
-          <img src={src(item.image)} alt="" className="h-full w-full object-cover" />
+          <img fetchPriority="high" src={src(item.image)} alt="" className="h-full w-full object-cover" />
         </div>
         <div className="absolute inset-0 bg-gradient-to-b from-seu-ink/85 via-seu-ink/30 to-seu-bg" />
         <div className="relative z-10 mx-auto flex h-full max-w-[1680px] flex-col justify-between px-gutter pb-16 pt-40">

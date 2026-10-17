@@ -96,7 +96,7 @@ export default function BlockPicker() {
           style={{ aspectRatio: `${RATIO}`, width: `max(100%, calc(var(--stage-h) * ${RATIO}))` }}
           onMouseLeave={() => setHover(null)}
         >
-          <img src={withBase(RENDER)} alt={t("SEU Varketili at golden hour: five residential blocks", "SEU ვარკეთილი მზის ჩასვლისას: ხუთი საცხოვრებელი ბლოკი")} className="h-full w-full" />
+          <img fetchPriority="high" src={withBase(RENDER)} alt={t("SEU Varketili at golden hour: five residential blocks", "SEU ვარკეთილი მზის ჩასვლისას: ხუთი საცხოვრებელი ბლოკი")} className="h-full w-full" />
           {/* Phones: the sky melts into the dark band under the heading instead of a hard edge. */}
           <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[22%] bg-gradient-to-b from-seu-ink to-transparent lg:hidden" />
           <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" data-cursor="native">

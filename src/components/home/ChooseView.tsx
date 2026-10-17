@@ -48,7 +48,10 @@ const BEDROOMS = ["Studio", "1 bedroom", "2 bedrooms", "3 bedrooms", "4 bedrooms
 const BEDROOMS_KA = ["სტუდიო", "1 საძინებელი", "2 საძინებელი", "3 საძინებელი", "4 საძინებელი", "5+ საძინებელი"];
 
 export default function ChooseView() {
+  // `view` is the choice (chips, form, phone picture); `shown` is the big picture on wide
+  // screens, which catches up once its wipe has finished.
   const [view, setView] = useState(VIEWS[0]);
+  const [shown, setShown] = useState(VIEWS[0]);
   const [rooms, setRooms] = useState<string[]>([]);
   const stageRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -61,8 +64,10 @@ export default function ChooseView() {
 
   const pickView = (next: View) => {
     if (next.id === view.id) return;
+    setView(next);
     const stage = stageRef.current;
-    if (!stage) return setView(next);
+    // The wide-screen stage is hidden on phones: nothing to animate there.
+    if (!stage || stage.offsetParent === null) return setShown(next);
     // New image wipes in over the current one, then becomes the base layer.
     const incoming = stage.querySelector<HTMLImageElement>(".cv-incoming");
     if (incoming) {
@@ -75,13 +80,14 @@ export default function ChooseView() {
           scale: 1,
           duration: 1.1,
           ease: "expo.inOut",
+          overwrite: true,
           onComplete: () => {
-            setView(next);
+            setShown(next);
             gsap.set(incoming, { clipPath: "inset(0 0 0 100%)" });
           },
         },
       );
-    } else setView(next);
+    } else setShown(next);
   };
 
   const toggleRoom = (r: string) => setRooms((cur) => (cur.includes(r) ? cur.filter((x) => x !== r) : [...cur, r]));
@@ -100,7 +106,7 @@ export default function ChooseView() {
 
           {/* On phones the picture sits above the controls; on wide screens it stays pinned beside them. */}
           <div className="relative mt-12 aspect-[4/3] overflow-hidden rounded-[20px] lg:hidden">
-            <img src={withBase(view.image)} alt={t(`${label(view)} view render`, `ხედი: ${label(view)}, რენდერი`)} className="absolute inset-0 h-full w-full object-cover" />
+            <img loading="lazy" decoding="async" src={withBase(view.image)} alt={t(`${label(view)} view render`, `ხედი: ${label(view)}, რენდერი`)} className="absolute inset-0 h-full w-full object-cover" />
           </div>
 
           <form
@@ -159,11 +165,11 @@ export default function ChooseView() {
 
         <div className="hidden lg:block">
           <div ref={stageRef} className="sticky top-28 h-[calc(100svh-9rem)] overflow-hidden rounded-[24px]">
-            <img src={withBase(view.image)} alt={t(`${label(view)} view render`, `ხედი: ${label(view)}, რენდერი`)} className="absolute inset-0 h-full w-full object-cover" />
+            <img loading="lazy" decoding="async" src={withBase(shown.image)} alt={t(`${label(shown)} view render`, `ხედი: ${label(shown)}, რენდერი`)} className="absolute inset-0 h-full w-full object-cover" />
             <img alt="" aria-hidden className="cv-incoming absolute inset-0 h-full w-full object-cover [clip-path:inset(0_0_0_100%)]" />
             <div className="sunbeams sunbeams--soft" />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0c1613]/70 via-transparent to-transparent" />
-            <p className="eyebrow absolute bottom-8 left-8 text-white [--muted:#fff]">{t("View", "ხედი")} · {label(view)}</p>
+            <p className="eyebrow absolute bottom-8 left-8 text-white [--muted:#fff]">{t("View", "ხედი")} · {label(shown)}</p>
           </div>
         </div>
       </Container>
