@@ -181,7 +181,7 @@ export default function Interior360() {
                 }}
                 className="absolute -translate-x-1/2 opacity-0"
               >
-                <span className="flex items-center gap-3 whitespace-nowrap rounded-full border border-white/40 bg-white/10 py-1.5 pl-1.5 pr-4 text-[13px] text-white backdrop-blur-md">
+                <span className="flex items-center gap-3 whitespace-nowrap rounded-full border border-white/40 bg-white/10 py-1.5 pl-1.5 pr-4 text-[14px] text-white backdrop-blur-md">
                   <span className="relative grid h-7 w-7 place-items-center rounded-full bg-seu-accent">
                     <span className="absolute inset-0 animate-ping rounded-full bg-seu-accent/50" />
                     <span className="h-1.5 w-1.5 rounded-full bg-white" />

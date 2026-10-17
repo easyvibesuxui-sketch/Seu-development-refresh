@@ -46,7 +46,10 @@ export default function FilterPanel({ className = "", tone = "light" }: { classN
       </p>
 
       <fieldset className="mt-6">
-        <legend className="field-label">{t("Size, m²", "ზომა, მ²")}</legend>
+        <legend className="field-label">
+          <Icon name="area" size={14} />
+          {t("Size, m²", "ზომა, მ²")}
+        </legend>
         <div className="grid grid-cols-2 gap-3">
           <label>
             <span className="sr-only">{t("From, m²", "დან, მ²")}</span>
@@ -60,7 +63,10 @@ export default function FilterPanel({ className = "", tone = "light" }: { classN
       </fieldset>
 
       <fieldset className="mt-5">
-        <legend className="field-label">{t("Bedrooms", "საძინებლები")}</legend>
+        <legend className="field-label">
+          <Icon name="bed" size={14} />
+          {t("Bedrooms", "საძინებლები")}
+        </legend>
         <div className="grid grid-cols-[1.5fr_1fr_1fr_1fr] gap-2">
           {ROOMS.map((r) => (
             <button key={r.value} type="button" aria-pressed={rooms.includes(r.value)} onClick={() => toggle(r.value)} className="chip px-0">
@@ -72,6 +78,7 @@ export default function FilterPanel({ className = "", tone = "light" }: { classN
 
       <div className="mt-6 flex items-center gap-3">
         <button type="submit" className="btn btn-primary flex-1">
+          <Icon name="search" size={16} strokeWidth={2} />
           {t("Search", "ძებნა")}
         </button>
         <button

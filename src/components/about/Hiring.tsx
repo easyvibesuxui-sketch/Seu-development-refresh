@@ -304,7 +304,7 @@ function ApplyDrawer({ role, open, onClose }: { role: Role; open: boolean; onClo
               </span>
               <span className="min-w-0">
                 <span className="block truncate">{file ?? t("Attach your CV", "მიამაგრეთ CV")}</span>
-                <span id={`${id}-cv-hint`} className={`block text-[13px] ${missingFile ? "text-seu-sold" : "text-seu-muted"}`} role={missingFile ? "alert" : undefined}>
+                <span id={`${id}-cv-hint`} className={`block text-[14px] ${missingFile ? "text-seu-sold" : "text-seu-muted"}`} role={missingFile ? "alert" : undefined}>
                   {missingFile ? t("Please attach your CV to apply.", "განაცხადისთვის მიამაგრეთ CV.") : t("PDF or DOC, up to 5 MB", "PDF ან DOC, 5 მბ-მდე")}
                 </span>
               </span>

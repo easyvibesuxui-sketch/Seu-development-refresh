@@ -7,72 +7,40 @@ import { withBase } from "@/data/projects";
 import { viewIn, type ViewId } from "@/data/inventory";
 import { useHref, useLang } from "@/lib/useLang";
 import { Container, Section, SectionHeader } from "@/components/ui/Section";
+import Icon, { type IconName } from "@/components/ui/Icon";
 
-type View = { id: string; label: string; image: string; icon: React.ReactNode };
-
-const stroke = { stroke: "currentColor", strokeWidth: 1.3, fill: "none" } as const;
+type View = { id: IconName; label: string; image: string };
 
 const VIEWS: View[] = [
   {
     id: "park",
     label: "Hualing Park",
     image: "/images/choose-varketili.jpg",
-    icon: (
-      <svg viewBox="0 0 24 24" {...stroke}>
-        <path d="M12 3l5 7h-3l4 6H6l4-6H7l5-7zM12 16v5" />
-      </svg>
-    ),
   },
   {
     id: "city",
     label: "City",
     image: "/images/varketili-panorama.jpg",
-    icon: (
-      <svg viewBox="0 0 24 24" {...stroke}>
-        <path d="M3 21V9h5v12M8 21V4h7v17M15 21v-9h6v9M2 21h20M10 7h3M10 10h3M10 13h3" />
-      </svg>
-    ),
   },
   {
     id: "sea",
     label: "Tbilisi Sea",
     image: "/images/upcoming-2.jpg",
-    icon: (
-      <svg viewBox="0 0 24 24" {...stroke}>
-        <path d="M2 14c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2M2 19c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2M16 8a3 3 0 1 0-6 0" />
-      </svg>
-    ),
   },
   {
     id: "mountains",
     label: "Mountains",
     image: "/images/upcoming-1.jpg",
-    icon: (
-      <svg viewBox="0 0 24 24" {...stroke}>
-        <path d="M2 20l7-12 4 6 3-4 6 10H2z" />
-      </svg>
-    ),
   },
   {
     id: "courtyard",
     label: "Courtyard",
     image: "/images/finished-vaja.jpg",
-    icon: (
-      <svg viewBox="0 0 24 24" {...stroke}>
-        <path d="M3 20h18M5 20v-6h14v6M8 14V9M16 14V9M6 9h4M14 9h4M12 4v10" />
-      </svg>
-    ),
   },
   {
     id: "panorama",
     label: "Panorama",
     image: "/images/varketili-panorama.jpg",
-    icon: (
-      <svg viewBox="0 0 24 24" {...stroke}>
-        <path d="M2 6c6 2 14 2 20 0v12c-6-2-14-2-20 0V6z" />
-        <path d="M5 15l4-4 3 3 2-2 4 4" />
-      </svg>
-    ),
   },
 ];
 
@@ -89,7 +57,7 @@ export default function ChooseView() {
   const t = (en: string, ka: string) => (lang === "ka" ? ka : en);
   const label = (v: View) => viewIn(v.id as ViewId, lang);
   // Chips are narrow: the short Georgian name there, the full one under the picture.
-  const chip = (v: View) => (lang === "ka" ? ({ park: "პარკი", sea: "ზღვა" }[v.id] ?? label(v)) : label(v));
+  const chip = (v: View) => (lang === "ka" ? ((({ park: "პარკი", sea: "ზღვა" }) as Record<string, string>)[v.id] ?? label(v)) : label(v));
 
   const pickView = (next: View) => {
     if (next.id === view.id) return;
@@ -146,7 +114,10 @@ export default function ChooseView() {
             }}
           >
             <fieldset>
-              <legend className="field-label mb-4">{t("View", "ხედი")}</legend>
+              <legend className="field-label mb-4">
+                <Icon name="eye" size={14} />
+                {t("View", "ხედი")}
+              </legend>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3" data-stagger>
                 {VIEWS.map((v) => (
                   <button
@@ -154,9 +125,9 @@ export default function ChooseView() {
                     type="button"
                     aria-pressed={view.id === v.id}
                     onClick={() => pickView(v)}
-                    className="chip ctl-lg [&>svg]:h-5 [&>svg]:w-5 [&>svg]:shrink-0"
+                    className="chip ctl-lg"
                   >
-                    {v.icon}
+                    <Icon name={v.id} size={18} />
                     <span className="truncate">{chip(v)}</span>
                   </button>
                 ))}
@@ -164,7 +135,10 @@ export default function ChooseView() {
             </fieldset>
 
             <fieldset>
-              <legend className="field-label mb-4">{t("Bedrooms", "საძინებლები")}</legend>
+              <legend className="field-label mb-4">
+                <Icon name="bed" size={14} />
+                {t("Bedrooms", "საძინებლები")}
+              </legend>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3" data-stagger>
                 {BEDROOMS.map((r) => (
                   <button key={r} type="button" aria-pressed={rooms.includes(r)} onClick={() => toggleRoom(r)} className="chip ctl-lg">
@@ -176,10 +150,7 @@ export default function ChooseView() {
 
             <div>
               <button type="submit" className="btn btn-primary btn-lg">
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden>
-                  <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.6" />
-                  <path d="M12.5 12.5L17 17" stroke="currentColor" strokeWidth="1.6" />
-                </svg>
+                <Icon name="search" size={18} strokeWidth={2} />
                 {t("Show apartments with this view", "ამ ხედის მქონე ბინების ჩვენება")}
               </button>
             </div>

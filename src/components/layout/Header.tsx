@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import LogoMark from "@/components/brand/LogoMark";
+import Icon from "@/components/ui/Icon";
 import { langOf, localize } from "@/lib/i18n";
 
 const links = [
@@ -162,10 +163,7 @@ export default function Header() {
           </nav>
           {/* Shortcut to search only where the "Apartments" link is folded into the menu. */}
           <Link href={h("/search/")} aria-label={t("Search apartments", "ბინების ძებნა")} className="btn btn-primary btn-icon ctl-lg xl:hidden">
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden>
-              <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.6" />
-              <path d="M12.5 12.5L17 17" stroke="currentColor" strokeWidth="1.6" />
-            </svg>
+            <Icon name="search" size={18} strokeWidth={2} />
           </Link>
           <Link href={h("/contact/")} className="btn btn-primary ctl-lg hidden sm:inline-flex">
             {t("Contact us", "კონტაქტი")}

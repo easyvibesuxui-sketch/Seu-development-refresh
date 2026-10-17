@@ -119,7 +119,7 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
               <span ref={numberRef} className="page-title block text-[clamp(48px,4vw,72px)] leading-none tabular-nums">
                 {floor}
               </span>
-              <span className="text-[13px] text-seu-muted">{t(`Floor · ${available} available`, `სართ. · ${available} თავისუფალი`)}</span>
+              <span className="text-[14px] text-seu-muted">{t(`Floor · ${available} available`, `სართ. · ${available} თავისუფალი`)}</span>
             </div>
             <ArrowButton dir="down" onClick={() => step(-1)} label={t("Floor down", "სართული ქვემოთ")} />
           </div>
@@ -280,7 +280,7 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
               );
             })}
           </nav>
-          <p className="mt-4 text-[13px] text-seu-muted">
+          <p className="mt-4 text-[14px] text-seu-muted">
             {block.floors} {t("floors", "სართული")} ·{" "}
             {block.status === "delivered" ? t(`Delivered ${block.delivery}`, `ჩაბარდა ${deliveryIn(block.delivery, lang)}`) : t(`Delivery ${block.delivery}`, `ჩაბარება: ${deliveryIn(block.delivery, lang)}`)}
           </p>

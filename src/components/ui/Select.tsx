@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import Icon from "./Icon";
+import Icon, { type IconName } from "./Icon";
 
 export type Option<T extends string> = { value: T; label: string };
 
@@ -15,9 +15,12 @@ export default function Select<T extends string>({
   value,
   options,
   onChange,
+  icon,
   className = "",
 }: {
   label: string;
+  /** Optional icon shown before the label. */
+  icon?: IconName;
   value: T;
   options: Option<T>[];
   onChange: (value: T) => void;
@@ -90,6 +93,7 @@ export default function Select<T extends string>({
   return (
     <div ref={rootRef} className={`relative ${className}`}>
       <span id={`${id}-label`} className="field-label">
+        {icon && <Icon name={icon} size={14} />}
         {label}
       </span>
       <button

@@ -40,7 +40,7 @@ export default function Footer() {
           <ul className="mt-6 space-y-3">
             {nav.map((item) => (
               <li key={item.href}>
-                <Link href={h(item.href)} className="label text-[13px] uppercase tracking-[0.16em] transition-colors hover:text-seu-accent-hi">
+                <Link href={h(item.href)} className="label text-[14px] uppercase tracking-[0.16em] transition-colors hover:text-seu-accent-hi">
                   {item.label[lang]}
                 </Link>
               </li>
@@ -70,7 +70,7 @@ export default function Footer() {
           <LogoMark className="w-20 overflow-visible lg:w-24" />
         </span>
       </div>
-      <p className="relative mx-auto max-w-[1680px] border-t border-seu-line px-gutter py-6 text-[13px] text-seu-muted">
+      <p className="relative mx-auto max-w-[1680px] border-t border-seu-line px-gutter py-6 text-[14px] text-seu-muted">
         © {new Date().getFullYear()} SEU Development · {t("Concept redesign", "კონცეფციის რედიზაინი")}
       </p>
     </footer>

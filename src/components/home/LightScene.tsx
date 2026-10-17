@@ -83,7 +83,7 @@ export default function LightScene() {
         <h2 className="pointer-events-none absolute inset-0 uppercase">
           <span className="ls-top absolute left-1/2 top-[5%] -translate-x-1/2 text-center md:left-[17%] md:top-1/2 md:-translate-y-1/2">
             <span className="title-display block text-[clamp(44px,12vw,96px)] leading-none md:text-[clamp(44px,5.4vw,112px)]">{t("Homes", "სახლები")}</span>
-            <span className="label mt-3 block text-[12px] tracking-[0.5em] text-seu-cream md:text-[13px]">{t("made of", "სავსე")}</span>
+            <span className="label mt-3 block text-[12px] tracking-[0.5em] text-seu-cream md:text-[14px]">{t("made of", "სავსე")}</span>
           </span>
           <span className="ls-bottom title-display absolute bottom-[5%] left-1/2 -translate-x-1/2 text-[clamp(44px,12vw,96px)] leading-none text-seu-accent-hi md:bottom-auto md:left-[83%] md:top-1/2 md:-translate-y-1/2 md:text-[clamp(44px,5.4vw,112px)]">
             {t("light", "სინათლით")}
@@ -111,7 +111,7 @@ export default function LightScene() {
               ].map(([v, k]) => (
                 <p key={k}>
                   <span className="title-display block text-[clamp(22px,2vw,30px)]">{v}</span>
-                  <span className="text-[13px] text-seu-cream">{k}</span>
+                  <span className="text-[14px] text-seu-cream">{k}</span>
                 </p>
               ))}
             </div>

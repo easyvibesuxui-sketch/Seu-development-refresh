@@ -141,6 +141,30 @@ export default function ScrollFX() {
       });
     });
 
+    // Light reveal for everything else worth noticing: headings, cards and marked blocks
+    // settle in from a few pixels below; neighbours that arrive together follow each other.
+    const skip = "[data-stagger], [data-split], [data-parallax], [data-zoom], .deck-card, .show-card, .barrel-stage, #results, [data-no-reveal], [role=dialog]";
+    const targets = [...document.querySelectorAll<HTMLElement>("main section :is(h2, [data-reveal], article, figure)")].filter(
+      (el) => !el.closest(skip) && !el.parentElement?.closest("main section :is(article, figure, [data-reveal])"),
+    );
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries
+          .filter((e) => e.isIntersecting)
+          .forEach((e, k) => {
+            const el = e.target as HTMLElement;
+            el.style.setProperty("--rv-d", `${Math.min(k, 4) * 70}ms`);
+            el.classList.add("is-in");
+            io.unobserve(el);
+          });
+      },
+      { rootMargin: "0px 0px -8% 0px" },
+    );
+    targets.forEach((el) => {
+      el.classList.add("rv");
+      io.observe(el);
+    });
+
     // Fonts and images change layout; re-measure once everything has settled.
     const refresh = () => ScrollTrigger.refresh();
     const timer = window.setTimeout(refresh, 400);
@@ -149,6 +173,8 @@ export default function ScrollFX() {
 
     return () => {
       ctx.revert();
+      io.disconnect();
+      targets.forEach((el) => el.classList.remove("rv", "is-in"));
       window.clearTimeout(timer);
       window.removeEventListener("load", refresh);
     };

@@ -55,7 +55,7 @@ export default function ApartmentPresentation({ unit, lang = "en", rooms }: { un
           <LogoMark className="w-40" />
           <p className="pres-serif mt-10 text-[54px] leading-none">SEU</p>
           <p className="pres-serif mt-4 text-[34px]">Development</p>
-          <p className="mt-20 text-[13px] uppercase leading-relaxed tracking-[0.08em]">
+          <p className="mt-20 text-[14px] uppercase leading-relaxed tracking-[0.08em]">
             {t.tagline[0]}
             <br />
             {t.tagline[1]}

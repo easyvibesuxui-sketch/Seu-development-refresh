@@ -271,7 +271,7 @@ export default function VirtualTour({
 
       {/* Where you are, and full screen. */}
       <div className="absolute right-4 top-16 z-10 flex items-center gap-2 sm:top-4">
-        <p className="glass glass-dark hidden rounded-full px-4 py-2 text-[13px] text-white sm:block">{t(stop.name[0], stop.name[1])}</p>
+        <p className="glass glass-dark hidden rounded-full px-4 py-2 text-[14px] text-white sm:block">{t(stop.name[0], stop.name[1])}</p>
         <button
           type="button"
           onClick={toggleFull}

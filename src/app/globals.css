@@ -343,13 +343,20 @@ body::before {
   color: var(--btn-fg);
   font-family: var(--font-sans);
   font-weight: 600;
-  font-size: 13px;
-  letter-spacing: 0.14em;
+  font-size: 14px;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   white-space: nowrap;
   transition:
     color 0.45s var(--ease-out),
-    border-color 0.45s var(--ease-out);
+    border-color 0.45s var(--ease-out),
+    transform 0.2s var(--ease-out);
+}
+
+/* A light press: the button gives a little under the finger or click. */
+.btn:active:not(:disabled) {
+  transform: scale(0.97);
+  transition-duration: 0.1s;
 }
 
 .btn::before {
@@ -690,7 +697,9 @@ body::before {
 }
 
 .field-label {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin-bottom: 8px;
   font-family: var(--font-sans);
   font-weight: 600;
@@ -1736,7 +1745,8 @@ body:has(.presentation) .cursor {
   transition: opacity 0.1s var(--ease-in), transform 0.1s var(--ease-in);
 }
 
-.tip:focus-visible::after {
+.tip:focus-visible::after,
+.tip:has(:focus-visible)::after {
   opacity: 1;
   transform: translate(-50%, 0);
   transition: opacity 0.15s var(--ease-out) 0.1s, transform 0.15s var(--ease-out) 0.1s;
@@ -1903,5 +1913,122 @@ body:has(.presentation) .cursor {
   .tour-dot,
   .tour-swatch > span[aria-hidden] {
     transition: none;
+  }
+}
+
+/* Light reveal used across the site: content settles in from a few pixels below as it enters. */
+.rv {
+  opacity: 0;
+  transform: translate3d(0, 18px, 0);
+  transition:
+    opacity 0.8s var(--ease-out),
+    transform 0.8s var(--ease-out);
+  transition-delay: var(--rv-d, 0ms);
+}
+
+.rv.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Projects strip (home): the "drag" disc stands in for the pointer over the cards. */
+@media (hover: hover) and (pointer: fine) {
+  .show-viewport {
+    cursor: none;
+  }
+  .show-viewport :is(a, button) {
+    cursor: pointer;
+  }
+}
+
+.show-cursor {
+  opacity: 0;
+  scale: 0.6;
+  transition:
+    opacity 0.3s var(--ease-out),
+    scale 0.3s var(--ease-out);
+}
+
+.show-viewport:hover .show-cursor {
+  opacity: 1;
+  scale: 1;
+}
+
+.show-viewport:has(:is(a, button):hover) .show-cursor {
+  opacity: 0;
+  scale: 0.6;
+}
+
+.show-viewport:active .show-cursor {
+  scale: 0.85;
+}
+
+/* Lifestyle barrel (home): pictures around a drum that turns with the scroll. */
+.barrel-stage {
+  display: grid;
+  place-items: center;
+  perspective: 1300px;
+  --w: min(28vw, 40svh);
+}
+
+@media (max-width: 767px) {
+  .barrel-stage {
+    perspective: 800px;
+    --w: min(54vw, 34svh);
+  }
+}
+
+.barrel-ring {
+  position: relative;
+  width: var(--w);
+  aspect-ratio: 3 / 4;
+  transform-style: preserve-3d;
+  transform: translateZ(calc(var(--r, 600px) * -1)) rotateY(var(--turn, 0deg));
+}
+
+.barrel-panel {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 22px;
+  backface-visibility: hidden;
+  transform: rotateY(calc(var(--i) * 30deg)) translateZ(var(--r, 600px));
+  box-shadow: 0 30px 60px rgb(19 33 29 / 0.25);
+}
+
+.barrel-panel img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+}
+
+.barrel-shade {
+  position: absolute;
+  inset: 0;
+  background: #13211d;
+  opacity: 0;
+}
+
+.barrel-in {
+  animation: barrel-in 0.5s var(--ease-out) both;
+}
+
+@keyframes barrel-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rv {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .barrel-in {
+    animation: none;
   }
 }

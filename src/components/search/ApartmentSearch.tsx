@@ -9,7 +9,7 @@ import ApartmentCard from "@/components/ui/ApartmentCard";
 import { Container, Section } from "@/components/ui/Section";
 import Select, { type Option } from "@/components/ui/Select";
 import Sheet from "@/components/ui/Sheet";
-import Icon from "@/components/ui/Icon";
+import Icon, { type IconName } from "@/components/ui/Icon";
 
 const PAGE = 24;
 
@@ -137,11 +137,12 @@ export default function ApartmentSearch() {
             submitLabel={t("Show apartments", "ბინების ჩვენება")}
             onSubmit={toResults}
             segments={[
-              { id: "project", label: t("Project", "პროექტი"), value: projectOptions.find((o) => o.value === f.project)?.label ?? "", set: !!f.project, panel: (close) => <OptionList options={projectOptions} value={f.project} onPick={(v) => { set("project", v); close(); }} /> },
-              { id: "block", label: t("Block", "ბლოკი"), value: blockOptions.find((o) => o.value === f.block)?.label ?? "", set: !!f.block, panel: (close) => <OptionList options={blockOptions} value={f.block} onPick={(v) => { set("block", v); close(); }} /> },
-              { id: "view", label: t("View", "ხედი"), value: viewOptions.find((o) => o.value === f.view)?.label ?? "", set: !!f.view, panel: (close) => <OptionList options={viewOptions} value={f.view} onPick={(v) => { set("view", v); close(); }} /> },
+              { id: "project", icon: "pin", label: t("Project", "პროექტი"), value: projectOptions.find((o) => o.value === f.project)?.label ?? "", set: !!f.project, panel: (close) => <OptionList options={projectOptions} value={f.project} onPick={(v) => { set("project", v); close(); }} /> },
+              { id: "block", icon: "building", label: t("Block", "ბლოკი"), value: blockOptions.find((o) => o.value === f.block)?.label ?? "", set: !!f.block, panel: (close) => <OptionList options={blockOptions} value={f.block} onPick={(v) => { set("block", v); close(); }} /> },
+              { id: "view", icon: "eye", label: t("View", "ხედი"), value: viewOptions.find((o) => o.value === f.view)?.label ?? "", set: !!f.view, panel: (close) => <OptionList options={viewOptions} value={f.view} onPick={(v) => { set("view", v); close(); }} /> },
               {
                 id: "size",
+                icon: "area",
                 label: t("Size", "ზომა"),
                 value: sizeText(f.sizeFrom, f.sizeTo),
                 set: !!(f.sizeFrom || f.sizeTo),
@@ -164,7 +165,7 @@ export default function ApartmentSearch() {
               </span>
             </span>
             <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-seu-accent text-white">
-              <SearchGlyph />
+              <Icon name="search" size={18} strokeWidth={2} />
             </span>
           </button>
         </Container>
@@ -183,12 +184,13 @@ export default function ApartmentSearch() {
                   {roomText(r)}
                 </button>
               ))}
-              <button type="button" aria-pressed={f.available} onClick={() => set("available", !f.available)} className="chip shrink-0 rounded-full px-4 [--ctl-h:44px]">
+              <button type="button" aria-pressed={f.available} onClick={() => set("available", !f.available)} className="chip shrink-0 gap-2 rounded-full px-4 [--ctl-h:44px]">
+                <Icon name="eyeOff" size={16} />
                 {t("Hide sold", "გაყიდულის დამალვა")}
               </button>
             </div>
             <button type="button" onClick={() => setSheet(true)} aria-haspopup="dialog" data-tip={t("Filters", "ფილტრები")} className="chip tip sm:after:hidden relative shrink-0 rounded-full px-4 [--ctl-h:44px]">
-              <FiltersGlyph />
+              <Icon name="filters" size={16} />
               <span className="max-sm:sr-only">{t("Filters", "ფილტრები")}</span>
               {active > 0 && (
                 <span className="absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-seu-accent px-1 text-[11px] text-white">
@@ -243,16 +245,22 @@ export default function ApartmentSearch() {
       {/* Every filter at once (and the whole search on phones). */}
       <Sheet open={sheet} onClose={() => setSheet(false)} side="right" tone="light" title={t("Filters", "ფილტრები")} bodyClassName="flex flex-col px-8 pb-0 sm:px-10">
         <div className="grid gap-8">
-          <Select label={t("Project", "პროექტი")} value={f.project} options={projectOptions} onChange={(v) => set("project", v)} />
-          <Select label={t("Block", "ბლოკი")} value={f.block} options={blockOptions} onChange={(v) => set("block", v)} />
-          <Select label={t("View", "ხედი")} value={f.view} options={viewOptions} onChange={(v) => set("view", v)} />
+          <Select icon="pin" label={t("Project", "პროექტი")} value={f.project} options={projectOptions} onChange={(v) => set("project", v)} />
+          <Select icon="building" label={t("Block", "ბლოკი")} value={f.block} options={blockOptions} onChange={(v) => set("block", v)} />
+          <Select icon="eye" label={t("View", "ხედი")} value={f.view} options={viewOptions} onChange={(v) => set("view", v)} />
           <fieldset className="min-w-0">
-            <legend className="field-label">{t("Size, m²", "ზომა, მ²")}</legend>
+            <legend className="field-label">
+              <Icon name="area" size={14} />
+              {t("Size, m²", "ზომა, მ²")}
+            </legend>
             {sizeFields}
             {sizePresets}
           </fieldset>
           <fieldset className="min-w-0">
-            <legend className="field-label">{t("Bedrooms", "საძინებლები")}</legend>
+            <legend className="field-label">
+              <Icon name="bed" size={14} />
+              {t("Bedrooms", "საძინებლები")}
+            </legend>
             <div className="grid grid-cols-4 gap-2">
               {[0, 1, 2, 3].map((r) => (
                 <button key={r} type="button" aria-pressed={f.rooms.includes(r)} onClick={() => toggleRoom(r)} className="chip px-0">
@@ -286,7 +294,7 @@ export default function ApartmentSearch() {
   );
 }
 
-type Segment = { id: Seg; label: string; value: string; set: boolean; panel: (close: () => void) => ReactNode };
+type Segment = { id: Seg; icon: IconName; label: string; value: string; set: boolean; panel: (close: () => void) => ReactNode };
 
 /** The desktop search pill: labelled parts, each opening a small panel under it, and a round button. */
 function SearchPill({ segments, label, submitLabel, onSubmit, className = "" }: { segments: Segment[]; label: string; submitLabel: string; onSubmit: () => void; className?: string }) {
@@ -335,7 +343,10 @@ function SearchPill({ segments, label, submitLabel, onSubmit, className = "" }: 
             onClick={() => setOpen(open === s.id ? null : s.id)}
             className="search-pill__seg"
           >
-            <span className="block text-[12px] font-semibold">{s.label}</span>
+            <span className="flex items-center gap-1.5 text-[12px] font-semibold">
+              <Icon name={s.icon} size={14} />
+              {s.label}
+            </span>
             <span className={`block truncate text-[14px] ${s.set ? "text-seu-fg" : "text-seu-muted"}`}>{s.value}</span>
           </button>
           {open === s.id && (
@@ -346,7 +357,7 @@ function SearchPill({ segments, label, submitLabel, onSubmit, className = "" }: 
         </div>
       ))}
       <button type="button" onClick={onSubmit} aria-label={submitLabel} data-tip={submitLabel} className="tip ml-1 grid h-14 w-14 shrink-0 place-items-center self-center rounded-full bg-seu-accent text-white transition-colors hover:bg-seu-accent-hover">
-        <SearchGlyph />
+        <Icon name="search" size={20} strokeWidth={2} />
       </button>
     </div>
   );
@@ -368,21 +379,4 @@ function OptionList<T extends string>({ options, value, onPick }: { options: Opt
   );
 }
 
-function SearchGlyph() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden>
-      <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M12.5 12.5L17 17" stroke="currentColor" strokeWidth="1.8" />
-    </svg>
-  );
-}
 
-function FiltersGlyph() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
-      <path d="M1 4h9M13 4h2M1 12h2M6 12h9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      <circle cx="11.5" cy="4" r="1.8" stroke="currentColor" strokeWidth="1.5" />
-      <circle cx="4.5" cy="12" r="1.8" stroke="currentColor" strokeWidth="1.5" />
-    </svg>
-  );
-}

@@ -38,7 +38,7 @@ export default function Gate() {
       <div className="pointer-events-none absolute left-8 top-6 z-20 flex items-center gap-2.5 md:left-14 md:top-10" aria-hidden>
         <LogoMark className="h-9 w-auto overflow-visible" />
         <span className="flex flex-col leading-none">
-          <span className="label text-[13px] tracking-[0.3em]">SEU</span>
+          <span className="label text-[14px] tracking-[0.3em]">SEU</span>
           <span className="text-[11px] text-white/75">Development</span>
         </span>
       </div>
