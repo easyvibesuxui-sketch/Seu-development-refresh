@@ -56,6 +56,13 @@ const FACADES: Record<string, Part[]> = {
   ],
 };
 
+/**
+ * Evening close-up of each block (Kling / Gemini 3 Pro from the aerial photograph), shown
+ * once the camera has flown in. `faces` are measured on that picture like FACADES above.
+ */
+type Closeup = { image: string; ratio: number; faces: Part[] };
+const CLOSEUPS: Partial<Record<string, Closeup>> = {};
+
 /** Where each block's pin stands: the highest point of its roof, in percent of the image. */
 const PINS: Record<string, { x: number; y: number }> = {
   v2: { x: 18.6, y: 52.8 },
@@ -107,6 +114,8 @@ export default function BlockPicker() {
   const [focus, setFocus] = useState<Block | null>(null);
   const [camera, setCamera] = useState("none");
   const [sharp, setSharp] = useState(false);
+  // The close-up picture fades in once the flight has landed.
+  const [landed, setLanded] = useState(false);
   // Cards follow a real pointer only: on touch a tap opens the block or the floor directly.
   const [canHover, setCanHover] = useState(false);
   useEffect(() => {
@@ -167,6 +176,9 @@ export default function BlockPicker() {
     const ty = top + room.h / 2 - (r.top - sr.top) - scale * cy;
     setCamera(`translate(${tx}px, ${ty}px) scale(${scale})`);
     setFocus(b);
+    setLanded(false);
+    const shot = CLOSEUPS[b.id];
+    if (shot) new Image().src = withBase(shot.image);
     setPeek(null);
     setHover(null);
     if (!sharp) {
@@ -176,6 +188,7 @@ export default function BlockPicker() {
     }
   };
   const close = () => {
+    setLanded(false);
     setFocus(null);
     setCamera("none");
     setHover(null);
@@ -183,16 +196,20 @@ export default function BlockPicker() {
 
   useEffect(() => {
     if (!focus) return;
+    const timer = window.setTimeout(() => setLanded(true), 950);
     const key = (e: KeyboardEvent) => e.key === "Escape" && close();
     // The flight is worked out for this window size; a new size returns to the overview.
     const resize = () => close();
     window.addEventListener("keydown", key);
     window.addEventListener("resize", resize);
     return () => {
+      window.clearTimeout(timer);
       window.removeEventListener("keydown", key);
       window.removeEventListener("resize", resize);
     };
   }, [focus]);
+
+  const shot = focus ? CLOSEUPS[focus.id] : undefined;
 
   return (
     <section ref={sectionRef} data-tone="dark" className="tone-dark relative h-[100svh] min-h-[680px] overflow-hidden bg-seu-ink">
@@ -310,6 +327,50 @@ export default function BlockPicker() {
           {canHover && hover && !focus && <FloorCard {...hover} />}
         </div>
       </div>
+      {/* The open block's own evening close-up, over the zoomed photo, with its floors. */}
+      {focus && shot && (
+        <div className={`absolute inset-0 overflow-hidden transition-opacity duration-700 ${landed ? "opacity-100" : "pointer-events-none opacity-0"}`} style={{ containerType: "size" }} onMouseLeave={() => setHover(null)}>
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" style={{ aspectRatio: `${shot.ratio}`, width: `max(100cqw, calc(100cqh * ${shot.ratio}))` }}>
+            <img src={withBase(shot.image)} alt={t(`${focus.name} in the evening`, `${blockNameIn(focus, lang)} საღამოს`)} className="h-full w-full" />
+            <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" data-cursor="native">
+              {Array.from({ length: focus.floors }, (_, i) => {
+                const floor = i + 1;
+                const on = hover?.floor === floor;
+                const match = hits.get(`${focus.id}-${floor}`) ?? 0;
+                return (
+                  <a
+                    key={floor}
+                    href={withBase(h(floorHref(focus, floor)))}
+                    tabIndex={-1}
+                    aria-hidden
+                    onMouseEnter={() => setHover({ block: focus, floor, match: active ? match : undefined })}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      router.push(h(floorHref(focus, floor)));
+                    }}
+                    className="cursor-pointer outline-none"
+                  >
+                    {shot.faces.map((p, k) => (
+                      <polygon
+                        key={k}
+                        points={band(p, focus.floors, floor).map((pt) => pt.join(",")).join(" ")}
+                        fill={on ? "#e07a3a" : match ? "#fff6ea" : active ? "#0c1613" : "#fff"}
+                        fillOpacity={on ? (match ? 0.6 : 0.45) : match ? 0.36 : active ? 0.2 : 0}
+                        stroke="#fffaf3"
+                        strokeOpacity={match ? 0.85 : 0}
+                        strokeWidth={1}
+                        vectorEffect="non-scaling-stroke"
+                        style={{ transition: "fill-opacity .3s ease-out, fill .3s ease-out, stroke-opacity .3s ease-out" }}
+                      />
+                    ))}
+                  </a>
+                );
+              })}
+            </svg>
+          </div>
+        </div>
+      )}
+
       {/* Shade under the title and a short fade into the page below; the render stays bright between. */}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[38%] bg-gradient-to-b from-seu-ink/85 via-seu-ink/45 to-transparent" />
       {/* A softer shade in the corner under the heading and its links. */}
