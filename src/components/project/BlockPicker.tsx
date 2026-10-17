@@ -13,58 +13,63 @@ import SearchPill, { OptionList } from "@/components/search/SearchPill";
 // The 3D sun study loads its map only when opened.
 const SunStudy = dynamic(() => import("./SunStudy"), { ssr: false });
 
-// Golden-hour render of SEU Varketili (Kling / Gemini 3 Pro from the developer's panorama).
-const RENDER = "/images/varketili-rise.jpg";
+// SEU Varketili from the air: the developer's own photograph, cleaned up and relit with
+// Kling / Gemini 3 Pro (composition and buildings untouched). Source: media/aerial.
+const RENDER = "/images/varketili-aerial.jpg";
 const RATIO = 5504 / 3072;
+// The photograph is a little taller than the screen and hangs from the top, so the empty
+// houses at its foot are cropped; FOCUS is the share of its width kept in the middle of the
+// screen (the centre of the five blocks).
+const ZOOM = 1.25;
+const FOCUS = 0.43;
 
 /*
- * Facades measured on the render, in percent of the image. Each part is one facade plane:
- * its left and right edges, the roof line and the storey height at the left edge. A facade
- * turned away from us (Block 2) shrinks toward the horizon `h` by `s` at its right edge, so
- * its storey lines slope like the render's. Storeys count down from the roof: the top band
- * is the block's highest floor.
+ * Facades measured on the photograph, in percent of the image. Each part is one face of a
+ * block as four corners (roof line left and right, then the foot of the lowest storey right
+ * and left), so slanted storey lines of the aerial view follow the picture. Storeys count
+ * down from the roof: the top band is the block's highest floor.
  */
-type Part = { xl: number; xr: number; top: number; pitch: number; h?: number; s?: number };
+type Pt = [number, number];
+type Part = { tl: Pt; tr: Pt; br: Pt; bl: Pt };
 const FACADES: Record<string, Part[]> = {
-  v2: [{ xl: 2.4, xr: 12.4, top: 34.8, pitch: 3.6, h: 70.3, s: 0.831 }],
-  v3: [{ xl: 18.6, xr: 30.9, top: 47.6, pitch: 3.95 }],
-  v4: [{ xl: 34.6, xr: 45.4, top: 44.3, pitch: 4.05 }],
-  v6: [{ xl: 48.4, xr: 59.5, top: 51, pitch: 4.15 }],
+  v2: [
+    { tl: [10.81, 58.25], tr: [13.74, 60.56], br: [14.95, 79.1], bl: [12.02, 76.76] },
+    { tl: [13.74, 60.56], tr: [22.93, 53.44], br: [23.33, 71.7], bl: [14.95, 79.1] },
+  ],
+  v3: [
+    { tl: [29.52, 48.6], tr: [34.03, 52.04], br: [34.03, 59.6], bl: [29.52, 56.1] },
+    { tl: [34.03, 52.04], tr: [36.47, 49.65], br: [36.47, 56.9], bl: [34.03, 59.6] },
+  ],
+  v4: [
+    { tl: [36.58, 42.67], tr: [39.55, 43.88], br: [39.55, 54], bl: [36.58, 52.86] },
+    { tl: [39.55, 43.88], tr: [41.56, 42.81], br: [41.56, 53], bl: [39.55, 54] },
+  ],
+  v6: [
+    { tl: [45.02, 27.72], tr: [47.97, 29.08], br: [47.97, 42.6], bl: [45.02, 41.12] },
+    { tl: [47.97, 29.08], tr: [54.8, 29], br: [54.8, 42.6], bl: [47.97, 42.6] },
+  ],
   v7: [
-    { xl: 63.9, xr: 82.4, top: 43.4, pitch: 4.4 },
-    { xl: 85, xr: 99.2, top: 36.6, pitch: 4.4 },
+    { tl: [70.06, 37.9], tr: [72.55, 35.04], br: [72.55, 44.14], bl: [69.79, 47.18] },
+    { tl: [72.55, 35.04], tr: [76.18, 34.66], br: [76.03, 43.7], bl: [72.55, 44.14] },
   ],
 };
 
-/**
- * Where each block's pin stands: the highest point of its roof (parapet or stair core), in
- * percent of the image. Block 2's sits toward its far edge, clear of the page title.
- */
+/** Where each block's pin stands: the highest point of its roof, in percent of the image. */
 const PINS: Record<string, { x: number; y: number }> = {
-  v2: { x: 9, y: 37.7 },
-  v3: { x: 24.7, y: 47.3 },
-  v4: { x: 40, y: 43.9 },
-  v6: { x: 54, y: 50.2 },
-  v7: { x: 73, y: 43.1 },
+  v2: { x: 18.6, y: 52.8 },
+  v3: { x: 32.7, y: 49.4 },
+  v4: { x: 38.9, y: 42.1 },
+  v6: { x: 49.5, y: 27.3 },
+  v7: { x: 73.9, y: 34 },
 };
 
-/** y of a storey line (given at the left edge) at x, following the facade's perspective. */
-function lineAt(p: Part, yLeft: number, x: number) {
-  if (!p.h || !p.s) return yLeft;
-  const s = 1 + (p.s - 1) * ((x - p.xl) / (p.xr - p.xl));
-  return p.h + (yLeft - p.h) * s;
-}
+const mix = (a: Pt, b: Pt, t: number): Pt => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
 
 /** Outline of one floor across one facade part, as SVG polygon points. */
 function band(p: Part, floors: number, floor: number) {
-  const y0 = p.top + (floors - floor) * p.pitch;
-  const y1 = y0 + p.pitch;
-  return [
-    [p.xl, lineAt(p, y0, p.xl)],
-    [p.xr, lineAt(p, y0, p.xr)],
-    [p.xr, lineAt(p, y1, p.xr)],
-    [p.xl, lineAt(p, y1, p.xl)],
-  ];
+  const t0 = (floors - floor) / floors;
+  const t1 = t0 + 1 / floors;
+  return [mix(p.tl, p.bl, t0), mix(p.tr, p.br, t0), mix(p.tr, p.br, t1), mix(p.tl, p.bl, t1)];
 }
 
 const floorHref = (b: Block, floor: number) => `/projects/varketili/${b.id}/?floor=${Math.max(2, floor)}`;
@@ -112,10 +117,10 @@ export default function BlockPicker() {
   const roomLabel = (r: number) => (r === 0 ? t("Studio", "სტუდიო") : r === 3 ? "3+" : String(r));
   const blockOptions = [{ value: "", label: t("All blocks", "ყველა ბლოკი") }, ...varketiliBlocks.map((b) => ({ value: b.id, label: blockNameIn(b, lang) }))];
 
-  // On narrow screens the render is wider than the viewport: start centred, let people swipe.
+  // On narrow screens the photo is wider than the viewport: start on the blocks, let people swipe.
   useEffect(() => {
     const el = scrollerRef.current;
-    if (el && el.scrollWidth > el.clientWidth) el.scrollLeft = (el.scrollWidth - el.clientWidth) / 2;
+    if (el && el.scrollWidth > el.clientWidth) el.scrollLeft = el.scrollWidth * FOCUS - el.clientWidth / 2;
   }, []);
 
   return (
@@ -123,12 +128,19 @@ export default function BlockPicker() {
       <div ref={scrollerRef} className="absolute inset-0 overflow-x-auto overflow-y-hidden lg:overflow-hidden">
         {/* The render covers the stage at its own aspect; floors and pins share its coordinate box. */}
         <div
-          // On phones the render starts lower so the roofs and pins stay clear of the heading.
-          className="absolute bottom-0 left-0 [--stage-h:calc(max(100svh,680px)-300px)] lg:left-1/2 lg:-translate-x-1/2 lg:[--stage-h:max(100svh,680px)]"
-          style={{ aspectRatio: `${RATIO}`, width: `max(100%, calc(var(--stage-h) * ${RATIO}))` }}
+          // On phones the photo starts below the heading and the pill so roofs and pins stay clear.
+          className="absolute left-0 top-[300px] [--stage-h:calc(max(100svh,680px)-300px)] lg:left-[calc(50%-var(--box-w)*var(--focus))] lg:top-0 lg:[--stage-h:max(100svh,680px)]"
+          style={
+            {
+              "--box-w": `max(100%, calc(var(--stage-h) * ${ZOOM * RATIO}))`,
+              "--focus": FOCUS,
+              aspectRatio: `${RATIO}`,
+              width: "var(--box-w)",
+            } as React.CSSProperties
+          }
           onMouseLeave={() => setHover(null)}
         >
-          <img fetchPriority="high" src={withBase(RENDER)} alt={t("SEU Varketili at golden hour: five residential blocks", "SEU ვარკეთილი მზის ჩასვლისას: ხუთი საცხოვრებელი ბლოკი")} className="h-full w-full" />
+          <img fetchPriority="high" src={withBase(RENDER)} alt={t("SEU Varketili from the air at golden hour: five residential blocks", "SEU ვარკეთილი ზემოდან, მზის ჩასვლისას: ხუთი საცხოვრებელი ბლოკი")} className="h-full w-full" />
           {/* Phones: the sky melts into the dark band under the heading instead of a hard edge. */}
           <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[22%] bg-gradient-to-b from-seu-ink to-transparent lg:hidden" />
           <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" data-cursor="native">
@@ -207,9 +219,9 @@ export default function BlockPicker() {
         </div>
       </div>
       {/* Shade under the title and a short fade into the page below; the render stays bright between. */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-[34%] bg-gradient-to-b from-seu-ink/75 via-seu-ink/30 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[38%] bg-gradient-to-b from-seu-ink/85 via-seu-ink/45 to-transparent" />
       {/* A softer shade in the corner under the heading and its links. */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-[40%] bg-[radial-gradient(60%_80%_at_0%_10%,rgb(12_22_19/0.7),transparent_72%)] max-md:bg-[radial-gradient(130%_75%_at_0%_10%,rgb(12_22_19/0.85),transparent_78%)]" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[40%] bg-[radial-gradient(60%_80%_at_0%_10%,rgb(12_22_19/0.85),transparent_72%)] max-md:bg-[radial-gradient(130%_75%_at_0%_10%,rgb(12_22_19/0.85),transparent_78%)]" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-seu-bg to-transparent" />
 
       {/* Compact heading, as on era.estate: the buildings carry the screen. */}
@@ -338,7 +350,9 @@ export default function BlockPicker() {
         </div>
       </div>
 
-      {/* Sun study: one quiet round button in the corner; its name shows on hover and focus. */}
+      {/* Sun study: one round button in the corner, on its own soft shade so it never melts into
+          the trees; its name shows on hover and focus. */}
+      <div aria-hidden className="pointer-events-none absolute bottom-0 right-0 z-10 h-[260px] w-[360px] bg-[radial-gradient(closest-side_at_75%_75%,rgb(12_22_19/0.7),transparent)]" />
       <div className="absolute bottom-8 right-5 z-10 md:bottom-10 md:right-gutter">
         <span className="tip tip--up block" data-tip={t("Sun study", "მზის კვლევა")}>
           <button
@@ -347,7 +361,7 @@ export default function BlockPicker() {
             aria-haspopup="dialog"
             aria-label={t("Sun study", "მზის კვლევა")}
             onClick={() => setSun(true)}
-            className="grid h-14 w-14 place-items-center rounded-full bg-seu-ink/70 text-white shadow-[0_10px_30px_rgb(0_0_0/0.3)] ring-1 ring-white/45 backdrop-blur-md transition-colors hover:bg-seu-accent focus-visible:bg-seu-accent"
+            className="grid h-14 w-14 place-items-center rounded-full bg-seu-ink/90 text-white shadow-[0_0_0_6px_rgb(12_22_19/0.25),0_12px_32px_rgb(0_0_0/0.45)] ring-1 ring-white/70 backdrop-blur-md transition-colors hover:bg-seu-accent focus-visible:bg-seu-accent"
           >
             <SunIcon />
           </button>
@@ -373,9 +387,10 @@ export default function BlockPicker() {
 function FloorCard({ block, floor, match }: Hover) {
   const parts = FACADES[block.id];
   const p = parts[parts.length - 1];
-  const left = parts[0].xl;
-  const right = p.xr;
-  const y = lineAt(p, p.top + (block.floors - floor + 0.5) * p.pitch, right);
+  const left = Math.min(...parts.flatMap((q) => [q.tl[0], q.bl[0]]));
+  const right = Math.max(...parts.flatMap((q) => [q.tr[0], q.br[0]]));
+  // Level with the floor's band where it meets the facade's right edge.
+  const y = mix(p.tr, p.br, (block.floors - floor + 0.5) / block.floors)[1];
   const flip = right > 66;
   const all = unitsOn(block.id, floor);
   const total = all.length;
@@ -389,7 +404,8 @@ function FloorCard({ block, floor, match }: Hover) {
       aria-hidden
       className="tone-light pointer-events-none absolute z-20 w-[300px] rounded-[20px] p-6 shadow-[0_30px_70px_rgb(0_0_0/0.35)]"
       style={{
-        top: `clamp(12%, ${y}%, 70%)`,
+        // The box is ZOOM times the screen height: keep the card inside the visible part.
+        top: `clamp(12%, ${y}%, ${56 / ZOOM}%)`,
         ...(flip ? { right: `${100 - left + 1.2}%` } : { left: `${right + 1.2}%` }),
         transform: "translateY(-50%)",
       }}

@@ -67,11 +67,11 @@ export type Block = {
 };
 
 export const varketiliBlocks: Block[] = [
-  { id: "v2", name: "Block 2", floors: 12, status: "under_construction", delivery: "Q2 2026", plan: { x: 8, y: 6, w: 14, h: 26 } },
-  { id: "v3", name: "Block 3", floors: 11, status: "delivered", delivery: "2023", plan: { x: 8, y: 66, w: 22, h: 18 } },
+  { id: "v2", name: "Block 2", floors: 20, status: "under_construction", delivery: "Q2 2026", plan: { x: 8, y: 6, w: 14, h: 26 } },
+  { id: "v3", name: "Block 3", floors: 10, status: "delivered", delivery: "2023", plan: { x: 8, y: 66, w: 22, h: 18 } },
   { id: "v4", name: "Block 4", floors: 12, status: "under_construction", delivery: "Q4 2026", plan: { x: 52, y: 52, w: 22, h: 18 } },
-  { id: "v6", name: "Block 6", floors: 12, status: "under_construction", delivery: "Q4 2026", plan: { x: 72, y: 20, w: 22, h: 14 } },
-  { id: "v7", name: "Block 7", floors: 12, status: "under_construction", delivery: "Q2 2026", plan: { x: 8, y: 36, w: 22, h: 14 } },
+  { id: "v6", name: "Block 6", floors: 16, status: "under_construction", delivery: "Q4 2026", plan: { x: 72, y: 20, w: 22, h: 14 } },
+  { id: "v7", name: "Block 7", floors: 11, status: "under_construction", delivery: "Q2 2026", plan: { x: 8, y: 36, w: 22, h: 14 } },
 ];
 
 // Seven layouts per floor, within the published 43–116 m² range.
