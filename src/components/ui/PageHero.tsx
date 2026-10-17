@@ -23,7 +23,7 @@ export default function PageHero({
   children?: ReactNode;
 }) {
   return (
-    <Section tone={tone} data-page-hero className="overflow-hidden pb-12 pt-44 md:pb-16 md:pt-52">
+    <Section tone={tone} data-page-hero className="overflow-hidden pb-20 pt-44 md:pb-32 md:pt-52">
       <Container className="relative">
         {back && (
           <div className="mb-14">

@@ -2264,3 +2264,9 @@ body:has(.presentation) .cursor {
     transition: none;
   }
 }
+
+/* Tooltip above the control, for buttons that sit at the bottom of a screen. */
+.tip--up::after {
+  top: auto;
+  bottom: calc(100% + 8px);
+}

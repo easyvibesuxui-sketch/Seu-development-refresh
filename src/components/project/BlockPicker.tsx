@@ -156,10 +156,12 @@ export default function BlockPicker() {
                       <polygon
                         key={k}
                         points={band(p, b.floors, floor).map((pt) => pt.join(",")).join(" ")}
-                        fill={on ? "#e07a3a" : match ? "#ffd7b5" : "#fff"}
-                        fillOpacity={on ? 0.5 : match ? 0.3 : inBlock ? 0.06 : 0}
-                        stroke="#fff8f0"
-                        strokeOpacity={match && !on ? 0.5 : 0}
+                        // Filtered: matching floors glow as light bands and the rest sink into a
+                        // little shade; the floor under the pointer turns copper.
+                        fill={on ? "#e07a3a" : match ? "#fff6ea" : active ? "#0c1613" : "#fff"}
+                        fillOpacity={on ? (match ? 0.65 : 0.5) : match ? 0.42 : active ? 0.22 : inBlock ? 0.06 : 0}
+                        stroke="#fffaf3"
+                        strokeOpacity={match ? 0.9 : 0}
                         strokeWidth={1}
                         vectorEffect="non-scaling-stroke"
                         // Matching floors light up block by block, bottom to top; hover answers at once.
@@ -187,17 +189,12 @@ export default function BlockPicker() {
                   t(`${b.name}, ${b.floors} floors: choose a floor`, `${blockNameIn(b, lang)}, ${b.floors} სართული: აირჩიეთ სართული`) +
                   (active ? t(`. ${found} matching apartments`, `. ${found} შესაბამისი ბინა`) : "")
                 }
-                className={`group absolute -translate-x-1/2 -translate-y-full transition-opacity duration-300 ${active && !found ? "opacity-40" : ""}`}
+                className="group absolute -translate-x-1/2 -translate-y-full"
                 style={{ left: `${pin.x}%`, top: `${pin.y}%` }}
               >
                 <span className="block-pin flex flex-col items-center" style={{ animationDelay: `${0.6 + i * 0.12}s` }}>
-                  <span className="label relative grid h-10 w-10 place-items-center rounded-full bg-seu-ink/85 text-[14px] text-white ring-1 ring-white/60 backdrop-blur transition-colors group-hover:bg-seu-accent group-focus-visible:bg-seu-accent">
+                  <span className="label grid h-10 w-10 place-items-center rounded-full bg-seu-ink/85 text-[14px] text-white ring-1 ring-white/60 backdrop-blur transition-colors group-hover:bg-seu-accent group-focus-visible:bg-seu-accent">
                     {b.id.slice(1)}
-                    {active && found > 0 && (
-                      <span aria-hidden className="pin-count absolute -right-2 -top-2 grid h-5 min-w-5 place-items-center rounded-full bg-[#fffcf7] px-1 text-[12px] font-semibold text-seu-ink">
-                        {found}
-                      </span>
-                    )}
                   </span>
                   <span className="h-7 w-px bg-white/80" />
                   <span className="-mb-[3px] h-1.5 w-1.5 rounded-full bg-white shadow-[0_0_0_3px_rgb(255_255_255/0.25)]" />
@@ -217,7 +214,7 @@ export default function BlockPicker() {
 
       {/* Compact heading, as on era.estate: the buildings carry the screen. */}
       <div className="pointer-events-none relative z-10 mx-auto max-w-[1680px] px-gutter pt-28 [&_a]:pointer-events-auto [&_button]:pointer-events-auto">
-        {/* Navigation reads as a quiet text link; the sun study is the one call to action. */}
+        {/* Navigation reads as a quiet text link. */}
         <div className="flex flex-wrap items-center gap-6">
           <Link href={h("/projects/")} className="group inline-flex items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-white">
             <span className="grid h-10 w-10 place-items-center rounded-full border border-white/50 bg-seu-ink/55 backdrop-blur transition-colors group-hover:border-white group-hover:bg-seu-ink/80">
@@ -227,9 +224,6 @@ export default function BlockPicker() {
             </span>
             <span className="[text-shadow:0_1px_12px_rgb(0_0_0/0.6)]">{t("All projects", "ყველა პროექტი")}</span>
           </Link>
-          <button ref={sunButton} type="button" aria-haspopup="dialog" onClick={() => setSun(true)} className="btn btn-primary btn-sm">
-            <SunIcon /> {t("Sun study", "მზის კვლევა")}
-          </button>
         </div>
         <p className="eyebrow mt-8 text-white/85">{t("Visual search · Choose a floor", "ვიზუალური ძებნა · აირჩიეთ სართული")}</p>
         <h1 className="title-display mt-3 text-[clamp(32px,3.4vw,56px)] uppercase leading-none" data-split>
@@ -344,6 +338,21 @@ export default function BlockPicker() {
         </div>
       </div>
 
+      {/* Sun study: one quiet round button in the corner; its name shows on hover and focus. */}
+      <div className="absolute bottom-8 right-5 z-10 md:bottom-10 md:right-gutter">
+        <span className="tip tip--up block" data-tip={t("Sun study", "მზის კვლევა")}>
+          <button
+            ref={sunButton}
+            type="button"
+            aria-haspopup="dialog"
+            aria-label={t("Sun study", "მზის კვლევა")}
+            onClick={() => setSun(true)}
+            className="grid h-14 w-14 place-items-center rounded-full bg-seu-ink/70 text-white shadow-[0_10px_30px_rgb(0_0_0/0.3)] ring-1 ring-white/45 backdrop-blur-md transition-colors hover:bg-seu-accent focus-visible:bg-seu-accent"
+          >
+            <SunIcon />
+          </button>
+        </span>
+      </div>
       {sun && (
         <SunStudy
           onClose={() => {
