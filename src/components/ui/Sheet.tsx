@@ -141,7 +141,7 @@ export default function Sheet({
           </div>
         )}
         {title && (
-          <header className={`flex w-full shrink-0 items-start justify-between gap-6 pb-6 ${bottom ? "mx-auto max-w-[calc(1180px+2*var(--gutter))] px-gutter pt-1" : "px-8 pt-8 sm:px-10"}`}>
+          <div className={`flex w-full shrink-0 items-start justify-between gap-6 pb-6 ${bottom ? "mx-auto max-w-[calc(1180px+2*var(--gutter))] px-gutter pt-1" : "px-8 pt-8 sm:px-10"}`}>
             <div className="min-w-0">
               {eyebrow && <p className="eyebrow">{eyebrow}</p>}
               <h2 id={`${id}-title`} className="title-m mt-2 text-[clamp(22px,2vw,30px)]">
@@ -151,7 +151,7 @@ export default function Sheet({
             <button type="button" onClick={onClose} aria-label={t("Close", "დახურვა")} className="btn btn-icon" data-autofocus>
               <Icon name="close" size={18} />
             </button>
-          </header>
+          </div>
         )}
         <div className={`min-h-0 flex-auto overflow-y-auto ${bodyClassName}`}>{children}</div>
       </div>
