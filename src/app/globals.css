@@ -466,11 +466,29 @@ body::before {
   border-color: var(--accent-ink);
 }
 
+/* A chosen chip is set in the ink of its tone (forest on paper, cream on the dark), so it
+   never reads like the copper action button next to it. */
 .chip[aria-pressed="true"],
 .chip[aria-selected="true"] {
-  background: var(--seu-accent);
-  border-color: var(--seu-accent);
-  color: #fff;
+  background: #13211d;
+  border-color: #13211d;
+  color: #f6f1e8;
+}
+
+.tone-dark .chip[aria-pressed="true"],
+.tone-dark .chip[aria-selected="true"],
+.glass-dark .chip[aria-pressed="true"] {
+  background: #f6f1e8;
+  border-color: #f6f1e8;
+  color: #13211d;
+}
+
+/* A light card or panel inside a dark section (e.g. the apartment stage) is paper again. */
+.tone-dark :is(.vars-light, .tone-light) .chip[aria-pressed="true"],
+.tone-dark :is(.vars-light, .tone-light) .chip[aria-selected="true"] {
+  background: #13211d;
+  border-color: #13211d;
+  color: #f6f1e8;
 }
 
 .field {
@@ -641,8 +659,21 @@ body::before {
 
 .segmented > button[aria-pressed="true"],
 .segmented > a[aria-current="true"] {
-  background: var(--seu-accent);
-  color: #fff;
+  background: #13211d;
+  color: #f6f1e8;
+}
+
+.tone-dark .segmented > button[aria-pressed="true"],
+.tone-dark .segmented > a[aria-current="true"],
+.glass-dark .segmented > button[aria-pressed="true"] {
+  background: #f6f1e8;
+  color: #13211d;
+}
+
+.tone-dark :is(.vars-light, .tone-light) .segmented > button[aria-pressed="true"],
+.tone-dark :is(.vars-light, .tone-light) .segmented > a[aria-current="true"] {
+  background: #13211d;
+  color: #f6f1e8;
 }
 
 /* Checkbox: our own box, same line height as the controls beside it. */
