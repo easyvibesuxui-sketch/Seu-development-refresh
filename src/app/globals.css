@@ -60,7 +60,7 @@
 
   /* ---- Rhythm ---- */
   --gutter: clamp(20px, 5vw, 96px);
-  --section-y: clamp(120px, 13vw, 224px);
+  --section-y: clamp(140px, 15vw, 256px);
   --radius: 10px;
   /* Control scale: every field, select, chip, toggle and button is one of these heights. */
   --ctl-sm: 40px;
@@ -2118,6 +2118,7 @@ body:has(.presentation) .cursor {
 
 .light-streak {
   clip-path: inset(0 100% 0 0);
+  opacity: 0;
 }
 
 .light-streak path {
@@ -2135,10 +2136,24 @@ body:has(.presentation) .cursor {
   opacity: 0.55;
 }
 
-/* Drawn from left to right as it arrives (the stroke stays hairline at any width). */
+/* It passes through once, left to right, and is gone: nothing stays across the words. */
 .light-streak.is-lit {
-  clip-path: inset(0 0 0 0);
-  transition: clip-path 1.8s cubic-bezier(0.65, 0, 0.35, 1) 0.35s;
+  animation: streak-pass 2.4s cubic-bezier(0.65, 0, 0.35, 1) 0.3s both;
+}
+
+@keyframes streak-pass {
+  0% {
+    clip-path: inset(0 100% 0 0);
+    opacity: 1;
+  }
+  50% {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+  100% {
+    clip-path: inset(0 0 0 100%);
+    opacity: 0;
+  }
 }
 
 /* Copper button: the primary fill as a gradient. */
@@ -2155,8 +2170,7 @@ body:has(.presentation) .cursor {
 
 @media (prefers-reduced-motion: reduce) {
   .light-streak {
-    clip-path: none;
-    transition: none;
+    display: none;
   }
 }
 
@@ -2178,4 +2192,16 @@ body:has(.presentation) .cursor {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+/* Section line drawing: a warm spotlight around the pointer, very soft. */
+.logo-lines__glow {
+  opacity: 0;
+  -webkit-mask-image: radial-gradient(circle 260px at var(--mx, -999px) var(--my, -999px), #000 0%, transparent 70%);
+  mask-image: radial-gradient(circle 260px at var(--mx, -999px) var(--my, -999px), #000 0%, transparent 70%);
+  transition: opacity 0.6s var(--ease-out);
+}
+
+.logo-lines.is-lit .logo-lines__glow {
+  opacity: 1;
 }

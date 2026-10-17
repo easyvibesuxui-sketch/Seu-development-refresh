@@ -1,4 +1,5 @@
 import type { ElementType, ReactNode } from "react";
+import LogoLines from "@/components/brand/LogoLines";
 import LightStreak from "./LightStreak";
 
 type Tone = "dark" | "light";
@@ -6,13 +7,16 @@ type Tone = "dark" | "light";
 /**
  * Every content block of the site sits in one of these: a tone (dark forest or light paper),
  * the shared gutter, and the shared vertical rhythm. `flush` drops the vertical padding for
- * full-bleed media sections. Backgrounds stay plain: the space does the work.
+ * full-bleed media sections. Behind the content runs the SEU mark in the faintest hairlines
+ * (right on dark blocks, left on light ones), warming a little around the pointer;
+ * `pattern="none"` leaves a block plain.
  */
 export function Section({
   as: Tag = "section",
   tone = "dark",
   flush = false,
   className = "",
+  pattern,
   children,
   ...rest
 }: {
@@ -20,10 +24,17 @@ export function Section({
   tone?: Tone;
   flush?: boolean;
   className?: string;
+  pattern?: "left" | "right" | "none";
   children: ReactNode;
 } & Record<string, unknown>) {
+  const side = pattern ?? (flush ? "none" : tone === "dark" ? "right" : "left");
   return (
     <Tag data-tone={tone} className={`tone-${tone} relative isolate ${flush ? "" : "py-section"} ${className}`} {...rest}>
+      {side !== "none" && (
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[min(100%,110svh)] overflow-hidden">
+          <LogoLines tone={tone} x={side === "right" ? 0.82 : 0.18} size={0.8} />
+        </div>
+      )}
       {children}
     </Tag>
   );
@@ -71,7 +82,7 @@ export function SectionHeader({
     return (
       <header className={`relative ${className}`}>
         {(eyebrow || index) && (
-          <p className="eyebrow mb-6 md:mb-8">
+          <p className="eyebrow mb-8 md:mb-12">
             {index && <span className="text-seu-accent-hi">{index}</span>}
             {eyebrow}
           </p>
@@ -87,7 +98,7 @@ export function SectionHeader({
           <LightStreak />
         </div>
         {(intro || action) && (
-          <div className="mt-12 flex flex-col items-start gap-8 md:mt-16 lg:ml-auto lg:max-w-[46ch]" data-stagger>
+          <div className="mt-14 flex flex-col items-start gap-8 md:mt-20 lg:ml-auto lg:max-w-[46ch]" data-stagger>
             {intro && <div className="lead">{intro}</div>}
             {action}
           </div>
