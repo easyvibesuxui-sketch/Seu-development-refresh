@@ -750,8 +750,8 @@ body::before {
     box-shadow:
       inset 0 1px 0 var(--glass-hi),
       var(--glass-shadow);
-    -webkit-backdrop-filter: blur(24px) saturate(1.5);
-    backdrop-filter: blur(24px) saturate(1.5);
+    -webkit-backdrop-filter: blur(16px) saturate(1.5);
+    backdrop-filter: blur(16px) saturate(1.5);
   }
 
   /* Dark glass whatever the section tone: for labels laid over photos and films. */
@@ -832,8 +832,8 @@ body::before {
     box-shadow:
       inset 0 1px 0 var(--glass-hi),
       var(--glass-shadow);
-    -webkit-backdrop-filter: blur(24px) saturate(1.5);
-    backdrop-filter: blur(24px) saturate(1.5);
+    -webkit-backdrop-filter: blur(16px) saturate(1.5);
+    backdrop-filter: blur(16px) saturate(1.5);
     transition:
       transform 0.5s var(--ease-out),
       border-color 0.5s var(--ease-out);
@@ -1768,18 +1768,6 @@ body:has(.presentation) .cursor {
   }
 }
 
-/* Apartment stage: on phones the floor-plan and sun-study buttons share one compact row. */
-@media (max-width: 639px) {
-  .stage-actions .btn {
-    --ctl-h: 44px;
-    flex: 0 1 auto;
-    min-width: 0;
-    padding: 0 12px;
-    font-size: 12px;
-    letter-spacing: 0.04em;
-    gap: 6px;
-  }
-}
 
 /* Virtual tour (apartment profile): rings on the floor, room dots, wall-colour swatches. */
 .tour-ring {
@@ -1846,11 +1834,6 @@ body:has(.presentation) .cursor {
   transition: transform 0.25s var(--ease-out);
 }
 
-@media (max-width: 400px) {
-  .stage-actions .btn svg {
-    display: none;
-  }
-}
 
 /* A small round control keeps a 44px tap area around it. */
 .tap-pad::after {
@@ -2237,3 +2220,50 @@ body:has(.presentation) .cursor {
   top: auto;
   bottom: calc(100% + 8px);
 }
+
+/* Plan tab: show or hide the dimension lines. */
+.plan-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 16px 0 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: rgb(255 253 248 / 0.9);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg);
+}
+
+.plan-switch__track {
+  position: relative;
+  width: 36px;
+  height: 22px;
+  border-radius: 999px;
+  background: rgb(19 33 29 / 0.18);
+  transition: background-color 0.2s;
+}
+
+.plan-switch__knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.25);
+  transition: transform 0.2s var(--ease-out);
+}
+
+.plan-switch[aria-checked="true"] .plan-switch__track {
+  background: var(--seu-accent);
+}
+
+.plan-switch[aria-checked="true"] .plan-switch__knob {
+  transform: translateX(14px);
+}
+

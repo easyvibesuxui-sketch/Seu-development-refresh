@@ -100,8 +100,8 @@ export default function Header() {
       >
         <div className="pointer-events-auto flex items-stretch gap-2">
           <nav
-            className={`flex h-14 items-center gap-1 rounded-full border pl-4 pr-2 text-seu-fg backdrop-blur-2xl backdrop-saturate-150 transition-colors duration-500 ${
-              light && !open ? "border-[#13211d]/10 bg-[#f6f1e8]/70" : "border-white/15 bg-[#0f1a17]/45"
+            className={`flex h-14 items-center gap-1 rounded-full border pl-4 pr-2 text-seu-fg backdrop-blur-md backdrop-saturate-150 transition-colors duration-500 ${
+              light && !open ? "border-[#13211d]/10 bg-[#f6f1e8]/80" : "border-white/15 bg-[#0f1a17]/55"
             }`}
             aria-label={t("Main", "მთავარი")}
           >

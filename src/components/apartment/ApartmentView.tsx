@@ -13,7 +13,9 @@ import BackLink from "@/components/ui/BackLink";
 import RequestCallModal from "@/components/ui/RequestCallModal";
 import { Benefits } from "@/components/project/ProjectDetails";
 import Icon, { type IconName } from "@/components/ui/Icon";
+import SunButton from "@/components/ui/SunButton";
 import FloorPlanSheet from "./FloorPlanSheet";
+import ApartmentPlan from "./ApartmentPlan";
 import Compass from "./Compass";
 import VirtualTour, { TourModel } from "./VirtualTour";
 
@@ -50,6 +52,7 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
   const [asking, setAsking] = useState(false);
   const [sheet, setSheet] = useState(false);
   const [sun, setSun] = useState(false);
+  const [dims, setDims] = useState(true);
   const stageRef = useRef<HTMLDivElement>(null);
   const lang = useLang();
   const h = useHref();
@@ -148,15 +151,21 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
         </div>
 
         <div>
-          <div className="flex items-center justify-end">
+          <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
+            {/* The whole floor opens in a bottom sheet. */}
+            <button type="button" aria-haspopup="dialog" onClick={() => setSheet(true)} className="btn btn-sm max-sm:px-3.5">
+              <Icon name="plan" size={16} />
+              {t("Floor plan", "სართულის გეგმა")}
+            </button>
             <a
               href={withBase(h(`/apartments/${unit.id}/presentation/`))}
               target="_blank"
               rel="noreferrer"
-              className="btn btn-sm"
+              className="btn btn-sm max-sm:px-3.5"
             >
               <Icon name="file" size={16} />
-              {t("See presentation", "პრეზენტაციის ნახვა")} <span aria-hidden>↗</span>
+              <span className="sm:hidden">{t("Presentation", "პრეზენტაცია")}</span>
+              <span className="max-sm:hidden">{t("See presentation", "პრეზენტაციის ნახვა")}</span>
               <span className="sr-only">{t("(opens in a new tab)", "(იხსნება ახალ ჩანართში)")}</span>
             </a>
           </div>
@@ -189,8 +198,8 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
               <>
                 <Compass label={t("North arrow", "ჩრდილოეთის ისარი")} className="absolute right-5 top-4 z-10 max-sm:hidden" />
                 {tab === "Plan" ? (
-                  <div className="absolute inset-0 grid place-items-center p-12">
-                    <img loading="lazy" decoding="async" data-tab-img src={withBase("/images/apartment-plan.png")} alt={t(`Apartment ${unit.number}, floor plan`, `ბინა ${unit.number}, გეგმა`)} className="max-h-full w-[75%] object-contain" />
+                  <div data-tab-img className="absolute inset-x-3 bottom-[76px] top-16 md:inset-x-8">
+                    <ApartmentPlan unit={unit} dims={dims} alt={t(`Apartment ${unit.number}, floor plan`, `ბინა ${unit.number}, გეგმა`)} />
                   </div>
                 ) : (
                   <TourModel
@@ -203,15 +212,21 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
                     }}
                   />
                 )}
-                {/* The whole floor opens from a centred button, in a bottom sheet. */}
-                <div className="stage-actions vars-light absolute inset-x-0 bottom-5 z-10 flex justify-center gap-3 px-4">
-                  <button type="button" aria-haspopup="dialog" onClick={() => setSheet(true)} className="btn btn-primary">
-                    <Icon name="plan" size={18} /> {t("Floor plan", "სართულის გეგმა")}
+                {tab === "Plan" && (
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={dims}
+                    onClick={() => setDims((d) => !d)}
+                    className="plan-switch vars-light absolute bottom-6 left-5 z-10"
+                  >
+                    <span aria-hidden className="plan-switch__track">
+                      <span className="plan-switch__knob" />
+                    </span>
+                    {t("Dimensions", "ზომები")}
                   </button>
-                  <button type="button" aria-haspopup="dialog" onClick={() => setSun(true)} className="btn bg-white/70 backdrop-blur">
-                    <Icon name="sun" size={18} /> {t("Sun study", "მზის კვლევა")}
-                  </button>
-                </div>
+                )}
+                <SunButton label={t("Sun study", "მზის კვლევა")} onClick={() => setSun(true)} className="absolute bottom-5 right-5 z-10" />
               </>
             )}
           </div>

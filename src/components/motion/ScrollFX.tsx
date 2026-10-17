@@ -6,6 +6,8 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
 import Lenis from "lenis";
+// Natural page height, no native smooth scroll underneath, embeds that do not swallow the wheel.
+import "lenis/dist/lenis.css";
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
@@ -27,11 +29,18 @@ export default function ScrollFX() {
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) return;
-    const lenis = new Lenis({ lerp: 0.12, smoothWheel: true });
+    // Mobile address bars resize the viewport while scrolling; recomputing every trigger then
+    // made the page jump and stall.
+    ScrollTrigger.config({ ignoreMobileResize: true });
+    // A little quicker to follow the wheel, so the page never feels like it lags behind.
+    const lenis = new Lenis({ lerp: 0.16, smoothWheel: true });
     lenisRef.current = lenis;
     const raf = (time: number) => lenis.raf(time * 1000);
     lenis.on("scroll", ScrollTrigger.update);
     gsap.ticker.add(raf);
+    // GSAP's lag smoothing shifts its clock after a slow frame; Lenis would then lag behind
+    // the wheel and catch up in a jump, which reads as the scroll sticking.
+    gsap.ticker.lagSmoothing(0);
 
     // Hold the page still while the preloader is up.
     const html = document.documentElement;

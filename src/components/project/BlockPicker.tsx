@@ -9,6 +9,7 @@ import { bedroomsIn, blockNameIn, deliveryIn, units, unitsOn, varketiliBlocks, t
 import { useHref, useLang } from "@/lib/useLang";
 import Icon from "@/components/ui/Icon";
 import SearchPill, { OptionList } from "@/components/search/SearchPill";
+import SunButton from "@/components/ui/SunButton";
 
 // The 3D sun study loads its map only when opened.
 const SunStudy = dynamic(() => import("./SunStudy"), { ssr: false });
@@ -58,10 +59,17 @@ const FACADES: Record<string, Part[]> = {
 
 /**
  * Evening close-up of each block (Kling / Gemini 3 Pro from the aerial photograph), shown
- * once the camera has flown in. `faces` are measured on that picture like FACADES above.
+ * once the camera has flown in. `faces` are measured on the first close-up; the pictures were
+ * then widened with sky above and the city at the sides (the first close-up now fills the
+ * lower-middle two thirds), so the building sits clear of the header, title and filters.
  */
 type Closeup = { image: string; ratio: number; faces: Part[] };
-const CLOSEUPS: Partial<Record<string, Closeup>> = {
+const WIDEN = { x: 100 / 6, y: 100 / 3, s: 2 / 3 };
+const widen = (q: Part): Part => {
+  const p = ([x, y]: Pt): Pt => [WIDEN.x + x * WIDEN.s, WIDEN.y + y * WIDEN.s];
+  return { tl: p(q.tl), tr: p(q.tr), br: p(q.br), bl: p(q.bl) };
+};
+const SHOTS: Record<string, Closeup> = {
   v2: {
     image: "/images/closeup-v2.webp",
     ratio: RATIO,
@@ -96,6 +104,7 @@ const CLOSEUPS: Partial<Record<string, Closeup>> = {
     ],
   },
 };
+const CLOSEUPS: Partial<Record<string, Closeup>> = Object.fromEntries(Object.entries(SHOTS).map(([id, c]) => [id, { ...c, faces: c.faces.map(widen) }]));
 
 /** Where each block's pin stands: the highest point of its roof, in percent of the image. */
 const PINS: Record<string, { x: number; y: number }> = {
@@ -368,8 +377,12 @@ export default function BlockPicker() {
             // Wide screens: the picture covers the stage with the building left of centre, clear of
             // the floor card on the right (so it is at least 116% wide). Phones: a band under the
             // search pill, wide enough to show the whole building.
-            className="absolute left-1/2 top-[330px] w-[200cqw] -translate-x-1/2 lg:left-[42%] lg:top-1/2 lg:w-[var(--cover)] lg:-translate-y-1/2"
-            style={{ aspectRatio: `${shot.ratio}`, "--cover": `max(116cqw, calc(100cqh * ${shot.ratio}))` } as React.CSSProperties}
+            className="absolute left-1/2 top-[200px] w-[var(--band)] -translate-x-1/2 lg:left-[42%] lg:top-1/2 lg:w-[var(--cover)] lg:-translate-y-1/2"
+            style={{ aspectRatio: `${shot.ratio}`, "--cover": `max(116cqw, calc(100cqh * ${shot.ratio}))`,
+              // Below the heading on small screens: wide enough to bring the building up close,
+              // never so tall that its foot drops out of view.
+              "--band": `max(100cqw, min(260cqw, calc((100cqh - 200px) * ${shot.ratio} * 1.05)))`,
+            } as React.CSSProperties}
           >
             <img src={withBase(shot.image)} alt={t(`${focus.name} in the evening`, `${blockNameIn(focus, lang)} საღამოს`)} className="h-full w-full" />
             <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" data-cursor="native">
@@ -573,20 +586,7 @@ export default function BlockPicker() {
       {/* Sun study: one round button in the corner, on its own soft shade so it never melts into
           the trees; its name shows on hover and focus. */}
       <div aria-hidden className="pointer-events-none absolute bottom-0 right-0 z-10 h-[260px] w-[360px] bg-[radial-gradient(closest-side_at_75%_75%,rgb(12_22_19/0.7),transparent)]" />
-      <div className="absolute bottom-8 right-5 z-10 md:bottom-10 md:right-gutter">
-        <span className="tip tip--up block" data-tip={t("Sun study", "მზის კვლევა")}>
-          <button
-            ref={sunButton}
-            type="button"
-            aria-haspopup="dialog"
-            aria-label={t("Sun study", "მზის კვლევა")}
-            onClick={() => setSun(true)}
-            className="grid h-14 w-14 place-items-center rounded-full bg-seu-ink/90 text-white shadow-[0_0_0_6px_rgb(12_22_19/0.25),0_12px_32px_rgb(0_0_0/0.45)] ring-1 ring-white/70 backdrop-blur-md transition-colors hover:bg-seu-accent focus-visible:bg-seu-accent"
-          >
-            <SunIcon />
-          </button>
-        </span>
-      </div>
+      <SunButton ref={sunButton} label={t("Sun study", "მზის კვლევა")} onClick={() => setSun(true)} className="absolute bottom-8 right-5 z-10 md:bottom-10 md:right-gutter" />
       {sun && (
         <SunStudy
           onClose={() => {
@@ -724,13 +724,5 @@ function FloorCard({ block, floor, match, docked }: Hover) {
         <p className="mt-3 text-[14px] text-seu-muted">{t("No flats available on this floor", "ამ სართულზე ხელმისაწვდომი ბინა არ არის")}</p>
       )}
     </div>
-  );
-}
-
-function SunIcon() {
-  return (
-    <svg width="20" height="14" viewBox="0 0 20 14" fill="none" stroke="currentColor" strokeWidth="1.2" aria-hidden>
-      <path d="M1 13h18M5 13a5 5 0 0 1 10 0M10 2v2M3.5 5l1.4 1.4M16.5 5l-1.4 1.4M1 9h2M17 9h2" />
-    </svg>
   );
 }
