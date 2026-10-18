@@ -192,7 +192,7 @@ export default function ApartmentSearch() {
                 {t("Hide sold", "გაყიდულის დამალვა")}
               </button>
             </div>
-            <button type="button" onClick={() => setSheet(true)} aria-haspopup="dialog" data-tip={t("Filters", "ფილტრები")} className="chip tip sm:after:hidden relative shrink-0 rounded-full px-4 [--ctl-h:44px]">
+            <button type="button" onClick={() => setSheet(true)} aria-haspopup="dialog" data-tip={t("Filters", "ფილტრები")} className="chip tip sm:after:hidden relative shrink-0 rounded-full px-4 [--ctl-h:44px] md:hidden">
               <Icon name="filters" size={16} />
               <span className="max-sm:sr-only">{t("Filters", "ფილტრები")}</span>
               {active > 0 && (

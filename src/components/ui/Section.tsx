@@ -90,7 +90,8 @@ export function SectionHeader({
             {eyebrow}
           </p>
         )}
-        <div className="relative">
+        {/* The heading sizes itself to this box (container units), so it never overflows it. */}
+        <div className="relative [container-type:inline-size]">
           <Heading className="spread-title" aria-label={title} data-split>
             {spread.map((l, i) => (
               <span key={i} aria-hidden className={`spread-title__line spread-title__line--${l.at ?? "start"} ${l.accent ? "text-copper" : ""}`}>
@@ -111,7 +112,7 @@ export function SectionHeader({
   return (
     // The second column only when there is something to put in it.
     <header className={`grid gap-10 ${intro || action ? "lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:items-end" : ""} ${className}`}>
-      <div>
+      <div className="[container-type:inline-size]">
         {(eyebrow || index) && (
           <p className="eyebrow mb-8">
             {index && <span className="text-seu-accent-hi">{index}</span>}

@@ -267,7 +267,8 @@ body::before {
 /* ---------- Type scale (one set for every page) ---------- */
 .section-title {
   font-family: var(--font-display);
-  font-size: clamp(36px, 4.4vw, 76px);
+  /* Never wider than its column: a long Georgian word (about 8em) still fits on one line. */
+  font-size: min(clamp(36px, 4.4vw, 76px), 12cqi);
   font-weight: 300;
   line-height: 0.98;
   letter-spacing: 0;
@@ -276,7 +277,7 @@ body::before {
 
 .page-title {
   font-family: var(--font-display);
-  font-size: clamp(42px, 5.8vw, 104px);
+  font-size: min(clamp(42px, 5.8vw, 104px), 12cqi);
   font-weight: 300;
   line-height: 0.94;
   text-transform: uppercase;
@@ -2057,7 +2058,7 @@ body:has(.presentation) .cursor {
 .spread-title {
   font-family: var(--font-display);
   font-weight: 300;
-  font-size: clamp(44px, 8.2vw, 148px);
+  font-size: min(clamp(44px, 8.2vw, 148px), 12cqi);
   line-height: 0.92;
   letter-spacing: -0.01em;
   text-transform: uppercase;

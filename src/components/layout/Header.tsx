@@ -133,27 +133,6 @@ export default function Header() {
                 </li>
               ))}
             </ul>
-            {/* The same page in the other language. */}
-            <div className="label ml-1 hidden items-center gap-1 px-2 text-[12px] tracking-[0.1em] sm:flex" role="group" aria-label={t("Language", "ენა")}>
-              {(["ka", "en"] as const).map((l, i) => (
-                <span key={l} className="flex items-center gap-1">
-                  {i > 0 && (
-                    <span className="text-seu-muted" aria-hidden>
-                      /
-                    </span>
-                  )}
-                  <Link
-                    href={localize(pathname, l)}
-                    lang={l}
-                    hrefLang={l}
-                    aria-current={lang === l ? "true" : undefined}
-                    className="grid min-h-11 min-w-9 place-items-center rounded-full px-1 text-seu-muted transition-colors hover:text-seu-accent-hi aria-[current=true]:text-seu-fg"
-                  >
-                    {l === "ka" ? "ქარ" : "EN"}
-                  </Link>
-                </span>
-              ))}
-            </div>
             <button
               ref={burgerRef}
               type="button"
@@ -173,6 +152,33 @@ export default function Header() {
           <Link href={h("/search/")} aria-label={t("Search apartments", "ბინების ძებნა")} className={`btn btn-icon ctl-lg hidden backdrop-blur-md sm:inline-flex xl:hidden ${light && !open ? "border-[#13211d]/15 bg-[#f6f1e8]/80" : "border-white/20 bg-[#0f1a17]/55"}`}>
             <Icon name="search" size={18} strokeWidth={2} />
           </Link>
+          {/* The same page in the other language: its own pill, between the menu and the contact button. */}
+          <div
+            className={`label hidden h-14 items-center gap-1 rounded-full border px-3 text-[12px] tracking-[0.1em] text-seu-fg backdrop-blur-md transition-colors duration-500 sm:flex ${
+              light && !open ? "border-[#13211d]/10 bg-[#f6f1e8]/80" : "border-white/15 bg-[#0f1a17]/55"
+            }`}
+            role="group"
+            aria-label={t("Language", "ენა")}
+          >
+            {(["ka", "en"] as const).map((l, i) => (
+              <span key={l} className="flex items-center gap-1">
+                {i > 0 && (
+                  <span className="text-seu-muted" aria-hidden>
+                    /
+                  </span>
+                )}
+                <Link
+                  href={localize(pathname, l)}
+                  lang={l}
+                  hrefLang={l}
+                  aria-current={lang === l ? "true" : undefined}
+                  className="grid min-h-11 min-w-9 place-items-center rounded-full px-1 text-seu-muted transition-colors hover:text-seu-accent-hi aria-[current=true]:text-seu-fg"
+                >
+                  {l === "ka" ? "ქარ" : "EN"}
+                </Link>
+              </span>
+            ))}
+          </div>
           <Link href={h("/contact/")} className="btn btn-primary ctl-lg hidden sm:inline-flex">
             {t("Contact us", "კონტაქტი")}
           </Link>
