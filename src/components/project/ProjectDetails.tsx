@@ -247,7 +247,7 @@ export function ApartmentTypes({ projectId }: { projectId: string }) {
           <li key={t.bedrooms}>
             <Link
               href={h(`/search/?project=${projectId}&rooms=${t.bedrooms}`)}
-              className="group grid grid-cols-[72px_1fr_auto] items-center gap-6 border-b border-seu-line py-6 transition-colors hover:bg-seu-field md:grid-cols-[96px_1.2fr_1fr_1fr_auto]"
+              className="group grid grid-cols-[64px_minmax(0,1fr)_auto] items-center gap-4 border-b border-seu-line py-6 transition-colors hover:bg-seu-field sm:gap-6 md:grid-cols-[96px_1.2fr_1fr_1fr_auto]"
             >
               <span className="block aspect-square overflow-hidden rounded-[12px] bg-white">
                 <img loading="lazy" decoding="async" src={withBase("/images/apartment-plan.png")} alt="" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />

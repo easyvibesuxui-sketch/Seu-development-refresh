@@ -114,23 +114,11 @@ export default function Header() {
                 <span className="text-[12px] leading-none text-seu-muted">Development</span>
               </span>
             </Link>
-            {/* Phones: logo on the left, search and a call request in the middle, menu on the right. */}
-            <div className="flex items-center gap-2 sm:hidden">
+            {/* Phones: logo on the left, search in the middle, menu on the right. */}
+            <div className="flex items-center sm:hidden">
               <Link href={h("/search/")} aria-label={t("Search apartments", "ბინების ძებნა")} className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-seu-accent text-white transition-colors hover:bg-seu-accent-hi">
                 <Icon name="search" size={18} strokeWidth={2} />
               </Link>
-              <button
-                type="button"
-                aria-haspopup="dialog"
-                aria-label={t("Request a call", "ზარის მოთხოვნა")}
-                onClick={() => setCalling(true)}
-                className="flex h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-current/25 px-4 text-[12px] font-semibold tracking-[0.04em] max-[359px]:px-3 transition-colors hover:border-seu-accent-hi hover:text-seu-accent-hi"
-              >
-                <Icon name="phone" size={15} />
-                {/* The narrowest phones get the short name. */}
-                <span className="max-[359px]:hidden">{t("Request a call", "ზარის მოთხოვნა")}</span>
-                <span className="min-[360px]:hidden">{t("Call", "ზარი")}</span>
-              </button>
             </div>
             <ul className="hidden items-center xl:flex">
               {links.map((l) => (
@@ -190,6 +178,18 @@ export default function Header() {
           </Link>
         </div>
       </header>
+      {/* Phones: the call request floats in the bottom left corner on light glass. */}
+      {!open && (
+        <button
+          type="button"
+          aria-haspopup="dialog"
+          onClick={() => setCalling(true)}
+          className="vars-light glass glass-clear fixed bottom-5 left-4 z-40 flex h-12 items-center gap-2 rounded-full pl-4 pr-5 text-[13px] font-semibold text-seu-fg sm:hidden"
+        >
+          <Icon name="phone" size={16} className="text-seu-accent" />
+          {t("Request a call", "ზარის მოთხოვნა")}
+        </button>
+      )}
       <RequestCallModal open={calling} onClose={() => setCalling(false)} />
 
       <div

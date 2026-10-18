@@ -10,6 +10,7 @@ import { useHref, useLang } from "@/lib/useLang";
 import Icon from "@/components/ui/Icon";
 import SearchPill, { OptionList } from "@/components/search/SearchPill";
 import SunButton from "@/components/ui/SunButton";
+import Sheet from "@/components/ui/Sheet";
 
 // The 3D sun study loads its map only when opened.
 const SunStudy = dynamic(() => import("./SunStudy"), { ssr: false });
@@ -151,6 +152,8 @@ export default function BlockPicker() {
   const h = useHref();
   const t = (en: string, ka: string) => (lang === "ka" ? ka : en);
   const [f, setF] = useState<Filter>(NONE);
+  // Phones: the filter opens in a sheet instead of the pill.
+  const [filtering, setFiltering] = useState(false);
   // `peek`: the block whose pin is under the pointer (its card shows). `focus`: the block the
   // camera has flown to, as era.estate opens one building from the overview.
   const [peek, setPeek] = useState<Block | null>(null);
@@ -167,6 +170,16 @@ export default function BlockPicker() {
   }, []);
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
+  // Phones: the photo starts just under the heading, however tall the heading wraps.
+  const headRef = useRef<HTMLDivElement>(null);
+  const [head, setHead] = useState(270);
+  useEffect(() => {
+    const el = headRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => setHead(Math.round(el.offsetTop + el.offsetHeight + 16)));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
   const active = !!(f.block || f.from || f.to || f.rooms.length);
 
   // Available flats that fit the filter, counted per floor ("v4-7") and per block ("v4").
@@ -208,7 +221,7 @@ export default function BlockPicker() {
     const r = stage.getBoundingClientRect();
     const [x0, y0, x1, y1] = bounds(b.id);
     const wide = sr.width >= 1024;
-    const top = wide ? 200 : 300;
+    const top = wide ? 200 : head;
     const room = { w: wide ? sr.width * 0.42 : sr.width * 0.9, h: sr.height - top - 48 };
     const box = { w: ((x1 - x0) / 100) * r.width, h: ((y1 - y0) / 100) * r.height };
     const scale = Math.min(room.w / box.w, room.h / box.h, 3.2);
@@ -254,14 +267,58 @@ export default function BlockPicker() {
 
   const shot = focus ? CLOSEUPS[focus.id] : undefined;
 
+  // The size and bedroom controls: in the pill's panels on wide screens, in a sheet on phones.
+  const sizePanel = (
+    <div className="w-[min(300px,calc(100vw-48px))] p-4">
+      <div className="grid grid-cols-2 gap-3">
+        <label className="grid min-w-0 gap-1.5">
+          <span className="text-[12px] font-semibold text-seu-muted">{t("From, m²", "დან, მ²")}</span>
+          <input className="field w-full min-w-0" inputMode="numeric" value={f.from} onChange={(e) => setF((d) => ({ ...d, from: e.target.value.replace(/\D/g, "") }))} />
+        </label>
+        <label className="grid min-w-0 gap-1.5">
+          <span className="text-[12px] font-semibold text-seu-muted">{t("To, m²", "მდე, მ²")}</span>
+          <input className="field w-full min-w-0" inputMode="numeric" value={f.to} onChange={(e) => setF((d) => ({ ...d, to: e.target.value.replace(/\D/g, "") }))} />
+        </label>
+      </div>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {SIZES.map(([a, b]) => (
+          <button key={a + b} type="button" aria-pressed={f.from === a && f.to === b} onClick={() => setF((d) => ({ ...d, from: a, to: b }))} className="chip rounded-full px-3.5 [--ctl-h:44px]">
+            {sizeText(a, b)}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+  const roomsPanel = (
+    <div className="grid w-[min(300px,calc(100vw-48px))] grid-cols-[auto_1fr_1fr_1fr] gap-2 p-4">
+      {[0, 1, 2, 3].map((r) => (
+        <button
+          key={r}
+          type="button"
+          aria-pressed={f.rooms.includes(r)}
+          onClick={() => setF((d) => ({ ...d, rooms: d.rooms.includes(r) ? d.rooms.filter((x) => x !== r) : [...d.rooms, r] }))}
+          className={`chip ${r === 0 ? "px-4" : "px-0"}`}
+        >
+          {roomLabel(r)}
+        </button>
+      ))}
+    </div>
+  );
+  const statusText = active
+    ? total
+      ? t(`${total} apartments on ${floorsLit} floors, lit on the buildings`, `${total} ბინა ${floorsLit} სართულზე — მონიშნულია შენობებზე`)
+      : t("No free apartments match: try a wider range", "ამ ფილტრით თავისუფალი ბინა ვერ მოიძებნა — სცადეთ უფრო ფართო")
+    : t("Pick a size or bedrooms: matching floors light up", "აირჩიეთ ზომა ან საძინებლები — შესაბამისი სართულები განათდება");
+  const setCount = (f.from || f.to ? 1 : 0) + (f.rooms.length ? 1 : 0) + (f.block ? 1 : 0);
+
   return (
-    <section ref={sectionRef} data-tone="dark" className="tone-dark relative h-[100svh] min-h-[780px] overflow-hidden bg-seu-ink lg:min-h-[680px]">
+    <section ref={sectionRef} data-tone="dark" className="tone-dark relative h-[100svh] min-h-[780px] overflow-hidden bg-seu-ink lg:min-h-[680px]" style={{ "--head": `${head}px` } as React.CSSProperties}>
       <div ref={scrollerRef} className={`absolute inset-0 overflow-y-hidden lg:overflow-hidden ${focus ? "overflow-x-hidden" : "overflow-x-auto"}`}>
         {/* The render covers the stage at its own aspect; floors and pins share its coordinate box. */}
         <div
           ref={stageRef}
           // On phones the photo starts below the heading and the pill so roofs and pins stay clear.
-          className="absolute left-0 top-[300px] [--stage-h:calc(max(100svh,780px)-300px)] lg:left-[calc(50%-var(--box-w)*var(--focus))] lg:top-0 lg:[--stage-h:max(100svh,680px)]"
+          className="absolute left-0 top-[var(--head)] [--stage-h:calc(max(100svh,780px)-var(--head))] lg:left-[calc(50%-var(--box-w)*var(--focus))] lg:top-0 lg:[--stage-h:max(100svh,680px)]"
           style={
             {
               "--box-w": `max(100%, calc(var(--stage-h) * ${ZOOM * RATIO}))`,
@@ -434,7 +491,7 @@ export default function BlockPicker() {
       {canHover && focus && hover && <FloorCard {...hover} docked />}
 
       {/* Compact heading, as on era.estate: the buildings carry the screen. */}
-      <div className="pointer-events-none relative z-10 mx-auto max-w-[1680px] px-gutter pt-28 [&_a]:pointer-events-auto [&_button]:pointer-events-auto">
+      <div ref={headRef} className="pointer-events-none relative z-10 mx-auto max-w-[1680px] px-gutter pt-28 [&_a]:pointer-events-auto [&_button]:pointer-events-auto">
         {/* Navigation reads as a quiet text link. */}
         <div className={`flex flex-wrap items-center gap-6 ${focus ? "hidden" : ""}`}>
           <Link href={h("/projects/")} className="group inline-flex items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-white">
@@ -443,8 +500,18 @@ export default function BlockPicker() {
                 <path d="M7 1L2 6l5 5" stroke="currentColor" strokeWidth="1.4" />
               </svg>
             </span>
-            <span className="[text-shadow:0_1px_12px_rgb(0_0_0/0.6)]">{t("All projects", "ყველა პროექტი")}</span>
+            <span className="[text-shadow:0_1px_12px_rgb(0_0_0/0.6)] max-[359px]:sr-only">{t("All projects", "ყველა პროექტი")}</span>
           </Link>
+          <button
+            type="button"
+            aria-haspopup="dialog"
+            onClick={() => setFiltering(true)}
+            className="ml-auto flex h-10 items-center gap-2 rounded-full border border-white/50 bg-seu-ink/55 px-4 text-[12px] font-semibold uppercase tracking-[0.12em] text-white backdrop-blur lg:hidden"
+          >
+            <Icon name="filters" size={15} />
+            {t("Filters", "ფილტრები")}
+            {setCount > 0 && <span className="grid h-5 min-w-5 place-items-center rounded-full bg-seu-accent px-1 text-[11px] tracking-normal">{setCount}</span>}
+          </button>
         </div>
         {/* Close-up of one block: back to the overview, and the floor plans for keyboard users. */}
         {focus && (
@@ -475,8 +542,14 @@ export default function BlockPicker() {
           </p>
         )}
 
+        {active && (
+          <p className="mt-2 text-[12px] text-white/90 [text-shadow:0_1px_10px_rgb(0_0_0/0.55)] lg:hidden" aria-live="polite">
+            {statusText}
+          </p>
+        )}
+
         {/* One long pill in the sky above the roofs, as on the apartment search; it filters in place. */}
-        <div className="pointer-events-auto mt-4 lg:absolute lg:right-gutter lg:top-[100px] lg:mt-0 lg:w-[min(720px,calc(100%-480px))]">
+        <div className="pointer-events-auto max-lg:hidden lg:absolute lg:right-gutter lg:top-[100px] lg:mt-0 lg:w-[min(720px,calc(100%-480px))]">
           <SearchPill
             className="vars-light block-pill flex"
             label={t("Find an apartment in SEU Varketili", "ბინის ძებნა SEU ვარკეთილში")}
@@ -507,27 +580,7 @@ export default function BlockPicker() {
                 set: !!(f.from || f.to),
                 // Phones: panels hang from the whole pill so they stay on screen.
                 className: "max-md:static",
-                panel: () => (
-                  <div className="w-[min(300px,calc(100vw-48px))] p-4">
-                    <div className="grid grid-cols-2 gap-3">
-                      <label className="grid gap-1.5">
-                        <span className="text-[12px] font-semibold text-seu-muted">{t("From, m²", "დან, მ²")}</span>
-                        <input className="field" inputMode="numeric" value={f.from} onChange={(e) => setF((d) => ({ ...d, from: e.target.value.replace(/\D/g, "") }))} />
-                      </label>
-                      <label className="grid gap-1.5">
-                        <span className="text-[12px] font-semibold text-seu-muted">{t("To, m²", "მდე, მ²")}</span>
-                        <input className="field" inputMode="numeric" value={f.to} onChange={(e) => setF((d) => ({ ...d, to: e.target.value.replace(/\D/g, "") }))} />
-                      </label>
-                    </div>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {SIZES.map(([a, b]) => (
-                        <button key={a + b} type="button" aria-pressed={f.from === a && f.to === b} onClick={() => setF((d) => ({ ...d, from: a, to: b }))} className="chip rounded-full px-3.5 [--ctl-h:44px]">
-                          {sizeText(a, b)}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                ),
+                panel: () => sizePanel,
               },
               {
                 id: "rooms",
@@ -536,21 +589,7 @@ export default function BlockPicker() {
                 value: f.rooms.length ? [...f.rooms].sort().map(roomLabel).join(", ") : t("Any", "ნებისმიერი"),
                 set: f.rooms.length > 0,
                 className: "max-md:static",
-                panel: () => (
-                  <div className="grid w-[min(300px,calc(100vw-48px))] grid-cols-[1.5fr_1fr_1fr_1fr] gap-2 p-4">
-                    {[0, 1, 2, 3].map((r) => (
-                      <button
-                        key={r}
-                        type="button"
-                        aria-pressed={f.rooms.includes(r)}
-                        onClick={() => setF((d) => ({ ...d, rooms: d.rooms.includes(r) ? d.rooms.filter((x) => x !== r) : [...d.rooms, r] }))}
-                        className="chip px-0"
-                      >
-                        {roomLabel(r)}
-                      </button>
-                    ))}
-                  </div>
-                ),
+                panel: () => roomsPanel,
               },
             ]}
             end={
@@ -568,17 +607,9 @@ export default function BlockPicker() {
             }
           />
           {/* What the render now shows, in words (also read out). */}
-          <p role="status" className={`mt-2 items-center gap-2 text-[12px] text-white/90 [text-shadow:0_1px_10px_rgb(0_0_0/0.55)] lg:mt-3 lg:flex lg:justify-end lg:text-[14px] ${active ? "flex" : "max-lg:sr-only"}`}>
-            {active ? (
-              <>
-                <span aria-hidden className={`h-2 w-2 shrink-0 rounded-full ${total ? "bg-[#ffd7b5] shadow-[0_0_0_3px_rgb(255_215_181/0.3)]" : "bg-white/40"}`} />
-                {total
-                  ? t(`${total} apartments on ${floorsLit} floors, lit on the buildings`, `${total} ბინა ${floorsLit} სართულზე — მონიშნულია შენობებზე`)
-                  : t("No free apartments match: try a wider range", "ამ ფილტრით თავისუფალი ბინა ვერ მოიძებნა — სცადეთ უფრო ფართო")}
-              </>
-            ) : (
-              t("Pick a size or bedrooms: matching floors light up", "აირჩიეთ ზომა ან საძინებლები — შესაბამისი სართულები განათდება")
-            )}
+          <p role="status" className="mt-3 flex items-center justify-end gap-2 text-[14px] text-white/90 [text-shadow:0_1px_10px_rgb(0_0_0/0.55)]">
+            {active && <span aria-hidden className={`h-2 w-2 shrink-0 rounded-full ${total ? "bg-[#ffd7b5] shadow-[0_0_0_3px_rgb(255_215_181/0.3)]" : "bg-white/40"}`} />}
+            {statusText}
           </p>
         </div>
       </div>
@@ -587,6 +618,31 @@ export default function BlockPicker() {
           the trees; its name shows on hover and focus. */}
       <div aria-hidden className="pointer-events-none absolute bottom-0 right-0 z-10 h-[260px] w-[360px] bg-[radial-gradient(closest-side_at_75%_75%,rgb(12_22_19/0.7),transparent)]" />
       <SunButton ref={sunButton} label={t("Sun study", "მზის კვლევა")} onClick={() => setSun(true)} className="absolute bottom-8 right-5 z-10 md:bottom-10 md:right-gutter" />
+      <Sheet open={filtering} onClose={() => setFiltering(false)} tone="light" title={t("Filters", "ფილტრები")} bodyClassName="mx-auto w-full max-w-[calc(1180px+2*var(--gutter))] px-gutter pb-8">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-6 [&>div>div]:w-full [&>div>div]:px-0">
+          <div>
+            <p className="field-label">
+              <Icon name="area" size={14} /> {t("Size, m²", "ზომა, მ²")}
+            </p>
+            {sizePanel}
+          </div>
+          <div>
+            <p className="field-label">
+              <Icon name="bed" size={14} /> {t("Bedrooms", "საძინებლები")}
+            </p>
+            {roomsPanel}
+          </div>
+          <p className="text-[14px] text-seu-muted">{statusText}</p>
+          <div className="flex gap-3">
+            <button type="button" onClick={() => setF(NONE)} disabled={!active} className="btn min-w-0 flex-1 px-4 disabled:opacity-40">
+              <Icon name="reset" size={16} className="max-[359px]:hidden" /> {t("Clear", "გასუფთავება")}
+            </button>
+            <button type="button" onClick={() => setFiltering(false)} className="btn btn-primary min-w-0 flex-1 px-4">
+              {t("Show", "ჩვენება")}
+            </button>
+          </div>
+        </div>
+      </Sheet>
       {sun && (
         <SunStudy
           onClose={() => {
