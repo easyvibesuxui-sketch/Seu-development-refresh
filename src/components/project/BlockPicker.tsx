@@ -616,7 +616,7 @@ export default function BlockPicker() {
 
       {/* Sun study: one round button in the corner, on its own soft shade so it never melts into
           the trees; its name shows on hover and focus. */}
-      <div aria-hidden className="pointer-events-none absolute bottom-0 right-0 z-10 h-[260px] w-[360px] bg-[radial-gradient(closest-side_at_75%_75%,rgb(12_22_19/0.7),transparent)]" />
+      <div aria-hidden className="pointer-events-none absolute bottom-0 right-0 z-10 h-[300px] w-[420px] max-w-full bg-[radial-gradient(closest-side_at_78%_78%,rgb(12_22_19/0.88),rgb(12_22_19/0.45)_55%,transparent)]" />
       <SunButton ref={sunButton} label={t("Sun study", "მზის კვლევა")} onClick={() => setSun(true)} className="absolute bottom-8 right-5 z-10 md:bottom-10 md:right-gutter" />
       <Sheet open={filtering} onClose={() => setFiltering(false)} tone="light" title={t("Filters", "ფილტრები")} bodyClassName="mx-auto w-full max-w-[calc(1180px+2*var(--gutter))] px-gutter pb-8">
         <div className="grid grid-cols-[minmax(0,1fr)] gap-6 [&>div>div]:w-full [&>div>div]:px-0">
