@@ -13,6 +13,7 @@ export default function PageHero({
   intro,
   back,
   tone = "dark",
+  titleClassName = "",
   children,
 }: {
   eyebrow: string;
@@ -20,6 +21,8 @@ export default function PageHero({
   intro?: ReactNode;
   back?: { href: string; label?: string };
   tone?: "dark" | "light";
+  /** Extra classes for the title, e.g. a smaller size for a very long word. */
+  titleClassName?: string;
   children?: ReactNode;
 }) {
   return (
@@ -30,10 +33,11 @@ export default function PageHero({
             <BackLink href={back.href} label={back.label} />
           </div>
         )}
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] lg:items-end">
-          <div>
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-10 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] lg:items-end">
+          {/* The title sizes itself to this column (container units), so long words never overflow. */}
+          <div className="[container-type:inline-size]">
             <p className="eyebrow mb-8">{eyebrow}</p>
-            <h1 className="page-title" data-split>
+            <h1 className={`page-title ${titleClassName}`} data-split>
               {title}
               <span className="text-seu-accent-hi">.</span>
             </h1>

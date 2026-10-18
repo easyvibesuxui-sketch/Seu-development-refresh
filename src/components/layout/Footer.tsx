@@ -23,7 +23,7 @@ export default function Footer() {
   const h = useHref();
   const t = (en: string, ka: string) => (lang === "ka" ? ka : en);
   return (
-    <footer data-tone="dark" className="tone-dark relative overflow-hidden border-t border-seu-line bg-seu-ink">
+    <footer data-tone="dark" data-call className="tone-dark relative overflow-hidden border-t border-seu-line bg-seu-ink">
       <div className="relative mx-auto grid max-w-[1680px] gap-16 px-gutter pb-12 pt-24 md:grid-cols-[1.2fr_1fr_1fr]">
         <div>
           <p className="eyebrow">{t("Get in touch", "დაგვიკავშირდით")}</p>

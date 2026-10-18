@@ -35,6 +35,24 @@ export default function Header() {
   const menuRef = useRef<HTMLDivElement>(null);
   const burgerRef = useRef<HTMLButtonElement>(null);
 
+  // The floating call button steps aside while another way to ask for a call (a form, the
+  // apartment's own button) or the footer is on screen, so it never doubles up or covers it.
+  const [callInView, setCallInView] = useState(false);
+  useEffect(() => {
+    const seen = new Set<Element>();
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => (e.isIntersecting ? seen.add(e.target) : seen.delete(e.target)));
+      setCallInView(seen.size > 0);
+    });
+    // Pages stream in after navigation; look for the targets once the new page has rendered.
+    const timer = window.setTimeout(() => document.querySelectorAll("[data-call]").forEach((el) => io.observe(el)), 300);
+    return () => {
+      window.clearTimeout(timer);
+      io.disconnect();
+      setCallInView(false);
+    };
+  }, [pathname]);
+
   useEffect(() => {
     let frame = 0;
     const update = () => {
@@ -189,8 +207,12 @@ export default function Header() {
         <button
           type="button"
           aria-haspopup="dialog"
+          aria-hidden={callInView || undefined}
+          tabIndex={callInView ? -1 : undefined}
           onClick={() => setCalling(true)}
-          className="vars-light glass glass-clear fixed bottom-5 left-4 z-40 flex h-12 items-center gap-2 rounded-full pl-4 pr-5 text-[13px] font-semibold text-seu-fg sm:hidden"
+          className={`vars-light glass glass-clear fixed bottom-5 left-4 z-40 flex h-12 items-center gap-2 rounded-full pl-4 pr-5 text-[13px] font-semibold text-seu-fg transition-[opacity,transform] duration-300 sm:hidden ${
+            callInView ? "pointer-events-none translate-y-4 opacity-0" : ""
+          }`}
         >
           <Icon name="phone" size={16} className="text-seu-accent" />
           {t("Request a call", "ზარის მოთხოვნა")}

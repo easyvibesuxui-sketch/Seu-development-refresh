@@ -132,6 +132,7 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
               <button
                 type="button"
                 onClick={() => setAsking(true)}
+                data-call
                 className="btn btn-primary btn-lg"
               >
                 <Icon name="phone" size={16} /> {t("Request a call", "ზარის მოთხოვნა")}

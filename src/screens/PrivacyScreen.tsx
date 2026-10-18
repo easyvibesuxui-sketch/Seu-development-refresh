@@ -80,6 +80,8 @@ export default function PrivacyScreen({ lang }: { lang: Lang }) {
       <PageHero
         eyebrow={t("Last updated · 2026", "ბოლო განახლება · 2026")}
         title={t("Privacy policy", "კონფიდენციალურობის პოლიტიკა")}
+        // "კონფიდენციალურობის" is about 11em wide: a size that keeps it on one line.
+        titleClassName="text-[min(clamp(42px,5.8vw,104px),8.6cqi)]"
         intro={t("How SEU Development collects, uses and protects the information you share with us.", "როგორ აგროვებს, იყენებს და იცავს SEU Development თქვენ მიერ გაზიარებულ ინფორმაციას.")}
       />
       <Section tone="light">

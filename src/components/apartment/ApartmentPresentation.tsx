@@ -3,6 +3,7 @@ import { PLAN, PLAN_RATIO, UNIT_SHAPES, centre } from "@/data/floorplan";
 import type { RoomKind, Unit } from "@/data/inventory";
 import LogoMark from "@/components/brand/LogoMark";
 import PrintButton from "./PrintButton";
+import ApartmentPlan from "./ApartmentPlan";
 
 type Lang = "ka" | "en";
 
@@ -66,7 +67,9 @@ export default function ApartmentPresentation({ unit, lang = "en", rooms }: { un
 
       <section className="pres-page pres-sheet">
         <div className="grid grid-cols-[1.25fr_1fr] gap-8 px-12 pt-10">
-          <img src={withBase("/images/apartment-plan.png")} alt={t.plan} className="w-full" />
+          <div className="aspect-[5/4]">
+            <ApartmentPlan unit={unit} dims alt={t.plan} />
+          </div>
           <div className="border-l border-seu-ink pl-6">
             <div className="flex justify-end">
               <LogoMark className="w-9" />
@@ -80,12 +83,12 @@ export default function ApartmentPresentation({ unit, lang = "en", rooms }: { un
             <div className="mt-6 h-[2px] bg-[#2b3a45]" />
             <ul className="mt-4 space-y-3 text-[10px]">
               {unit.rooms.map((r, i) => (
-                <li key={i} className="flex justify-between">
+                <li key={i} className="flex justify-between gap-3">
                   <span>{rooms[r.kind]}</span>
                   <span>{r.area} m²</span>
                 </li>
               ))}
-              <li className="flex justify-between border-t border-seu-ink/20 pt-3 font-semibold">
+              <li className="flex justify-between gap-3 border-t border-seu-ink/20 pt-3 font-semibold">
                 <span>{t.total}</span>
                 <span>{unit.totalArea} m²</span>
               </li>

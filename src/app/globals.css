@@ -267,8 +267,9 @@ body::before {
 /* ---------- Type scale (one set for every page) ---------- */
 .section-title {
   font-family: var(--font-display);
-  /* Never wider than its column: a long Georgian word (about 8em) still fits on one line. */
-  font-size: min(clamp(36px, 4.4vw, 76px), 12cqi);
+  /* Never wider than its column: the longest Georgian words (up to about 9.5em) fit on one line. */
+  font-size: min(clamp(36px, 4.4vw, 76px), 10.5cqi);
+  overflow-wrap: break-word;
   font-weight: 300;
   line-height: 0.98;
   letter-spacing: 0;
@@ -277,7 +278,9 @@ body::before {
 
 .page-title {
   font-family: var(--font-display);
-  font-size: min(clamp(42px, 5.8vw, 104px), 12cqi);
+  font-size: min(clamp(42px, 5.8vw, 104px), 10cqi);
+  /* Last resort for a word longer than the column: wrap it rather than cut it off. */
+  overflow-wrap: break-word;
   font-weight: 300;
   line-height: 0.94;
   text-transform: uppercase;
@@ -1237,14 +1240,44 @@ body:has(.presentation) .cursor {
   flex-direction: column;
   align-items: center;
   gap: 32px;
-  padding: 32px 16px 64px;
+  /* Clear of the fixed site header. */
+  padding: 104px 16px 64px;
   background: #3a3f3d;
 }
 
 .pres-toolbar {
   position: sticky;
-  top: 16px;
+  top: 92px;
   z-index: 5;
+}
+
+/* On smaller screens the A4 pages shrink whole, like a document preview, instead of
+   squeezing their columns. */
+@media screen and (max-width: 860px) {
+  .pres-page {
+    zoom: 0.9;
+    max-width: none;
+  }
+}
+@media screen and (max-width: 760px) {
+  .pres-page {
+    zoom: 0.7;
+  }
+}
+@media screen and (max-width: 600px) {
+  .pres-page {
+    zoom: 0.55;
+  }
+}
+@media screen and (max-width: 460px) {
+  .pres-page {
+    zoom: 0.43;
+  }
+}
+@media screen and (max-width: 360px) {
+  .pres-page {
+    zoom: 0.38;
+  }
 }
 
 .pres-page {
@@ -2058,7 +2091,7 @@ body:has(.presentation) .cursor {
 .spread-title {
   font-family: var(--font-display);
   font-weight: 300;
-  font-size: min(clamp(44px, 8.2vw, 148px), 12cqi);
+  font-size: min(clamp(44px, 8.2vw, 148px), 10.5cqi);
   line-height: 0.92;
   letter-spacing: -0.01em;
   text-transform: uppercase;

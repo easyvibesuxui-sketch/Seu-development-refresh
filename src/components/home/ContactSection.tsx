@@ -16,7 +16,7 @@ export default function ContactSection({ split = false }: { split?: boolean }) {
   const t = useT();
 
   return (
-    <Section id="contact" tone="dark">
+    <Section id="contact" tone="dark" data-call>
       <Container className="grid gap-20 lg:grid-cols-2 lg:gap-28">
         <div>
           <SectionHeader index={split ? undefined : "08"} eyebrow={t("Talk to sales", "გაყიდვების განყოფილება")} title={t("Request a call", "მოითხოვე ზარი")} spread={[{ text: t("Request", "მოითხოვე") }, { text: t("a call.", "ზარი."), at: "end", accent: true }]} />
