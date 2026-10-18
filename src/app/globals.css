@@ -2275,15 +2275,52 @@ body:has(.presentation) .cursor {
   }
 }
 
-/* Visual search on phones and tablets: a slimmer pill, so the photo below keeps the screen. */
-@media (max-width: 1023px) {
-  .block-pill .search-pill__seg {
-    padding: 6px 16px;
-  }
-  .block-pill .search-pill__seg > span.flex {
-    font-size: 11px;
-  }
-  .block-pill .search-pill__seg > span.block {
-    font-size: 13px;
-  }
+
+/* Filter buttons over a photograph: small dark glass pills, the chosen value in copper. */
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 14px 0 16px;
+  border: 1px solid rgb(255 255 255 / 0.28);
+  border-radius: 999px;
+  background: rgb(12 22 19 / 0.42);
+  -webkit-backdrop-filter: blur(14px) saturate(1.5);
+  backdrop-filter: blur(14px) saturate(1.5);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.16), 0 10px 30px rgb(0 0 0 / 0.25);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.filter-chip:hover,
+.filter-chip[aria-expanded="true"] {
+  background: rgb(12 22 19 / 0.62);
+  border-color: rgb(255 255 255 / 0.5);
+}
+
+.filter-chip[data-set] {
+  border-color: var(--seu-accent-hover);
+}
+
+.filter-chip__value {
+  max-width: 14ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #ffd7b5;
+  font-weight: 500;
+}
+
+.filter-chip--icon {
+  justify-content: center;
+  width: 44px;
+  padding: 0;
+}
+
+.filter-chip:disabled {
+  opacity: 0.45;
+  cursor: default;
 }

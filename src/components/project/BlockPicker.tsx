@@ -549,9 +549,10 @@ export default function BlockPicker() {
         )}
 
         {/* One long pill in the sky above the roofs, as on the apartment search; it filters in place. */}
-        <div className="pointer-events-auto max-lg:hidden lg:absolute lg:right-gutter lg:top-[100px] lg:mt-0 lg:w-[min(720px,calc(100%-480px))]">
+        <div className="pointer-events-auto max-lg:hidden lg:absolute lg:right-gutter lg:top-[108px] lg:max-w-[calc(100%-520px)]">
           <SearchPill
-            className="vars-light block-pill flex"
+            variant="chips"
+            className="justify-end"
             label={t("Find an apartment in SEU Varketili", "ბინის ძებნა SEU ვარკეთილში")}
             segments={[
               {
@@ -560,7 +561,6 @@ export default function BlockPicker() {
                 label: t("Block", "ბლოკი"),
                 value: blockOptions.find((o) => o.value === f.block)?.label ?? "",
                 set: !!f.block,
-                className: "max-xl:hidden",
                 panel: (close) => (
                   <OptionList
                     options={blockOptions}
@@ -593,15 +593,9 @@ export default function BlockPicker() {
               },
             ]}
             end={
-              <span className="tip ml-1 shrink-0 self-center" data-tip={t("Clear filter", "ფილტრის გასუფთავება")}>
-                <button
-                  type="button"
-                  onClick={() => setF(NONE)}
-                  disabled={!active}
-                  aria-label={t("Clear filter", "ფილტრის გასუფთავება")}
-                  className="grid h-10 w-10 place-items-center rounded-full bg-seu-ink text-white transition-opacity hover:bg-seu-ink/85 disabled:bg-seu-ink/10 disabled:text-seu-ink/35 lg:h-14 lg:w-14"
-                >
-                  <Icon name="reset" size={18} />
+              <span className="tip shrink-0" data-tip={t("Clear filter", "ფილტრის გასუფთავება")}>
+                <button type="button" onClick={() => setF(NONE)} disabled={!active} aria-label={t("Clear filter", "ფილტრის გასუფთავება")} className="filter-chip filter-chip--icon">
+                  <Icon name="reset" size={16} />
                 </button>
               </span>
             }

@@ -110,7 +110,8 @@ export default function ScrollFX() {
         );
       });
 
-      // A framed image opens from a rounded inset window to full bleed as it enters.
+      // A framed image opens from a rounded inset window to full bleed as it enters, and is fully
+      // open by the time it is centred on screen (or its top is near the top, for tall frames).
       gsap.utils.toArray<HTMLElement>("[data-window]").forEach((el) => {
         gsap.fromTo(
           el,
@@ -118,7 +119,14 @@ export default function ScrollFX() {
           {
             clipPath: "inset(0% 0% 0% 0% round 0px)",
             ease: "none",
-            scrollTrigger: { trigger: el, start: "top bottom", end: "top 15%", scrub: 0.5 },
+            scrollTrigger: {
+              trigger: el,
+              start: "top bottom",
+              // A little ahead of centre, so the smoothing has caught up when it gets there.
+              end: () => `top ${Math.min(80, Math.max(20, (100 - (el.offsetHeight / window.innerHeight) * 100) / 2 + 8))}%`,
+              scrub: 0.5,
+              invalidateOnRefresh: true,
+            },
           },
         );
       });
@@ -152,7 +160,8 @@ export default function ScrollFX() {
 
     // Light reveal for everything else worth noticing: headings, cards and marked blocks
     // settle in from a few pixels below; neighbours that arrive together follow each other.
-    const skip = "[data-stagger], [data-split], [data-parallax], [data-zoom], .deck-card, .show-card, .barrel-stage, #results, [data-no-reveal], [role=dialog]";
+    // Cards in a sideways-scrolling row stay put: they would only appear once swiped to.
+    const skip = "[data-stagger], [data-split], [data-parallax], [data-zoom], .deck-card, .show-card, .barrel-stage, #results, [data-no-reveal], [role=dialog], .snap-x, .overflow-x-auto";
     const targets = [...document.querySelectorAll<HTMLElement>("main section :is(h2, [data-reveal], article, figure)")].filter(
       (el) => !el.closest(skip) && !el.parentElement?.closest("main section :is(article, figure, [data-reveal])"),
     );

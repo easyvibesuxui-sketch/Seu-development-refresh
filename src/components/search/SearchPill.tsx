@@ -9,8 +9,23 @@ export type PillSegment = { id: string; icon: IconName; label: string; value: st
 /**
  * The search pill (Airbnb-like): labelled parts in one rounded bar, each opening a small panel
  * under it. `end` sits after the parts: the apartment search puts its round button there.
+ * `variant="chips"` lays the same parts out as separate small glass buttons, for use over a
+ * photograph where one long bar would cover too much of it.
  */
-export default function SearchPill({ segments, label, end, className = "" }: { segments: PillSegment[]; label: string; end?: ReactNode; className?: string }) {
+export default function SearchPill({
+  segments,
+  label,
+  end,
+  className = "",
+  variant = "pill",
+}: {
+  segments: PillSegment[];
+  label: string;
+  end?: ReactNode;
+  className?: string;
+  variant?: "pill" | "chips";
+}) {
+  const chips = variant === "chips";
   const id = useId();
   const [open, setOpen] = useState<string | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -44,26 +59,43 @@ export default function SearchPill({ segments, label, end, className = "" }: { s
   };
 
   return (
-    <div ref={rootRef} role="search" aria-label={label} className={`search-pill relative items-stretch p-1.5 ${open ? "search-pill--open" : ""} ${className}`}>
+    <div
+      ref={rootRef}
+      role="search"
+      aria-label={label}
+      className={chips ? `relative flex flex-wrap items-center gap-2 ${className}` : `search-pill relative items-stretch p-1.5 ${open ? "search-pill--open" : ""} ${className}`}
+    >
       {segments.map((s, i) => (
-        <div key={s.id} className={`relative min-w-0 flex-1 ${s.className ?? ""}`}>
+        <div key={s.id} className={`relative ${chips ? "" : "min-w-0 flex-1"} ${s.className ?? ""}`}>
           <button
             id={`${id}-${s.id}-trigger`}
             type="button"
             aria-expanded={open === s.id}
             aria-controls={open === s.id ? `${id}-${s.id}` : undefined}
             onClick={() => setOpen(open === s.id ? null : s.id)}
-            className="search-pill__seg"
+            className={chips ? "filter-chip" : "search-pill__seg"}
+            data-set={s.set || undefined}
           >
-            {i > 0 && <span aria-hidden className="search-pill__rule" />}
-            <span className="flex items-center gap-1.5 text-[12px] font-semibold">
-              <Icon name={s.icon} size={14} />
-              {s.label}
-            </span>
-            <span className={`block truncate text-[14px] ${s.set ? "text-seu-fg" : "text-seu-muted"}`}>{s.value}</span>
+            {chips ? (
+              <>
+                <Icon name={s.icon} size={15} />
+                <span>{s.label}</span>
+                {s.set && <span className="filter-chip__value">{s.value}</span>}
+                <Icon name="chevron" size={14} className={`transition-transform ${open === s.id ? "rotate-180" : ""}`} />
+              </>
+            ) : (
+              <>
+                {i > 0 && <span aria-hidden className="search-pill__rule" />}
+                <span className="flex items-center gap-1.5 text-[12px] font-semibold">
+                  <Icon name={s.icon} size={14} />
+                  {s.label}
+                </span>
+                <span className={`block truncate text-[14px] ${s.set ? "text-seu-fg" : "text-seu-muted"}`}>{s.value}</span>
+              </>
+            )}
           </button>
           {open === s.id && (
-            <div id={`${id}-${s.id}`} role="dialog" aria-label={s.label} className={`search-pill__panel ${i === segments.length - 1 && i > 0 ? "right-0" : "left-0"}`} data-lenis-prevent>
+            <div id={`${id}-${s.id}`} role="dialog" aria-label={s.label} className={`search-pill__panel ${chips ? "vars-light text-seu-fg" : ""} ${i === segments.length - 1 && i > 0 ? "right-0" : "left-0"}`} data-lenis-prevent>
               {s.panel(close)}
             </div>
           )}
