@@ -72,85 +72,90 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
 
   return (
     <main>
-      <section data-tone="dark" className="tone-dark mx-auto grid max-w-[1680px] gap-16 px-gutter pb-section pt-40 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-        <div>
-          <BackLink href={`/projects/varketili/${unit.block}/`} />
-          <div className="mt-10 flex items-center gap-8">
-            <p className="flex items-center gap-3 text-[16px] text-seu-muted">
-              <Icon name="block" size={22} className="text-seu-accent-hi" />
-              {t("Block", "ბლოკი")} <span className="title-m text-[28px] text-seu-fg">{unit.block.slice(1)}</span>
+      {/* Phones: the title, then the pictures and plan, then the details. Wide screens: the
+          details on the left, the pictures on the right. */}
+      <section data-tone="dark" className="tone-dark mx-auto grid max-w-[1680px] gap-10 px-gutter pb-section pt-40 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
+        <div className="max-lg:contents">
+          <div className="max-lg:order-1">
+            <BackLink href={`/projects/varketili/${unit.block}/`} />
+            <div className="mt-10 flex items-center gap-8">
+              <p className="flex items-center gap-3 text-[16px] text-seu-muted">
+                <Icon name="block" size={22} className="text-seu-accent-hi" />
+                {t("Block", "ბლოკი")} <span className="title-m text-[28px] text-seu-fg">{unit.block.slice(1)}</span>
+              </p>
+              <p className="flex items-center gap-3 text-[16px] text-seu-muted">
+                <Icon name="floor" size={22} className="text-seu-accent-hi" />
+                {t("Floor", "სართული")} <span className="title-m text-[28px] text-seu-fg">{unit.floor}</span>
+              </p>
+            </div>
+            <p className="eyebrow mt-10">
+              {t("SEU Varketili", "SEU ვარკეთილი")} · {unitStatusIn(unit.status, lang)}
             </p>
-            <p className="flex items-center gap-3 text-[16px] text-seu-muted">
-              <Icon name="floor" size={22} className="text-seu-accent-hi" />
-              {t("Floor", "სართული")} <span className="title-m text-[28px] text-seu-fg">{unit.floor}</span>
-            </p>
+            <h1 className="page-title mt-4 text-[clamp(40px,4.4vw,76px)]">
+              {t("Apartment", "ბინა")} {unit.number}<span className="text-seu-accent-hi">.</span>
+            </h1>
           </div>
-          <p className="eyebrow mt-10">
-            {t("SEU Varketili", "SEU ვარკეთილი")} · {unitStatusIn(unit.status, lang)}
-          </p>
-          <h1 className="page-title mt-4 text-[clamp(40px,4.4vw,76px)]">
-            {t("Apartment", "ბინა")} {unit.number}<span className="text-seu-accent-hi">.</span>
-          </h1>
+          <div className="max-lg:order-3 lg:mt-8">
+            <dl className="grid grid-cols-2 gap-x-6 gap-y-6 sm:grid-cols-4" data-stagger>
+              {(
+                [
+                  ["area", t("Total size", "საერთო ფართი"), `${unit.totalArea} ${t("m²", "მ²")}`],
+                  ["living", t("Main size", "საცხოვრებელი ფართი"), `${unit.livingArea} ${t("m²", "მ²")}`],
+                  ["balcony", t("Open space", "საზაფხულო ფართი"), `${unit.openArea} ${t("m²", "მ²")}`],
+                  ["bed", t("Bedrooms", "საძინებლები"), unit.bedrooms === 0 ? t("Studio", "სტუდიო") : String(unit.bedrooms)],
+                ] as [IconName, string, string][]
+              ).map(([icon, k, v]) => (
+                // Icon, label and figure share one left edge.
+                <div key={k} className="flex flex-col items-start">
+                  <dt className="flex flex-col items-start gap-4">
+                    <span className="grid h-11 w-11 place-items-center rounded-full border border-seu-line text-seu-accent-hi">
+                      <Icon name={icon} size={20} />
+                    </span>
+                    {/* Room for two lines, so every figure sits on the same baseline. */}
+                    <span className="min-h-[2.8em] text-[12px] font-semibold uppercase leading-[1.4] tracking-[0.14em] text-seu-muted">{k}</span>
+                  </dt>
+                  <dd className="title-m normal-case">{v}</dd>
+                </div>
+              ))}
+            </dl>
+            <ul className="mt-8 flex flex-wrap gap-2" aria-label={t("Views", "ხედები")}>
+              {unit.views.map((v) => (
+                <li key={v} className="tag gap-2 py-1.5">
+                  <Icon name={viewIcon[v]} size={15} className="text-seu-accent-hi" />
+                  {viewIn(v, lang)}
+                </li>
+              ))}
+            </ul>
+            <div className="mt-10 h-px bg-seu-line" />
 
-          <dl className="mt-8 grid grid-cols-2 gap-x-6 gap-y-6 sm:grid-cols-4" data-stagger>
-            {(
-              [
-                ["area", t("Total size", "საერთო ფართი"), `${unit.totalArea} ${t("m²", "მ²")}`],
-                ["living", t("Main size", "საცხოვრებელი ფართი"), `${unit.livingArea} ${t("m²", "მ²")}`],
-                ["balcony", t("Open space", "საზაფხულო ფართი"), `${unit.openArea} ${t("m²", "მ²")}`],
-                ["bed", t("Bedrooms", "საძინებლები"), unit.bedrooms === 0 ? t("Studio", "სტუდიო") : String(unit.bedrooms)],
-              ] as [IconName, string, string][]
-            ).map(([icon, k, v]) => (
-              // Icon, label and figure share one left edge.
-              <div key={k} className="flex flex-col items-start">
-                <dt className="flex flex-col items-start gap-4">
-                  <span className="grid h-11 w-11 place-items-center rounded-full border border-seu-line text-seu-accent-hi">
-                    <Icon name={icon} size={20} />
+            <div className="mt-8">
+              <button
+                type="button"
+                onClick={() => setAsking(true)}
+                className="btn btn-primary btn-lg"
+              >
+                <Icon name="phone" size={16} /> {t("Request a call", "ზარის მოთხოვნა")}
+              </button>
+            </div>
+
+            <h2 className="eyebrow mt-16">{t("Room by room", "ოთახები")}</h2>
+            <ul className="mt-6 grid grid-cols-1 gap-x-8 gap-y-5 text-[16px] min-[480px]:grid-cols-2 lg:grid-cols-3" data-stagger>
+              {unit.rooms.map((r, i) => (
+                <li key={i} className="flex items-center justify-between gap-3 border-b border-seu-line pb-3">
+                  <span className="flex items-center gap-2.5 text-seu-muted">
+                    <Icon name={roomIcon[r.kind]} size={18} className="text-seu-accent-hi" />
+                    {roomIn(r.kind, lang)}
                   </span>
-                  {/* Room for two lines, so every figure sits on the same baseline. */}
-                  <span className="min-h-[2.8em] text-[12px] font-semibold uppercase leading-[1.4] tracking-[0.14em] text-seu-muted">{k}</span>
-                </dt>
-                <dd className="title-m normal-case">{v}</dd>
-              </div>
-            ))}
-          </dl>
-          <ul className="mt-8 flex flex-wrap gap-2" aria-label={t("Views", "ხედები")}>
-            {unit.views.map((v) => (
-              <li key={v} className="tag gap-2 py-1.5">
-                <Icon name={viewIcon[v]} size={15} className="text-seu-accent-hi" />
-                {viewIn(v, lang)}
-              </li>
-            ))}
-          </ul>
-          <div className="mt-10 h-px bg-seu-line" />
-
-          <div className="mt-8">
-            <button
-              type="button"
-              onClick={() => setAsking(true)}
-              className="btn btn-primary btn-lg"
-            >
-              <Icon name="phone" size={16} /> {t("Request a call", "ზარის მოთხოვნა")}
-            </button>
+                  <span className="label shrink-0 whitespace-nowrap">
+                    {r.area} {t("m²", "მ²")}
+                  </span>
+                </li>
+              ))}
+            </ul>
           </div>
-
-          <h2 className="eyebrow mt-16">{t("Room by room", "ოთახები")}</h2>
-          <ul className="mt-6 grid grid-cols-1 gap-x-8 gap-y-5 text-[16px] min-[480px]:grid-cols-2 lg:grid-cols-3" data-stagger>
-            {unit.rooms.map((r, i) => (
-              <li key={i} className="flex items-center justify-between gap-3 border-b border-seu-line pb-3">
-                <span className="flex items-center gap-2.5 text-seu-muted">
-                  <Icon name={roomIcon[r.kind]} size={18} className="text-seu-accent-hi" />
-                  {roomIn(r.kind, lang)}
-                </span>
-                <span className="label shrink-0 whitespace-nowrap">
-                  {r.area} {t("m²", "მ²")}
-                </span>
-              </li>
-            ))}
-          </ul>
         </div>
 
-        <div>
+        <div className="max-lg:order-2">
           <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
             {/* The whole floor opens in a bottom sheet. */}
             <button type="button" aria-haspopup="dialog" onClick={() => setSheet(true)} className="btn btn-sm max-sm:px-3.5">

@@ -255,13 +255,13 @@ export default function BlockPicker() {
   const shot = focus ? CLOSEUPS[focus.id] : undefined;
 
   return (
-    <section ref={sectionRef} data-tone="dark" className="tone-dark relative h-[100svh] min-h-[680px] overflow-hidden bg-seu-ink">
+    <section ref={sectionRef} data-tone="dark" className="tone-dark relative h-[100svh] min-h-[780px] overflow-hidden bg-seu-ink lg:min-h-[680px]">
       <div ref={scrollerRef} className={`absolute inset-0 overflow-y-hidden lg:overflow-hidden ${focus ? "overflow-x-hidden" : "overflow-x-auto"}`}>
         {/* The render covers the stage at its own aspect; floors and pins share its coordinate box. */}
         <div
           ref={stageRef}
           // On phones the photo starts below the heading and the pill so roofs and pins stay clear.
-          className="absolute left-0 top-[300px] [--stage-h:calc(max(100svh,680px)-300px)] lg:left-[calc(50%-var(--box-w)*var(--focus))] lg:top-0 lg:[--stage-h:max(100svh,680px)]"
+          className="absolute left-0 top-[300px] [--stage-h:calc(max(100svh,780px)-300px)] lg:left-[calc(50%-var(--box-w)*var(--focus))] lg:top-0 lg:[--stage-h:max(100svh,680px)]"
           style={
             {
               "--box-w": `max(100%, calc(var(--stage-h) * ${ZOOM * RATIO}))`,
@@ -462,7 +462,7 @@ export default function BlockPicker() {
             </Link>
           </div>
         )}
-        <p className="eyebrow mt-8 text-white/85">
+        <p className="eyebrow mt-5 text-white/85 lg:mt-8">
           {focus ? t("SEU Varketili · Choose a floor", "SEU ვარკეთილი · აირჩიეთ სართული") : t("Visual search · Choose a floor", "ვიზუალური ძებნა · აირჩიეთ სართული")}
         </p>
         <h1 className={`title-display mt-3 text-[clamp(32px,3.4vw,56px)] uppercase leading-none ${focus ? "hidden" : ""}`} data-split>
@@ -476,9 +476,9 @@ export default function BlockPicker() {
         )}
 
         {/* One long pill in the sky above the roofs, as on the apartment search; it filters in place. */}
-        <div className="pointer-events-auto mt-6 lg:absolute lg:right-gutter lg:top-[100px] lg:mt-0 lg:w-[min(720px,calc(100%-480px))]">
+        <div className="pointer-events-auto mt-4 lg:absolute lg:right-gutter lg:top-[100px] lg:mt-0 lg:w-[min(720px,calc(100%-480px))]">
           <SearchPill
-            className="vars-light flex"
+            className="vars-light block-pill flex"
             label={t("Find an apartment in SEU Varketili", "ბინის ძებნა SEU ვარკეთილში")}
             segments={[
               {
@@ -560,7 +560,7 @@ export default function BlockPicker() {
                   onClick={() => setF(NONE)}
                   disabled={!active}
                   aria-label={t("Clear filter", "ფილტრის გასუფთავება")}
-                  className="grid h-12 w-12 place-items-center rounded-full bg-seu-ink text-white transition-opacity hover:bg-seu-ink/85 disabled:bg-seu-ink/10 disabled:text-seu-ink/35 lg:h-14 lg:w-14"
+                  className="grid h-10 w-10 place-items-center rounded-full bg-seu-ink text-white transition-opacity hover:bg-seu-ink/85 disabled:bg-seu-ink/10 disabled:text-seu-ink/35 lg:h-14 lg:w-14"
                 >
                   <Icon name="reset" size={18} />
                 </button>
@@ -568,7 +568,7 @@ export default function BlockPicker() {
             }
           />
           {/* What the render now shows, in words (also read out). */}
-          <p role="status" className="mt-3 flex items-center gap-2 text-[14px] text-white/90 [text-shadow:0_1px_10px_rgb(0_0_0/0.55)] lg:justify-end">
+          <p role="status" className={`mt-2 items-center gap-2 text-[12px] text-white/90 [text-shadow:0_1px_10px_rgb(0_0_0/0.55)] lg:mt-3 lg:flex lg:justify-end lg:text-[14px] ${active ? "flex" : "max-lg:sr-only"}`}>
             {active ? (
               <>
                 <span aria-hidden className={`h-2 w-2 shrink-0 rounded-full ${total ? "bg-[#ffd7b5] shadow-[0_0_0_3px_rgb(255_215_181/0.3)]" : "bg-white/40"}`} />

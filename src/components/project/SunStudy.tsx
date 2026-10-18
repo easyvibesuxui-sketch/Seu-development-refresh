@@ -140,7 +140,9 @@ export default function SunStudy({ onClose, variant = "full", place }: { onClose
         canvasContextAttributes: { antialias: true },
       });
       mapRef.current = map;
-      map.addControl(new maplibre.NavigationControl({ visualizePitch: true }), "bottom-right");
+      // On phones the time strip runs along the bottom, so the zoom buttons go to the top left.
+      const phone = window.matchMedia("(max-width: 767px)").matches;
+      map.addControl(new maplibre.NavigationControl({ visualizePitch: true }), phone ? "top-left" : "bottom-right");
 
       map.on("load", () => {
         if (!map) return;
@@ -352,120 +354,146 @@ export default function SunStudy({ onClose, variant = "full", place }: { onClose
     setMinutes(l.getUTCHours() * 60 + l.getUTCMinutes());
   };
 
+  // The controls appear in both layouts (phone strip and desktop card); only one is shown.
+  const timeRange = (cls: string) => (
+    <input
+      type="range"
+      className={`sun-range w-full ${cls}`}
+      min={times.rise}
+      max={times.set}
+      step={5}
+      value={Math.min(times.set, Math.max(times.rise, minutes))}
+      aria-label={t("Time of day", "დღის დრო")}
+      aria-valuetext={clock(minutes)}
+      onChange={(e) => {
+        setPlaying(false);
+        setMinutes(+e.target.value);
+      }}
+    />
+  );
+  const dateRange = (cls: string) => (
+    <input
+      type="range"
+      className={`sun-range sun-range--date w-full ${cls}`}
+      min={0}
+      max={364}
+      value={doy}
+      aria-label={t("Date", "თარიღი")}
+      aria-valuetext={dateText}
+      onChange={(e) => setDoy(+e.target.value)}
+    />
+  );
+  const nowButton = (
+    <button type="button" onClick={toNow} className="btn btn-sm border-white/40 text-white">
+      {t("Now", "ახლა")}
+    </button>
+  );
+  const playButton = (
+    <button
+      type="button"
+      aria-pressed={playing}
+      aria-label={playing ? t("Pause the day", "დღის შეჩერება") : t("Play the day", "დღის დაკვრა")}
+      onClick={() => {
+        if (!playing && minutes >= times.set) setMinutes(times.rise);
+        setPlaying(!playing);
+      }}
+      className="btn btn-icon btn-sm h-10 w-10 border-white/40 text-white aria-pressed:bg-seu-accent"
+    >
+      <svg width="12" height="14" viewBox="0 0 12 14" fill="currentColor" aria-hidden>
+        {playing ? <path d="M1 1h3v12H1zM8 1h3v12H8z" /> : <path d="M1 1l10 6-10 6z" />}
+      </svg>
+    </button>
+  );
+
   const body = (
     <>
       {/* Inline position: MapLibre's stylesheet sets its container to position: relative. */}
-      <div ref={containerRef} style={{ position: "absolute", inset: 0 }} />
+      <div ref={containerRef} className="sun-map" style={{ position: "absolute", inset: 0 }} />
       {sun.altitude <= 0.5 && <div className="pointer-events-none absolute inset-0 bg-[#0c1a2a]/45" aria-hidden />}
 
+      <button ref={closeRef} type="button" onClick={onClose} data-autofocus aria-label={t("Close sun study", "მზის კვლევის დახურვა")} className="btn btn-icon btn-sm absolute right-4 top-4 z-10 h-10 w-10 border-white/40 bg-seu-ink/60 text-white backdrop-blur md:right-[44px] md:top-[44px] md:bg-transparent md:backdrop-blur-none">
+        <svg width="14" height="14" viewBox="0 0 14 14" stroke="currentColor" strokeWidth="1.5" aria-hidden>
+          <path d="M1 1l12 12M13 1L1 13" />
+        </svg>
+      </button>
+
+      {/* Phones: a two-line strip along the bottom (time, then date), so the map stays in view.
+          Wider screens: the full card in the top right corner. */}
       <section
         aria-label={t("Time and date", "დრო და თარიღი")}
-        className="glass glass-dark absolute left-4 right-4 top-4 rounded-[24px] p-5 text-white md:left-auto md:right-6 md:top-6 md:w-[380px]"
+        className="glass glass-dark absolute inset-x-3 bottom-3 rounded-[22px] p-4 text-white md:inset-x-auto md:bottom-auto md:right-6 md:top-6 md:w-[380px] md:rounded-[24px] md:p-5"
       >
-        <div className="flex items-center justify-between">
-          <p className="eyebrow text-white/85">
+        <div className="grid grid-cols-[84px_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-3 md:hidden">
+          <span className="title-display text-[26px] leading-none tabular-nums">{clock(minutes)}</span>
+          {timeRange("")}
+          {playButton}
+          <span className="text-[11px] uppercase leading-tight tracking-[0.1em] text-white/75">{dateText}</span>
+          {dateRange("")}
+          {nowButton}
+        </div>
+
+        <div className="max-md:hidden">
+          <p className="eyebrow flex h-10 items-center pr-12 text-white/85">
             {t("Sun study", "მზის კვლევა")} · {place ?? t("SEU Varketili", "SEU ვარკეთილი")}
           </p>
-          <button ref={closeRef} type="button" onClick={onClose} data-autofocus aria-label={t("Close sun study", "მზის კვლევის დახურვა")} className="btn btn-icon btn-sm h-10 w-10 border-white/40 text-white">
-            <svg width="14" height="14" viewBox="0 0 14 14" stroke="currentColor" strokeWidth="1.5" aria-hidden>
-              <path d="M1 1l12 12M13 1L1 13" />
-            </svg>
-          </button>
-        </div>
 
-        <div className="mt-4 flex items-end justify-between gap-4">
-          <p>
-            <span className="title-display block text-[44px] leading-none tabular-nums">{clock(minutes)}</span>
-            <span className="mt-1 block text-[12px] uppercase tracking-[0.16em] text-white/75">{dateText} · UTC+4</span>
+          <div className="mt-4 flex items-end justify-between gap-4">
+            <p>
+              <span className="title-display block text-[44px] leading-none tabular-nums">{clock(minutes)}</span>
+              <span className="mt-1 block text-[12px] uppercase tracking-[0.16em] text-white/75">{dateText} · UTC+4</span>
+            </p>
+            <div className="flex gap-2">
+              {nowButton}
+              {playButton}
+            </div>
+          </div>
+
+          <label className="mt-5 block">
+            <span className="flex justify-between text-[12px] text-white/75">
+              <span>
+                {t("Sunrise", "მზის ამოსვლა")} {clock(times.rise)}
+              </span>
+              <span>
+                {t("Sunset", "მზის ჩასვლა")} {clock(times.set)}
+              </span>
+            </span>
+            {timeRange("mt-2")}
+          </label>
+          <label className="mt-4 block">
+            <span className="flex justify-between text-[12px] text-white/75">
+              <span>{t("1 Jan", "1 იან")}</span>
+              <span>{t("31 Dec", "31 დეკ")}</span>
+            </span>
+            {dateRange("mt-2")}
+          </label>
+
+          <dl className="mt-5 grid grid-cols-3 gap-3 border-t border-white/15 pt-4 text-[12px]">
+            <div>
+              <dt className="text-white/70">{t("Altitude", "სიმაღლე")}</dt>
+              <dd className="mt-1 text-[16px] tabular-nums">{Math.max(0, Math.round(sun.altitude))}°</dd>
+            </div>
+            <div>
+              <dt className="text-white/70">{t("Direction", "მიმართულება")}</dt>
+              <dd className="mt-1 text-[16px] tabular-nums">
+                {Math.round(sun.azimuth)}° {(lang === "ka" ? COMPASS_KA : COMPASS)[Math.round(sun.azimuth / 45) % 8]}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-white/70">{t("Daylight", "დღის ხანგრძლივობა")}</dt>
+              <dd className="mt-1 text-[16px] tabular-nums">
+                {Math.floor(daylight / 60)}{t("h", "სთ")} {daylight % 60}{t("m", "წთ")}
+              </dd>
+            </div>
+          </dl>
+          <p className="mt-4 flex items-center gap-4 text-[12px] text-white/75">
+            <span className="flex items-center gap-2">
+              <span className="h-[3px] w-5 rounded bg-[#f2c230]" /> {t("Today", "დღეს")}
+            </span>
+            <span className="flex items-center gap-2">
+              <span className="w-5 border-t-2 border-dashed border-white" /> {t("June / December", "ივნისი / დეკემბერი")}
+            </span>
           </p>
-          <div className="flex gap-2">
-            <button type="button" onClick={toNow} className="btn btn-sm border-white/40 text-white">
-              {t("Now", "ახლა")}
-            </button>
-            <button
-              type="button"
-              aria-pressed={playing}
-              aria-label={playing ? t("Pause the day", "დღის შეჩერება") : t("Play the day", "დღის დაკვრა")}
-              onClick={() => {
-                if (!playing && minutes >= times.set) setMinutes(times.rise);
-                setPlaying(!playing);
-              }}
-              className="btn btn-icon btn-sm h-10 w-10 border-white/40 text-white aria-pressed:bg-seu-accent"
-            >
-              <svg width="12" height="14" viewBox="0 0 12 14" fill="currentColor" aria-hidden>
-                {playing ? <path d="M1 1h3v12H1zM8 1h3v12H8z" /> : <path d="M1 1l10 6-10 6z" />}
-              </svg>
-            </button>
-          </div>
         </div>
-
-        <label className="mt-5 block">
-          <span className="flex justify-between text-[12px] text-white/75">
-            <span>
-              {t("Sunrise", "მზის ამოსვლა")} {clock(times.rise)}
-            </span>
-            <span>
-              {t("Sunset", "მზის ჩასვლა")} {clock(times.set)}
-            </span>
-          </span>
-          <input
-            type="range"
-            className="sun-range mt-2 w-full"
-            min={times.rise}
-            max={times.set}
-            step={5}
-            value={Math.min(times.set, Math.max(times.rise, minutes))}
-            aria-label={t("Time of day", "დღის დრო")}
-            aria-valuetext={clock(minutes)}
-            onChange={(e) => {
-              setPlaying(false);
-              setMinutes(+e.target.value);
-            }}
-          />
-        </label>
-        <label className="mt-4 block">
-          <span className="flex justify-between text-[12px] text-white/75">
-            <span>{t("1 Jan", "1 იან")}</span>
-            <span>{t("31 Dec", "31 დეკ")}</span>
-          </span>
-          <input
-            type="range"
-            className="sun-range sun-range--date mt-2 w-full"
-            min={0}
-            max={364}
-            value={doy}
-            aria-label={t("Date", "თარიღი")}
-            aria-valuetext={dateText}
-            onChange={(e) => setDoy(+e.target.value)}
-          />
-        </label>
-
-        <dl className="mt-5 grid grid-cols-3 gap-3 border-t border-white/15 pt-4 text-[12px]">
-          <div>
-            <dt className="text-white/70">{t("Altitude", "სიმაღლე")}</dt>
-            <dd className="mt-1 text-[16px] tabular-nums">{Math.max(0, Math.round(sun.altitude))}°</dd>
-          </div>
-          <div>
-            <dt className="text-white/70">{t("Direction", "მიმართულება")}</dt>
-            <dd className="mt-1 text-[16px] tabular-nums">
-              {Math.round(sun.azimuth)}° {(lang === "ka" ? COMPASS_KA : COMPASS)[Math.round(sun.azimuth / 45) % 8]}
-            </dd>
-          </div>
-          <div>
-            <dt className="text-white/70">{t("Daylight", "დღის ხანგრძლივობა")}</dt>
-            <dd className="mt-1 text-[16px] tabular-nums">
-              {Math.floor(daylight / 60)}{t("h", "სთ")} {daylight % 60}{t("m", "წთ")}
-            </dd>
-          </div>
-        </dl>
-        <p className="mt-4 flex items-center gap-4 text-[12px] text-white/75">
-          <span className="flex items-center gap-2">
-            <span className="h-[3px] w-5 rounded bg-[#f2c230]" /> {t("Today", "დღეს")}
-          </span>
-          <span className="flex items-center gap-2">
-            <span className="w-5 border-t-2 border-dashed border-white" /> {t("June / December", "ივნისი / დეკემბერი")}
-          </span>
-        </p>
       </section>
     </>
   );
