@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import LogoMark from "@/components/brand/LogoMark";
 import Icon from "@/components/ui/Icon";
+import RequestCallModal from "@/components/ui/RequestCallModal";
 import { langOf, localize } from "@/lib/i18n";
 
 const links = [
@@ -26,6 +27,7 @@ const same = (a: string, b: string) => a.replace(/\/$/, "") === b.replace(/\/$/,
 export default function Header() {
   const [light, setLight] = useState(false);
   const [open, setOpen] = useState(false);
+  const [calling, setCalling] = useState(false);
   const pathname = usePathname();
   const lang = langOf(pathname);
   const t = (en: string, ka: string) => (lang === "ka" ? ka : en);
@@ -98,20 +100,38 @@ export default function Header() {
       <header
         className={`pointer-events-none fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-5 ${tone}`}
       >
-        <div className="pointer-events-auto flex items-stretch gap-2">
+        <div className="pointer-events-auto flex items-stretch gap-2 max-sm:w-full">
           <nav
-            className={`flex h-14 items-center gap-1 rounded-full border pl-4 pr-2 text-seu-fg backdrop-blur-md backdrop-saturate-150 transition-colors duration-500 ${
+            className={`flex h-14 items-center gap-1 rounded-full border pl-4 pr-2 text-seu-fg max-sm:flex-1 max-sm:justify-between max-sm:pl-3 backdrop-blur-md backdrop-saturate-150 transition-colors duration-500 ${
               light && !open ? "border-[#13211d]/10 bg-[#f6f1e8]/80" : "border-white/15 bg-[#0f1a17]/55"
             }`}
             aria-label={t("Main", "მთავარი")}
           >
-            <Link href={h("/home/")} className="group mr-2 flex min-h-11 min-w-11 items-center gap-2.5 pr-2" aria-label={t("SEU Development home", "SEU Development — მთავარი")}>
+            <Link href={h("/home/")} className="group flex min-h-11 min-w-11 items-center gap-2.5 sm:mr-2 sm:pr-2" aria-label={t("SEU Development home", "SEU Development — მთავარი")}>
               <LogoMark className="h-8 w-auto overflow-visible" />
               <span className="hidden flex-col leading-none sm:flex">
                 <span className="label text-[12px] tracking-[0.3em]">SEU</span>
                 <span className="text-[12px] leading-none text-seu-muted">Development</span>
               </span>
             </Link>
+            {/* Phones: logo on the left, search and a call request in the middle, menu on the right. */}
+            <div className="flex items-center gap-2 sm:hidden">
+              <Link href={h("/search/")} aria-label={t("Search apartments", "ბინების ძებნა")} className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-seu-accent text-white transition-colors hover:bg-seu-accent-hi">
+                <Icon name="search" size={18} strokeWidth={2} />
+              </Link>
+              <button
+                type="button"
+                aria-haspopup="dialog"
+                aria-label={t("Request a call", "ზარის მოთხოვნა")}
+                onClick={() => setCalling(true)}
+                className="flex h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-current/25 px-4 text-[12px] font-semibold tracking-[0.04em] max-[359px]:px-3 transition-colors hover:border-seu-accent-hi hover:text-seu-accent-hi"
+              >
+                <Icon name="phone" size={15} />
+                {/* The narrowest phones get the short name. */}
+                <span className="max-[359px]:hidden">{t("Request a call", "ზარის მოთხოვნა")}</span>
+                <span className="min-[360px]:hidden">{t("Call", "ზარი")}</span>
+              </button>
+            </div>
             <ul className="hidden items-center xl:flex">
               {links.map((l) => (
                 <li key={l.href}>
@@ -153,7 +173,7 @@ export default function Header() {
               aria-controls="site-menu"
               aria-label={open ? t("Close menu", "მენიუს დახურვა") : t("Open menu", "მენიუს გახსნა")}
               onClick={() => setOpen(!open)}
-              className="ml-1 grid h-11 w-11 place-items-center rounded-full transition-colors hover:bg-white/10 xl:hidden"
+              className="grid h-11 w-11 place-items-center rounded-full transition-colors hover:bg-white/10 sm:ml-1 xl:hidden"
             >
               <span className="relative block h-3 w-5" aria-hidden>
                 <span className={`absolute left-0 h-px w-5 bg-current transition-transform duration-500 ${open ? "top-1.5 rotate-45" : "top-0"}`} />
@@ -162,7 +182,7 @@ export default function Header() {
             </button>
           </nav>
           {/* Shortcut to search only where the "Apartments" link is folded into the menu. */}
-          <Link href={h("/search/")} aria-label={t("Search apartments", "ბინების ძებნა")} className="btn btn-primary btn-icon ctl-lg xl:hidden">
+          <Link href={h("/search/")} aria-label={t("Search apartments", "ბინების ძებნა")} className="btn btn-primary btn-icon ctl-lg hidden sm:inline-flex xl:hidden">
             <Icon name="search" size={18} strokeWidth={2} />
           </Link>
           <Link href={h("/contact/")} className="btn btn-primary ctl-lg hidden sm:inline-flex">
@@ -170,6 +190,7 @@ export default function Header() {
           </Link>
         </div>
       </header>
+      <RequestCallModal open={calling} onClose={() => setCalling(false)} />
 
       <div
         id="site-menu"
