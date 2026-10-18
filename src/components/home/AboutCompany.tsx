@@ -108,8 +108,10 @@ export default function AboutCompany() {
         </div>
 
         {/* Composition area below the title: rings, film and the two notes share one centre line. */}
-        <div className="absolute inset-x-0 bottom-0 top-[30%] md:top-[28%]">
-          <div className="ac-stage pointer-events-none absolute inset-0 flex items-center justify-center">
+        <div className="absolute inset-x-0 bottom-0 top-[34%] sm:top-[30%] md:top-[28%]">
+          {/* Phones: the film stays above the note, which takes the bottom of the screen clear of the
+              floating call button. */}
+          <div className="ac-stage pointer-events-none absolute inset-x-0 top-0 bottom-56 flex items-center justify-center sm:bottom-44 lg:bottom-0">
             <div className="relative grid place-items-center">
               {RINGS.map((r, i) => (
                 <svg
@@ -126,7 +128,7 @@ export default function AboutCompany() {
                 </svg>
               ))}
 
-              <div className="ac-video pointer-events-auto relative aspect-[16/9] w-[min(440px,74vw)] overflow-hidden rounded-[20px] shadow-[0_30px_80px_rgb(19_33_29/0.25)]">
+              <div className="ac-video pointer-events-auto relative aspect-[16/9] w-[min(440px,64vw)] sm:w-[min(440px,74vw)] overflow-hidden rounded-[20px] shadow-[0_30px_80px_rgb(19_33_29/0.25)]">
                 <img loading="lazy" decoding="async" src={withBase("/images/choose-varketili.jpg")} alt={t("SEU Varketili aerial render", "SEU ვარკეთილის რენდერი ზემოდან")} className="h-full w-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-seu-ink/60 via-transparent to-transparent" />
                 {/* Centring lives on the wrapper so GSAP can scale the button freely. */}
@@ -149,9 +151,9 @@ export default function AboutCompany() {
           </div>
 
           {/* Side notes share the header's container and the composition's centre line. */}
-          <div className="pointer-events-none absolute inset-0 z-10 mx-auto flex max-w-[1680px] items-end justify-between px-gutter pb-10 lg:items-center lg:pb-0">
+          <div className="pointer-events-none absolute inset-0 z-10 mx-auto flex max-w-[1680px] items-end justify-between px-gutter pb-24 sm:pb-10 lg:items-center lg:pb-0">
             <p className="ac-left title-m hidden max-w-[220px] lg:block">{t("Real estate market since 2014.", "უძრავი ქონების ბაზარზე 2014 წლიდან.")}</p>
-            <p className="ac-right body-copy ml-auto max-w-[320px] text-right">
+            <p className="ac-right body-copy max-w-[320px] max-lg:mx-auto max-lg:text-center lg:ml-auto lg:text-right">
               {t(
                 "The company's team, consisting of experienced professionals, cares about continuous development, adheres to high construction standards and uses innovative technologies.",
                 "კომპანიის გუნდი, რომელიც გამოცდილ პროფესიონალებს აერთიანებს, ზრუნავს მუდმივ განვითარებაზე, იცავს მშენებლობის მაღალ სტანდარტებს და იყენებს ინოვაციურ ტექნოლოგიებს.",

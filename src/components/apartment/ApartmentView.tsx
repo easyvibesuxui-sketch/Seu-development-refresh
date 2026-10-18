@@ -8,7 +8,7 @@ import { WALL_COLOURS, type TourPlace } from "@/data/tour";
 import { roomIn, unitStatusIn, units, viewIn, type RoomKind, type Unit, type ViewId } from "@/data/inventory";
 import { useHref, useLang } from "@/lib/useLang";
 import { Container, Section, SectionHeader } from "@/components/ui/Section";
-import ApartmentCard from "@/components/ui/ApartmentCard";
+import ApartmentCard, { statusClass } from "@/components/ui/ApartmentCard";
 import BackLink from "@/components/ui/BackLink";
 import RequestCallModal from "@/components/ui/RequestCallModal";
 import { Benefits } from "@/components/project/ProjectDetails";
@@ -62,6 +62,8 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
     .sort((a, b) => Math.abs(a.totalArea - unit.totalArea) - Math.abs(b.totalArea - unit.totalArea))
     .slice(0, 8);
 
+  const taken = unit.status !== "available";
+
   const closeSheet = useCallback(() => setSheet(false), []);
   const closeSun = useCallback(() => setSun(false), []);
 
@@ -88,12 +90,17 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
                 {t("Floor", "სართული")} <span className="title-m text-[28px] text-seu-fg">{unit.floor}</span>
               </p>
             </div>
-            <p className="eyebrow mt-10">
-              {t("SEU Varketili", "SEU ვარკეთილი")} · {unitStatusIn(unit.status, lang)}
-            </p>
-            <h1 className="page-title mt-4 text-[clamp(40px,4.4vw,76px)]">
-              {t("Apartment", "ბინა")} {unit.number}<span className="text-seu-accent-hi">.</span>
-            </h1>
+            <p className="eyebrow mt-10">{t("SEU Varketili", "SEU ვარკეთილი")}</p>
+            {/* The status sits with the number, in the colours the cards and floor plans use. */}
+            <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-3">
+              <h1 className="page-title text-[clamp(40px,4.4vw,76px)]">
+                {t("Apartment", "ბინა")} {unit.number}<span className="text-seu-accent-hi">.</span>
+              </h1>
+              <span className={`inline-flex h-9 items-center gap-2 rounded-full px-4 text-[12px] font-semibold uppercase tracking-[0.12em] ${statusClass[unit.status]}`}>
+                <span aria-hidden className="h-2 w-2 rounded-full bg-white" />
+                {unitStatusIn(unit.status, lang)}
+              </span>
+            </div>
           </div>
           <div className="max-lg:order-3 lg:mt-8">
             <dl className="grid grid-cols-2 gap-x-6 gap-y-6 sm:grid-cols-4" data-stagger>
@@ -128,16 +135,55 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
             </ul>
             <div className="mt-10 h-px bg-seu-line" />
 
-            <div className="mt-8">
-              <button
-                type="button"
-                onClick={() => setAsking(true)}
-                data-call
-                className="btn btn-primary btn-lg"
-              >
-                <Icon name="phone" size={16} /> {t("Request a call", "ზარის მოთხოვნა")}
-              </button>
-            </div>
+            {taken ? (
+              // Reserved or sold: say so plainly, then point to what can still be done.
+              <div className={`mt-8 rounded-[20px] border p-6 sm:p-8 ${unit.status === "reserved" ? "border-[rgb(15_111_134/0.6)] bg-[rgb(15_111_134/0.14)]" : "border-[rgb(163_23_63/0.6)] bg-[rgb(163_23_63/0.14)]"}`} role="note">
+                <p className="title-m flex items-center gap-3 text-[22px]">
+                  <Icon name="lock" size={20} className="shrink-0 text-seu-accent-hi" />
+                  {unit.status === "reserved" ? t("This apartment is reserved", "ეს ბინა დაჯავშნილია") : t("This apartment is sold", "ეს ბინა გაყიდულია")}
+                </p>
+                <p className="body-copy mt-3 max-w-[52ch] text-seu-muted">
+                  {unit.status === "reserved"
+                    ? t(
+                        "Someone holds a reservation on it. Ask for a call and we will tell you first if it becomes free, or see apartments of the same size that are open now.",
+                        "მასზე ჯავშანი უკვე არსებობს. მოითხოვეთ ზარი და პირველს შეგატყობინებთ, თუ გათავისუფლდება, ან ნახეთ იგივე ზომის თავისუფალი ბინები.",
+                      )
+                    : t("It has a new owner. Apartments of the same size that are still open are just below.", "ბინას უკვე ახალი მეპატრონე ჰყავს. იგივე ზომის თავისუფალი ბინები ქვემოთაა.")}
+                </p>
+                <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
+                  {unit.status === "reserved" ? (
+                    <>
+                      <button type="button" onClick={() => setAsking(true)} data-call className="btn btn-primary">
+                        <Icon name="phone" size={16} /> {t("Tell me if it frees up", "შემატყობინეთ")}
+                      </button>
+                      <a href="#similar" className="text-[12px] font-semibold uppercase tracking-[0.12em] underline decoration-current/40 underline-offset-[6px] transition-colors hover:text-seu-accent-hi">
+                        {t("Similar apartments", "მსგავსი ბინები")}
+                      </a>
+                    </>
+                  ) : (
+                    <>
+                      <a href="#similar" className="btn btn-primary">
+                        {t("Similar apartments", "მსგავსი ბინები")}
+                      </a>
+                      <button type="button" onClick={() => setAsking(true)} data-call className="text-[12px] font-semibold uppercase tracking-[0.12em] underline decoration-current/40 underline-offset-[6px] transition-colors hover:text-seu-accent-hi">
+                        {t("Request a call", "ზარის მოთხოვნა")}
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="mt-8">
+                <button
+                  type="button"
+                  onClick={() => setAsking(true)}
+                  data-call
+                  className="btn btn-primary btn-lg"
+                >
+                  <Icon name="phone" size={16} /> {t("Request a call", "ზარის მოთხოვნა")}
+                </button>
+              </div>
+            )}
 
             <h2 className="eyebrow mt-16">{t("Room by room", "ოთახები")}</h2>
             <ul className="mt-6 grid grid-cols-1 gap-x-8 gap-y-5 text-[16px] min-[480px]:grid-cols-2 lg:grid-cols-3" data-stagger>
@@ -242,7 +288,7 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
 
       <Benefits />
 
-      <Section tone="light" className="overflow-hidden">
+      <Section id="similar" tone="light" className="scroll-mt-24 overflow-hidden">
         <Container>
         <SectionHeader eyebrow={t("Same size, other floors", "იგივე ზომა, სხვა სართულები")} title={t("Similar apartments", "მსგავსი ბინები")} />
         </Container>
