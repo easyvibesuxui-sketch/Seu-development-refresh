@@ -7,7 +7,8 @@ const LABELS: Record<string, string> = { drag: "Drag", play: "Play" };
 
 /**
  * Soft ring cursor for fine pointers; grows with a label over [data-cursor] areas.
- * data-cursor="native" hides the ring where it would sit on top of a highlight (floor bands).
+ * Over links, buttons and fields the ring steps aside (their own hover says enough), as does
+ * data-cursor="native" where it would sit on top of a highlight (floor bands).
  */
 export default function Cursor() {
   const ringRef = useRef<HTMLDivElement>(null);

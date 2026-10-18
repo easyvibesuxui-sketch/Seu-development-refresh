@@ -114,13 +114,14 @@ export default function AboutCompany() {
               {RINGS.map((r, i) => (
                 <svg
                   key={i}
-                  className="ac-ring absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+                  className="ac-ring absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 overflow-visible"
                   style={{ width: r.size, height: r.size }}
                   viewBox="0 0 200 200"
                   fill="none"
                   aria-hidden
                 >
                   <circle cx="100" cy="100" r="99" stroke="currentColor" strokeOpacity=".45" strokeWidth=".35" strokeDasharray={r.dash} />
+                  {/* The dot sits on the line, half outside the box: the svg must not clip it. */}
                   {r.dot && <circle cx="100" cy="1" r="1.8" fill="var(--seu-accent)" />}
                 </svg>
               ))}

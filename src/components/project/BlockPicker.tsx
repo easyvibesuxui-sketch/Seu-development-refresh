@@ -310,6 +310,15 @@ export default function BlockPicker() {
       : t("No free apartments match: try a wider range", "ამ ფილტრით თავისუფალი ბინა ვერ მოიძებნა — სცადეთ უფრო ფართო")
     : t("Pick a size or bedrooms: matching floors light up", "აირჩიეთ ზომა ან საძინებლები — შესაბამისი სართულები განათდება");
   const setCount = (f.from || f.to ? 1 : 0) + (f.rooms.length ? 1 : 0) + (f.block ? 1 : 0);
+  // The same choice as a list of apartments on the search page.
+  const search = () => {
+    const q = new URLSearchParams({ project: "varketili" });
+    if (f.block) q.set("block", f.block);
+    if (f.rooms.length) q.set("rooms", [...f.rooms].sort().join(","));
+    if (f.from) q.set("from", f.from);
+    if (f.to) q.set("to", f.to);
+    router.push(h(`/search/?${q}`));
+  };
 
   return (
     <section ref={sectionRef} data-tone="dark" className="tone-dark relative h-[100svh] min-h-[780px] overflow-hidden bg-seu-ink lg:min-h-[680px]" style={{ "--head": `${head}px` } as React.CSSProperties}>
@@ -547,65 +556,71 @@ export default function BlockPicker() {
             {statusText}
           </p>
         )}
+      </div>
 
-        {/* One long pill in the sky above the roofs, as on the apartment search; it filters in place. */}
-        <div className="pointer-events-auto max-lg:hidden lg:absolute lg:right-gutter lg:top-[108px] lg:max-w-[calc(100%-520px)]">
-          <SearchPill
-            variant="chips"
-            className="justify-end"
-            label={t("Find an apartment in SEU Varketili", "ბინის ძებნა SEU ვარკეთილში")}
-            segments={[
-              {
-                id: "block",
-                icon: "building",
-                label: t("Block", "ბლოკი"),
-                value: blockOptions.find((o) => o.value === f.block)?.label ?? "",
-                set: !!f.block,
-                panel: (close) => (
-                  <OptionList
-                    options={blockOptions}
-                    value={f.block}
-                    onPick={(v) => {
-                      setF((d) => ({ ...d, block: v }));
-                      close();
-                    }}
-                  />
-                ),
-              },
-              {
-                id: "size",
-                icon: "area",
-                label: t("Size", "ზომა"),
-                value: sizeText(f.from, f.to),
-                set: !!(f.from || f.to),
-                // Phones: panels hang from the whole pill so they stay on screen.
-                className: "max-md:static",
-                panel: () => sizePanel,
-              },
-              {
-                id: "rooms",
-                icon: "bed",
-                label: t("Bedrooms", "საძინებლები"),
-                value: f.rooms.length ? [...f.rooms].sort().map(roomLabel).join(", ") : t("Any", "ნებისმიერი"),
-                set: f.rooms.length > 0,
-                className: "max-md:static",
-                panel: () => roomsPanel,
-              },
-            ]}
-            end={
+      {/* Desktop filter, docked at the bottom centre clear of the menu: the chips filter the render
+          in place, the search button takes the same choice to the apartment list. */}
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-[260px] bg-[radial-gradient(42%_80%_at_50%_100%,rgb(12_22_19/0.82),rgb(12_22_19/0.4)_55%,transparent)] max-lg:hidden" />
+      <div className="absolute inset-x-0 bottom-10 z-20 flex flex-col items-center gap-4 px-gutter max-lg:hidden">
+        {/* What the render now shows, in words (also read out). */}
+        <p role="status" className="flex items-center justify-center gap-2 text-center text-[14px] text-white/90 [text-shadow:0_1px_10px_rgb(0_0_0/0.55)]">
+          {active && <span aria-hidden className={`h-2 w-2 shrink-0 rounded-full ${total ? "bg-[#ffd7b5] shadow-[0_0_0_3px_rgb(255_215_181/0.3)]" : "bg-white/40"}`} />}
+          {statusText}
+        </p>
+        <SearchPill
+          variant="chips"
+          up
+          className="justify-center"
+          label={t("Find an apartment in SEU Varketili", "ბინის ძებნა SEU ვარკეთილში")}
+          segments={[
+            {
+              id: "block",
+              icon: "building",
+              label: t("Block", "ბლოკი"),
+              value: blockOptions.find((o) => o.value === f.block)?.label ?? "",
+              set: !!f.block,
+              panel: (close) => (
+                <OptionList
+                  options={blockOptions}
+                  value={f.block}
+                  onPick={(v) => {
+                    setF((d) => ({ ...d, block: v }));
+                    close();
+                  }}
+                />
+              ),
+            },
+            {
+              id: "size",
+              icon: "area",
+              label: t("Size", "ზომა"),
+              value: sizeText(f.from, f.to),
+              set: !!(f.from || f.to),
+              panel: () => sizePanel,
+            },
+            {
+              id: "rooms",
+              icon: "bed",
+              label: t("Bedrooms", "საძინებლები"),
+              value: f.rooms.length ? [...f.rooms].sort().map(roomLabel).join(", ") : t("Any", "ნებისმიერი"),
+              set: f.rooms.length > 0,
+              panel: () => roomsPanel,
+            },
+          ]}
+          end={
+            <>
               <span className="tip shrink-0" data-tip={t("Clear filter", "ფილტრის გასუფთავება")}>
                 <button type="button" onClick={() => setF(NONE)} disabled={!active} aria-label={t("Clear filter", "ფილტრის გასუფთავება")} className="filter-chip filter-chip--icon">
                   <Icon name="reset" size={16} />
                 </button>
               </span>
-            }
-          />
-          {/* What the render now shows, in words (also read out). */}
-          <p role="status" className="mt-3 flex items-center justify-end gap-2 text-[14px] text-white/90 [text-shadow:0_1px_10px_rgb(0_0_0/0.55)]">
-            {active && <span aria-hidden className={`h-2 w-2 shrink-0 rounded-full ${total ? "bg-[#ffd7b5] shadow-[0_0_0_3px_rgb(255_215_181/0.3)]" : "bg-white/40"}`} />}
-            {statusText}
-          </p>
-        </div>
+              <button type="button" onClick={search} className="btn btn-copper ml-1 px-6 text-[13px] [--ctl-h:44px]">
+                <Icon name="search" size={16} strokeWidth={2} />
+                {t("Search", "ძებნა")}
+              </button>
+            </>
+          }
+        />
       </div>
 
       {/* Sun study: one round button in the corner, on its own soft shade so it never melts into

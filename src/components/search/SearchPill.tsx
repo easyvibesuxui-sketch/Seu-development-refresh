@@ -10,7 +10,8 @@ export type PillSegment = { id: string; icon: IconName; label: string; value: st
  * The search pill (Airbnb-like): labelled parts in one rounded bar, each opening a small panel
  * under it. `end` sits after the parts: the apartment search puts its round button there.
  * `variant="chips"` lays the same parts out as separate small glass buttons, for use over a
- * photograph where one long bar would cover too much of it.
+ * photograph where one long bar would cover too much of it. `up` opens the panels above the
+ * parts, for a pill docked at the bottom of a screen.
  */
 export default function SearchPill({
   segments,
@@ -18,12 +19,14 @@ export default function SearchPill({
   end,
   className = "",
   variant = "pill",
+  up = false,
 }: {
   segments: PillSegment[];
   label: string;
   end?: ReactNode;
   className?: string;
   variant?: "pill" | "chips";
+  up?: boolean;
 }) {
   const chips = variant === "chips";
   const id = useId();
@@ -95,7 +98,7 @@ export default function SearchPill({
             )}
           </button>
           {open === s.id && (
-            <div id={`${id}-${s.id}`} role="dialog" aria-label={s.label} className={`search-pill__panel ${chips ? "vars-light text-seu-fg" : ""} ${i === segments.length - 1 && i > 0 ? "right-0" : "left-0"}`} data-lenis-prevent>
+            <div id={`${id}-${s.id}`} role="dialog" aria-label={s.label} className={`search-pill__panel ${up ? "search-pill__panel--up" : ""} ${chips ? "vars-light text-seu-fg" : ""} ${i === segments.length - 1 && i > 0 ? "right-0" : "left-0"}`} data-lenis-prevent>
               {s.panel(close)}
             </div>
           )}

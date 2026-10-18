@@ -35,7 +35,7 @@ export default function ApartmentSearch() {
       .map((r) => Math.min(Number(r), 3))
       .filter((r) => !Number.isNaN(r));
     const view = params.get("view") ?? "";
-    return { ...empty, project: params.get("project") ?? "", view: view in viewText ? (view as ViewId) : "", rooms, sizeFrom: params.get("from") ?? "", sizeTo: params.get("to") ?? "" };
+    return { ...empty, project: params.get("project") ?? "", block: params.get("block") ?? "", view: view in viewText ? (view as ViewId) : "", rooms, sizeFrom: params.get("from") ?? "", sizeTo: params.get("to") ?? "" };
   }, [params]);
   const [f, setF] = useState<Filters>(initial);
   const [shown, setShown] = useState(PAGE);
