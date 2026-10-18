@@ -542,8 +542,15 @@
     left: 48px;
   }
 
+  /* The search bar runs along the bottom right, clear of the caption on the left; the scroll
+     hint would sit under it, so it steps aside on these screens. */
   .filter {
     right: 48px;
+    width: clamp(440px, calc(100% - 96px - 540px), 820px);
+  }
+
+  .scrollHint {
+    display: none;
   }
 }
 

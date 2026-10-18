@@ -28,37 +28,42 @@ export default function AboutCompany() {
     if (!root || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({
+      // The scene assembles while the section rises into view and is complete the moment the
+      // stage is held: rings open out, then the film, then the two notes.
+      const intro = gsap.timeline({
         defaults: { ease: "power2.out" },
-        // A tall track with a sticky stage (no JS pin): the scene holds while it plays, and is
-        // done by the time the next section starts sliding over it. Nothing travels vertically
-        // once the stage is held, so the hold reads as a stop, not as more scrolling.
-        scrollTrigger: {
-          trigger: root,
-          // The rings draw in while the section comes up, so it never arrives empty.
-          start: "top 60%",
-          end: () => `top+=${root.offsetHeight - 2 * window.innerHeight} top`,
-          scrub: 0.8,
-          invalidateOnRefresh: true,
-        },
+        scrollTrigger: { trigger: root, start: "top 85%", end: "top top", scrub: 0.6, invalidateOnRefresh: true },
       });
-
-      // Rings open out from the centre in place, largest first.
       gsap.utils.toArray<HTMLElement>(".ac-ring").forEach((ring, i) => {
-        tl.fromTo(ring, { scale: 0.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.8, ease: "power3.out" }, i * 0.2);
+        intro.fromTo(ring, { scale: 0.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.8, ease: "power3.out" }, i * 0.15);
       });
+      intro
+        .fromTo(
+          ".ac-video",
+          { clipPath: "inset(48% 48% 48% 48% round 40px)", scale: 1.15, opacity: 0 },
+          { clipPath: "inset(0% 0% 0% 0% round 20px)", scale: 1, opacity: 1, duration: 1, ease: "power3.inOut" },
+          0.5,
+        )
+        .from(".ac-play", { scale: 0, opacity: 0, duration: 0.35, ease: "back.out(2)" }, 1.15)
+        .fromTo(".ac-left", { x: -60, opacity: 0 }, { x: 0, opacity: 1, duration: 0.6 }, 1.0)
+        .fromTo(".ac-right", { x: 60, opacity: 0 }, { x: 0, opacity: 1, duration: 0.6 }, 1.1);
 
-      tl.fromTo(
-        ".ac-video",
-        { clipPath: "inset(48% 48% 48% 48% round 40px)", scale: 1.15, opacity: 0 },
-        { clipPath: "inset(0% 0% 0% 0% round 20px)", scale: 1, opacity: 1, duration: 1, ease: "power3.inOut" },
-        1.1,
-      )
-        .from(".ac-play", { scale: 0, opacity: 0, duration: 0.4, ease: "back.out(2)" }, 1.8)
-        .fromTo(".ac-left", { x: -60, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8 }, 1.7)
-        .fromTo(".ac-right", { x: 60, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8 }, 1.85)
-        // The finished composition stays put for the rest of the hold; only the rings turn.
-        .to(".ac-ring", { rotate: (i: number) => (i % 2 ? -20 : 20), duration: 3.4, ease: "none" }, 0);
+      // While the stage is held the composition stays put; only the rings keep turning.
+      gsap.fromTo(
+        ".ac-ring",
+        { rotate: 0 },
+        {
+          rotate: (i: number) => (i % 2 ? -20 : 20),
+          ease: "none",
+          scrollTrigger: {
+            trigger: root,
+            start: "top 85%",
+            end: () => `top+=${root.offsetHeight - 2 * window.innerHeight} top`,
+            scrub: 0.8,
+            invalidateOnRefresh: true,
+          },
+        },
+      );
 
       // Held under the incoming section: the stage settles back and fades as it is covered.
       gsap.fromTo(
@@ -85,7 +90,7 @@ export default function AboutCompany() {
   return (
     // The last screen of the track lies under the next section (negative margin), which slides
     // up over the held stage.
-    <section id="about" ref={rootRef} data-tone="light" className="tone-light relative z-0 mb-[-100svh] h-[360svh]">
+    <section id="about" ref={rootRef} data-tone="light" className="tone-light relative z-0 mb-[-100svh] h-[280svh]">
       <div className="ac-sticky sticky top-0 isolate h-[100svh] min-h-[640px] origin-top overflow-hidden">
         <div className="relative z-10 mx-auto flex max-w-[1680px] items-start justify-between px-gutter pt-28 md:pt-32">
           <div>

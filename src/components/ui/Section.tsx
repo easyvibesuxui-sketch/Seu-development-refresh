@@ -67,6 +67,7 @@ export function SectionHeader({
   size = "section",
   spread,
   className = "",
+  titleClassName = "",
 }: {
   index?: string;
   eyebrow?: string;
@@ -77,6 +78,8 @@ export function SectionHeader({
   size?: "section" | "page";
   spread?: SpreadLine[];
   className?: string;
+  /** Extra classes for the heading, e.g. a smaller size in a narrow column. */
+  titleClassName?: string;
 }) {
   if (spread)
     return (
@@ -106,7 +109,8 @@ export function SectionHeader({
       </header>
     );
   return (
-    <header className={`grid gap-10 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:items-end ${className}`}>
+    // The second column only when there is something to put in it.
+    <header className={`grid gap-10 ${intro || action ? "lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:items-end" : ""} ${className}`}>
       <div>
         {(eyebrow || index) && (
           <p className="eyebrow mb-8">
@@ -114,7 +118,7 @@ export function SectionHeader({
             {eyebrow}
           </p>
         )}
-        <Heading className={size === "page" ? "page-title" : "section-title"} data-split>
+        <Heading className={`${size === "page" ? "page-title" : "section-title"} ${titleClassName}`} data-split>
           {title}
           <span className="text-seu-accent-hi">.</span>
         </Heading>

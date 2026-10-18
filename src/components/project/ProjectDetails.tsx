@@ -259,7 +259,7 @@ export function ApartmentTypes({ projectId }: { projectId: string }) {
               <span className="hidden text-[16px] text-seu-muted md:block">
                 {t.count} {tr("available", "ხელმისაწვდომი")}
               </span>
-              <span className="btn btn-icon transition-transform group-hover:translate-x-1" aria-hidden>
+              <span className="grid h-11 w-6 place-items-center text-seu-muted transition-[transform,color] group-hover:translate-x-1 group-hover:text-seu-fg" aria-hidden>
                 <svg width="8" height="14" viewBox="0 0 8 14" fill="none" aria-hidden>
                   <path d="M1 1l6 6-6 6" stroke="currentColor" strokeWidth="1.4" />
                 </svg>

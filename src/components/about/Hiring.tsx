@@ -138,7 +138,7 @@ export default function Hiring() {
     <Section id="career" tone="light">
       <Container className="grid gap-16 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
         <div>
-          <SectionHeader index="03" eyebrow={t("Benefits of working with us", "ჩვენთან მუშაობის უპირატესობები")} title={t("We are hiring", "შემოუერთდი ჩვენს გუნდს")} className="lg:grid-cols-1" />
+          <SectionHeader index="03" eyebrow={t("Benefits of working with us", "ჩვენთან მუშაობის უპირატესობები")} title={t("We are hiring", "შემოუერთდი ჩვენს გუნდს")} className="lg:grid-cols-1" titleClassName="text-[clamp(40px,4.4vw,76px)]" />
           <p className="body-copy mt-10 max-w-md">
             {t(
               "The company's team cares about continuous development and provides the best working environment.",
@@ -163,7 +163,7 @@ export default function Hiring() {
               <p className="mt-2 text-[15px] text-seu-muted">{r.lead}</p>
               <Meta role={r} className="mt-6" />
               <div className="mt-auto pt-8">
-                <button type="button" aria-haspopup="dialog" onClick={() => setRole(r)} className="btn btn-primary w-full">
+                <button type="button" aria-haspopup="dialog" onClick={() => setRole(r)} className="btn w-full">
                   {t("Details", "დეტალები")} <Icon name="arrow" size={16} />
                   <span className="sr-only">: {r.title}</span>
                 </button>

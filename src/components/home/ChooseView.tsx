@@ -42,7 +42,7 @@ export default function ChooseView() {
         </div>
 
         <form
-          className="mt-16 md:mt-20"
+          className="mt-12 md:mt-16"
           onSubmit={(e) => {
             e.preventDefault();
             const q = new URLSearchParams({ project: "varketili", view });
@@ -53,7 +53,7 @@ export default function ChooseView() {
         >
           <fieldset>
             <legend className="sr-only">{t("View", "ხედი")}</legend>
-            <div className="grid grid-cols-2 gap-3 md:gap-5 lg:grid-cols-3" data-stagger>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:gap-4 xl:grid-cols-6" data-stagger>
               {VIEWS.map((v) => {
                 const on = view === v;
                 return (
@@ -62,19 +62,19 @@ export default function ChooseView() {
                     type="button"
                     aria-pressed={on}
                     onClick={() => setView(v)}
-                    className={`view-card group relative aspect-[4/5] overflow-hidden rounded-[18px] text-left outline-offset-4 sm:aspect-[4/3] md:rounded-[24px] ${on ? "is-on" : ""}`}
+                    className={`view-card group relative aspect-[4/3] overflow-hidden rounded-[18px] text-left outline-offset-4 xl:aspect-[3/4] ${on ? "is-on" : ""}`}
                   >
                     <img loading="lazy" decoding="async" src={withBase(`/images/view-${v}.webp`)} alt="" className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]" />
                     <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-[#0c1613]/75 via-[#0c1613]/10 to-transparent" />
-                    <span className="absolute inset-x-0 bottom-0 flex items-center gap-2.5 p-4 text-white md:p-6">
-                      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white/15 ring-1 ring-white/40 backdrop-blur md:h-10 md:w-10">
-                        <Icon name={v} size={18} />
+                    <span className="absolute inset-x-0 bottom-0 flex items-center gap-2 p-3 text-white md:p-4">
+                      <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-white/15 ring-1 ring-white/40 backdrop-blur">
+                        <Icon name={v} size={16} />
                       </span>
-                      <span className="min-w-0 text-[14px] font-semibold leading-tight md:text-[18px]">{viewIn(v, lang)}</span>
+                      <span className="min-w-0 text-[13px] font-semibold leading-tight md:text-[15px]">{viewIn(v, lang)}</span>
                     </span>
-                    {/* Chosen: a check in the corner and a frame in the page's ink, not the button's copper. */}
-                    <span aria-hidden className="view-card__check absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-full bg-[#fffcf7] text-[#13211d] shadow-[0_4px_14px_rgb(0_0_0/0.2)] md:right-4 md:top-4">
-                      <Icon name="check" size={16} strokeWidth={2} />
+                    {/* Every card shows a selection circle; the chosen one fills with a check and gets a frame. */}
+                    <span aria-hidden className="view-card__check absolute right-3 top-3 grid h-7 w-7 place-items-center rounded-full shadow-[0_4px_14px_rgb(0_0_0/0.2)]">
+                      <Icon name="check" size={15} strokeWidth={2.2} />
                     </span>
                   </button>
                 );
@@ -82,7 +82,7 @@ export default function ChooseView() {
             </div>
           </fieldset>
 
-          <div className="mt-12 flex flex-col gap-8 md:mt-16 lg:flex-row lg:items-end lg:justify-between">
+          <div className="mt-10 flex flex-col gap-8 md:mt-12 lg:flex-row lg:items-end lg:justify-between">
             <fieldset className="min-w-0">
               <legend className="field-label mb-4">
                 <Icon name="bed" size={14} />

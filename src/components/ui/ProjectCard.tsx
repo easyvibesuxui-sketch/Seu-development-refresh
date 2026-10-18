@@ -22,11 +22,6 @@ export default function ProjectCard({ project, wide = false }: { project: Projec
             />
           </div>
           <div className="absolute inset-0 bg-gradient-to-t from-seu-ink/90 via-seu-ink/30 to-transparent" />
-          <span className="btn btn-glass btn-icon absolute right-6 top-6 text-white opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-focus-visible:opacity-100" aria-hidden>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M3 13L13 3M5 3h8v8" stroke="currentColor" strokeWidth="1.4" />
-            </svg>
-          </span>
           <div className="absolute inset-x-6 bottom-6 text-white md:inset-x-8 md:bottom-8">
             <p className="eyebrow text-white/85 [--muted:rgb(255_255_255/0.85)]">
               {statusIn(project.status, lang)} · {project.date}

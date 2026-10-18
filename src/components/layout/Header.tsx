@@ -170,7 +170,7 @@ export default function Header() {
             </button>
           </nav>
           {/* Shortcut to search only where the "Apartments" link is folded into the menu. */}
-          <Link href={h("/search/")} aria-label={t("Search apartments", "ბინების ძებნა")} className="btn btn-primary btn-icon ctl-lg hidden sm:inline-flex xl:hidden">
+          <Link href={h("/search/")} aria-label={t("Search apartments", "ბინების ძებნა")} className={`btn btn-icon ctl-lg hidden backdrop-blur-md sm:inline-flex xl:hidden ${light && !open ? "border-[#13211d]/15 bg-[#f6f1e8]/80" : "border-white/20 bg-[#0f1a17]/55"}`}>
             <Icon name="search" size={18} strokeWidth={2} />
           </Link>
           <Link href={h("/contact/")} className="btn btn-primary ctl-lg hidden sm:inline-flex">

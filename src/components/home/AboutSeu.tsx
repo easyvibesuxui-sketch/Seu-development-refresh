@@ -36,7 +36,7 @@ export default function AboutSeu() {
               <ButtonLink href="/about/" variant="copper">
                 {ka ? "ჩვენი ისტორია" : "Our story"}
               </ButtonLink>
-              <ButtonLink href="#contact">{ka ? "მოითხოვე ზარი" : "Request a call"}</ButtonLink>
+              <ButtonLink href="#contact" variant="ghost">{ka ? "მოითხოვე ზარი" : "Request a call"}</ButtonLink>
             </div>
           </div>
         </div>

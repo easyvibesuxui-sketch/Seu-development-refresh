@@ -166,7 +166,7 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
               href={withBase(h(`/apartments/${unit.id}/presentation/`))}
               target="_blank"
               rel="noreferrer"
-              className="btn btn-sm max-sm:px-3.5"
+              className="inline-flex min-h-11 items-center gap-2 px-2 text-[12px] font-semibold uppercase tracking-[0.12em] underline decoration-current/40 underline-offset-[6px] transition-colors hover:text-seu-accent-hi"
             >
               <Icon name="file" size={16} />
               <span className="sm:hidden">{t("Presentation", "პრეზენტაცია")}</span>

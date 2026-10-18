@@ -12,12 +12,13 @@ export default function NewsCard({ item: source, wide }: { item: NewsItem; wide?
   return (
     <Link
       href={h(`/news/${item.slug}/`)}
-      className={`card group md:p-6 ${
+      // Wide and narrow cards share one picture height, so a row lines up.
+      className={`card group flex flex-col md:p-6 ${
         wide ? "md:col-span-7" : "md:col-span-5"
       }`}
     >
-      <h3 className="title-m text-[clamp(20px,1.6vw,26px)]">{item.title}</h3>
-      <div className="relative mt-5 aspect-[16/7] overflow-hidden rounded-[16px]">
+      <h3 className="title-m text-[clamp(20px,1.6vw,26px)] md:min-h-[2.5em]">{item.title}</h3>
+      <div className="relative mt-5 aspect-[16/9] overflow-hidden rounded-[16px] md:aspect-auto md:h-[clamp(220px,22vw,380px)]">
         <img
           src={isExternal(item.image) ? item.image : withBase(item.image)}
           alt=""
@@ -32,7 +33,7 @@ export default function NewsCard({ item: source, wide }: { item: NewsItem; wide?
           </span>
         )}
       </div>
-      <div className="mt-6 flex flex-wrap gap-3">
+      <div className="mt-auto flex flex-wrap gap-3 pt-6">
         <span className="tag tag-solid">{lang === "ka" ? `${item.minutes} წთ საკითხავი` : `${item.minutes} min read`}</span>
         <span className="tag tag-solid">{item.tag}</span>
         <span className="label ml-auto self-center text-[12px] text-seu-muted">{item.date}</span>
