@@ -1259,8 +1259,7 @@ html.is-loading body {
 }
 
 /* ---------- Apartment presentation (A4) ---------- */
-body:has(.presentation) > header,
-body:has(.presentation) > footer,
+/* On screen the presentation keeps the site header (its toolbar sits under it). */
 body:has(.presentation) .cursor {
   display: none !important;
 }
@@ -1286,6 +1285,13 @@ body:has(.presentation) .call-fab {
   z-index: 5;
 }
 
+/* Phones read the card version of the presentation instead; the A4 pages stay for print. */
+@media screen and (max-width: 639px) {
+  .presentation .pres-page {
+    display: none;
+  }
+}
+
 /* On smaller screens the A4 pages shrink whole, like a document preview, instead of
    squeezing their columns. */
 @media screen and (max-width: 860px) {
@@ -1297,21 +1303,6 @@ body:has(.presentation) .call-fab {
 @media screen and (max-width: 760px) {
   .pres-page {
     zoom: 0.7;
-  }
-}
-@media screen and (max-width: 600px) {
-  .pres-page {
-    zoom: 0.55;
-  }
-}
-@media screen and (max-width: 460px) {
-  .pres-page {
-    zoom: 0.43;
-  }
-}
-@media screen and (max-width: 360px) {
-  .pres-page {
-    zoom: 0.38;
   }
 }
 
@@ -1363,6 +1354,13 @@ body:has(.presentation) .call-fab {
 
   .pres-toolbar {
     display: none;
+  }
+
+  /* The PDF is the two A4 pages and nothing of the site around them. */
+  body:has(.presentation) header,
+  body:has(.presentation) footer,
+  body:has(.presentation) .skip-link {
+    display: none !important;
   }
 
   body:has(.presentation) {
