@@ -226,7 +226,7 @@ export const mapLocale = (lang: "en" | "ka"): Record<string, string> | undefined
         "AttributionControl.MapFeedback": "რუკაზე უკუკავშირი",
         "NavigationControl.ZoomIn": "გადიდება",
         "NavigationControl.ZoomOut": "დაპატარავება",
-        "NavigationControl.ResetBearing": "გადაათრიეთ მოსაბრუნებლად, დააჭირეთ ჩრდილოეთისკენ დასაბრუნებლად",
+        "NavigationControl.ResetBearing": "გადაწიეთ მოსაბრუნებლად, დააჭირეთ ჩრდილოეთისკენ დასაბრუნებლად",
         "CooperativeGesturesHandler.WindowsHelpText": "რუკის გასადიდებლად გამოიყენეთ Ctrl + გადახვევა",
         "CooperativeGesturesHandler.MacHelpText": "რუკის გასადიდებლად გამოიყენეთ ⌘ + გადახვევა",
         "CooperativeGesturesHandler.MobileHelpText": "რუკის გადასაადგილებლად გამოიყენეთ ორი თითი",

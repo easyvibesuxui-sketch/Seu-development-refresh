@@ -189,7 +189,7 @@ export default function ProjectsShowcase() {
 
         {/* "Drag" disc that follows the pointer over the strip (mouse only). */}
         <div ref={cursorRef} aria-hidden className="show-cursor pointer-events-none absolute left-0 top-0 z-10 -ml-12 -mt-12 hidden h-24 w-24 place-items-center rounded-full bg-[#fffcf7] text-[12px] font-semibold uppercase tracking-[0.12em] text-[#111923] md:grid">
-          {t("Drag", "გადაათრიე")}
+          {t("Drag", "გადაწიე")}
         </div>
       </div>
 

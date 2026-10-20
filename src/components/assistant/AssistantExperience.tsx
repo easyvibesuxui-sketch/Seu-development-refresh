@@ -528,7 +528,7 @@ export default function AssistantExperience({ engine = templateEngine }: { engin
               <p className="mt-1 text-[14px] leading-relaxed text-white md:text-[15px]">{t(line)}</p>
             </div>
           </div>
-          <div className="-mx-4 mt-4 flex gap-2 overflow-x-auto px-4 pb-1 md:mx-0 md:flex-wrap md:overflow-visible md:px-0">
+          <div className="mt-4 flex flex-wrap gap-2">
             {scene === "block" || scene === "finished" ? (
               <>
                 {scene === "finished" && (
@@ -553,10 +553,10 @@ export default function AssistantExperience({ engine = templateEngine }: { engin
           {withForm && !chatOpen && callForm()}
           {/* The models as a list too: for keyboards, screen readers and narrow screens. */}
           {(scene === "showroom" || scene === "greet") && (
-            <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-white/15 pt-3 text-[13px]">
+            <div className="mt-3 flex flex-wrap items-center gap-x-2 border-t border-white/15 pt-2 text-[13px]">
               <span className="text-white/75">{t(UI.models)}:</span>
               {MODELS.map((m) => (
-                <button key={m.id} type="button" onClick={() => goToModel(m)} className="rounded-full px-2 py-1 font-semibold text-white underline decoration-white/40 underline-offset-4 hover:decoration-white">
+                <button key={m.id} type="button" onClick={() => goToModel(m)} className="inline-flex min-h-11 items-center rounded-full px-2 font-semibold text-white underline decoration-white/40 underline-offset-4 hover:decoration-white">
                   {t(m.name)}
                 </button>
               ))}
@@ -609,7 +609,7 @@ export default function AssistantExperience({ engine = templateEngine }: { engin
             >
               <div className="mb-3 flex items-center justify-between gap-3">
                 <p className="label text-[12px] uppercase tracking-[0.16em] text-white/80">{t(ASSISTANT_NAME)}</p>
-                <button type="button" onClick={() => setChatOpen(false)} aria-label={t(UI.chatClose)} className="btn btn-glass btn-sm w-9 px-0">
+                <button type="button" onClick={() => setChatOpen(false)} aria-label={t(UI.chatClose)} className="btn btn-glass btn-icon [--ctl-h:44px]">
                   <Icon name="close" size={16} />
                 </button>
               </div>

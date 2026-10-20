@@ -217,7 +217,7 @@ export default function VirtualTour({
         aria-roledescription={t("tour view", "ტურის ხედი")}
         aria-label={t(
           `${stop.name[0]}. Drag or use the left and right arrow keys to look around; the rings on the floor take you to the next room.`,
-          `${stop.name[1]}. მიმოიხედეთ გადათრევით ან მარცხენა და მარჯვენა ისრებით; იატაკზე წრეები შემდეგ ოთახში გადაგიყვანთ.`,
+          `${stop.name[1]}. მიმოიხედეთ გადაწევით ან მარცხენა და მარჯვენა ისრებით; იატაკზე წრეები შემდეგ ოთახში გადაგიყვანთ.`,
         )}
         onKeyDown={onKey}
         data-cursor="drag"

@@ -3,7 +3,11 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 
-const LABELS: Record<string, string> = { drag: "Drag", play: "Play" };
+// The label follows the language of the element under the pointer (the page, or a block with its own lang).
+const LABELS: Record<string, Record<string, string>> = {
+  en: { drag: "Drag", play: "Play" },
+  ka: { drag: "გადაწიე", play: "ჩართვა" },
+};
 
 /**
  * Soft ring cursor for fine pointers; grows with a label over [data-cursor] areas.
@@ -30,7 +34,8 @@ export default function Cursor() {
       const zone = target.closest<HTMLElement>("[data-cursor]")?.dataset.cursor;
       const mode = interactive && zone !== "play" && zone !== "native" ? "link" : zone ?? "";
       ring.dataset.mode = mode;
-      if (labelRef.current) labelRef.current.textContent = LABELS[mode] ?? "";
+      const lang = target.closest<HTMLElement>("[lang]")?.lang === "en" ? "en" : "ka";
+      if (labelRef.current) labelRef.current.textContent = LABELS[lang][mode] ?? "";
     };
     const onLeave = () => (ring.dataset.hidden = "true");
     const onEnter = () => (ring.dataset.hidden = "false");

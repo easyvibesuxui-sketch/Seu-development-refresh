@@ -414,19 +414,21 @@ body::before {
   border-color: var(--btn-border);
 }
 
+/* Primary fill is the bright green; copper is kept for helper details (sun study, pins,
+   badges, accent lines), not for buttons. */
 .btn-primary {
-  --btn-bg: var(--seu-accent);
-  --btn-fg: #fff;
-  --btn-border: var(--seu-accent);
-  --btn-fill: var(--seu-accent-lo);
-  --btn-fill-fg: #fff;
+  --btn-bg: var(--seu-go);
+  --btn-fg: var(--seu-go-ink);
+  --btn-border: var(--seu-go);
+  --btn-fill: var(--seu-go-hover);
+  --btn-fill-fg: var(--seu-go-ink);
 }
 
 .btn-light {
   --btn-bg: var(--seu-paper);
   --btn-fg: #111923;
   --btn-border: var(--seu-paper);
-  --btn-fill: var(--seu-accent);
+  --btn-fill: var(--seu-go);
   --btn-fill-fg: #fff;
 }
 
@@ -2215,13 +2217,18 @@ body:has(.presentation) .call-fab {
   }
 }
 
-/* Copper button: flat, like every other fill, so its edge sits where the layout puts it. */
+/* Green buttons keep a focus ring in their own colour, not the copper one. */
+:is(.btn-primary, .btn-copper, .btn-go):focus-visible {
+  outline-color: var(--seu-go);
+}
+
+/* Former copper button: now the same green fill as the primary. */
 .btn-copper {
-  --btn-bg: var(--seu-accent);
-  --btn-fg: #fff;
-  --btn-border: var(--seu-accent);
-  --btn-fill: var(--seu-accent-lo);
-  --btn-fill-fg: #fff;
+  --btn-bg: var(--seu-go);
+  --btn-fg: var(--seu-go-ink);
+  --btn-border: var(--seu-go);
+  --btn-fill: var(--seu-go-hover);
+  --btn-fill-fg: var(--seu-go-ink);
 }
 
 /* Green button: the finding actions (search, show results). White label on bright green. */

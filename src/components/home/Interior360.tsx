@@ -139,7 +139,7 @@ export default function Interior360() {
           aria-roledescription={t("360° viewer", "360° ხედი")}
           aria-label={t(
             "360° view of a sample SEU apartment. Use the left and right arrow keys or drag to look around.",
-            "SEU-ს სანიმუშო ბინის 360° ხედი. მიმოიხედეთ მარცხენა და მარჯვენა ისრებით ან გადათრევით.",
+            "SEU-ს სანიმუშო ბინის 360° ხედი. მიმოიხედეთ მარცხენა და მარჯვენა ისრებით ან გადაწევით.",
           )}
           data-cursor="drag"
           className="absolute inset-0 cursor-grab touch-pan-y select-none overflow-hidden bg-seu-ink active:cursor-grabbing"
@@ -208,7 +208,7 @@ export default function Interior360() {
               <svg width="34" height="14" viewBox="0 0 34 14" fill="none" aria-hidden>
                 <path d="M6 1L1 7l5 6M28 1l5 6-5 6M1 7h32" stroke="currentColor" strokeWidth="1.2" />
               </svg>
-              {t("Scroll or drag to look around", "გადაახვიეთ ან გადაათრიეთ მიმოსახედად")}
+              {t("Scroll or drag to look around", "გადაახვიეთ ან გადაწიეთ მიმოსახედად")}
             </p>
           </div>
         </div>
