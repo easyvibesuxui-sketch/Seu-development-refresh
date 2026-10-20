@@ -30,7 +30,7 @@ export default function FilterPanel({ className = "", tone = "light" }: { classN
   const toggle = (n: number) => setRooms((cur) => (cur.includes(n) ? cur.filter((b) => b !== n) : [...cur, n]));
   const part = "flex min-w-0 flex-col justify-center gap-1.5 px-5 py-2";
   const label = "flex items-center gap-2 text-[12px] font-semibold text-seu-muted";
-  const input = "w-16 min-w-0 bg-transparent text-[15px] outline-none placeholder:text-seu-muted/80";
+  const input = "field-line w-16 min-w-0 text-[15px] placeholder:text-seu-muted/80";
   const set = !!(from || to || rooms.length);
 
   return (
@@ -52,7 +52,7 @@ export default function FilterPanel({ className = "", tone = "light" }: { classN
             <Icon name="area" size={15} className="text-seu-accent-hi" />
             {t("Size, m²", "ზომა, მ²")}
           </span>
-          <div className="flex h-8 items-center gap-2">
+          <div className="flex h-8 items-center gap-3">
             <input className={input} inputMode="numeric" placeholder={t("from", "დან")} aria-label={t("From, m²", "დან, მ²")} value={from} onChange={(e) => setFrom(e.target.value.replace(/\D/g, ""))} />
             <span aria-hidden className="text-seu-muted">–</span>
             <input className={input} inputMode="numeric" placeholder={t("to", "მდე")} aria-label={t("To, m²", "მდე, მ²")} value={to} onChange={(e) => setTo(e.target.value.replace(/\D/g, ""))} />

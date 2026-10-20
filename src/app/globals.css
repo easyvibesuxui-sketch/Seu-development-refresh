@@ -893,6 +893,23 @@ body::before {
   outline-offset: 3px;
 }
 
+/* Underline field (the hero search bar): a hairline under the value that turns copper on
+   focus, instead of the focus ring's box. */
+.field-line {
+  border: 0;
+  border-bottom: 1px solid var(--line-strong);
+  border-radius: 0;
+  background: transparent;
+  padding: 4px 0;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.field-line:focus-visible {
+  outline: none;
+  border-bottom-color: var(--seu-accent);
+  box-shadow: 0 1px 0 var(--seu-accent);
+}
+
 /* A select's list holds focus while open; its active option carries the ring instead. */
 .select-menu:focus-visible {
   outline: none;
