@@ -1265,6 +1265,11 @@ body:has(.presentation) .cursor {
   display: none !important;
 }
 
+/* The presentation is a document preview: the floating call button would sit on its pages. */
+body:has(.presentation) .call-fab {
+  display: none !important;
+}
+
 .presentation {
   display: flex;
   flex-direction: column;

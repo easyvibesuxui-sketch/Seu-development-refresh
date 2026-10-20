@@ -210,7 +210,7 @@ export default function Header() {
           aria-hidden={callInView || undefined}
           tabIndex={callInView ? -1 : undefined}
           onClick={() => setCalling(true)}
-          className={`vars-light glass fixed bottom-5 left-4 z-40 flex h-12 items-center gap-2 rounded-full pl-4 pr-5 text-[13px] font-semibold text-seu-fg transition-[opacity,transform] duration-300 sm:hidden ${
+          className={`call-fab vars-light glass fixed bottom-5 left-4 z-40 flex h-12 items-center gap-2 rounded-full pl-4 pr-5 text-[13px] font-semibold text-seu-fg transition-[opacity,transform] duration-300 sm:hidden ${
             callInView ? "pointer-events-none translate-y-4 opacity-0" : ""
           }`}
         >
