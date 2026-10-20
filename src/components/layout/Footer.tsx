@@ -27,10 +27,10 @@ export default function Footer() {
       <div className="relative mx-auto grid max-w-[1680px] gap-16 px-gutter pb-12 pt-24 md:grid-cols-[1.2fr_1fr_1fr]">
         <div>
           <p className="eyebrow">{t("Get in touch", "დაგვიკავშირდით")}</p>
-          <a href="tel:+995596707070" className="title-m mt-6 block transition-colors hover:text-seu-accent-hi">
+          <a href="tel:+995596707070" className="title-m mt-4 flex min-h-11 items-center transition-colors hover:text-seu-accent-hi">
             +995 596 70 70 70
           </a>
-          <a href="mailto:info@seudevelopment.ge" className="lead mt-3 block text-seu-muted transition-colors hover:text-seu-accent-hi">
+          <a href="mailto:info@seudevelopment.ge" className="lead mt-1 flex min-h-11 items-center text-seu-muted transition-colors hover:text-seu-accent-hi">
             info@seudevelopment.ge
           </a>
           <p className="body-copy mt-3">{t("Tbilisi, A. Politkovskaya St. 32", "თბილისი, ა. პოლიტკოვსკაიას ქ. 32")}</p>

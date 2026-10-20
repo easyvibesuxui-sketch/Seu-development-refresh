@@ -142,7 +142,7 @@ function FloorPlate({ unit, alt, className = "" }: { unit: Unit; alt: string; cl
         <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
           <polygon points={shape.map((p) => p.join(",")).join(" ")} fill="#c2652a" fillOpacity={0.6} stroke="#fff" strokeWidth={2} vectorEffect="non-scaling-stroke" />
         </svg>
-        <span className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#1a1d22] px-2.5 py-1 text-[11px] font-semibold text-white" style={{ left: `${x}%`, top: `${y}%` }}>
+        <span className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#1a1d22] px-2.5 py-1 text-[12px] font-semibold text-white" style={{ left: `${x}%`, top: `${y}%` }}>
           {unit.number}
         </span>
       </div>

@@ -78,7 +78,7 @@ export default function ContactSection({ split = false }: { split?: boolean }) {
               <div>
                 <dt className="field-label">{t("Phone", "ტელეფონი")}</dt>
                 <dd>
-                  <a href="tel:+995596707070" className="lead hover:text-seu-accent-hi">
+                  <a href="tel:+995596707070" className="lead inline-flex min-h-11 items-center hover:text-seu-accent-hi">
                     +995 596 70 70 70
                   </a>
                 </dd>
@@ -86,7 +86,7 @@ export default function ContactSection({ split = false }: { split?: boolean }) {
               <div className="sm:col-span-2">
                 <dt className="field-label">{t("Email", "ელ. ფოსტა")}</dt>
                 <dd>
-                  <a href="mailto:info@seudevelopment.ge" className="lead hover:text-seu-accent-hi">
+                  <a href="mailto:info@seudevelopment.ge" className="lead inline-flex min-h-11 items-center hover:text-seu-accent-hi">
                     info@seudevelopment.ge
                   </a>
                 </dd>

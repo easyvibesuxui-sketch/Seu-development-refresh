@@ -156,7 +156,7 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
                       <button type="button" onClick={() => setAsking(true)} data-call className="btn btn-primary">
                         <Icon name="phone" size={16} /> {t("Tell me if it frees up", "შემატყობინეთ")}
                       </button>
-                      <a href="#similar" className="text-[12px] font-semibold uppercase tracking-[0.12em] underline decoration-current/40 underline-offset-[6px] transition-colors hover:text-seu-accent-hi">
+                      <a href="#similar" className="inline-flex min-h-11 items-center text-[12px] font-semibold uppercase tracking-[0.12em] underline decoration-current/40 underline-offset-[6px] transition-colors hover:text-seu-accent-hi">
                         {t("Similar apartments", "მსგავსი ბინები")}
                       </a>
                     </>
