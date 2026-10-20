@@ -5,7 +5,7 @@ export default function Compass({ label = "North arrow", className = "absolute r
       <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
         <circle cx="28" cy="28" r="15" stroke="currentColor" strokeOpacity=".4" />
         <path d="M28 16l4 12-4 12-4-12z" fill="#8b5a3c" />
-        <path d="M28 28l4 0-4 12z" fill="#15201d" fillOpacity=".5" />
+        <path d="M28 28l4 0-4 12z" fill="#131a22" fillOpacity=".5" />
         {[
           ["N", 28, 7],
           ["S", 28, 54],

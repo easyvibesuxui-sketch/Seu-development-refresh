@@ -121,7 +121,7 @@ export default function Header() {
         <div className="pointer-events-auto flex items-stretch gap-2 max-sm:w-full">
           <nav
             className={`flex h-14 items-center gap-1 rounded-full border pl-4 pr-2 text-seu-fg max-sm:flex-1 max-sm:justify-between max-sm:pl-3 backdrop-blur-md backdrop-saturate-150 transition-colors duration-500 ${
-              light && !open ? "border-[#13211d]/10 bg-[#f6f1e8]/80" : "border-white/15 bg-[#0f1a17]/55"
+              light && !open ? "border-[#111923]/10 bg-[#f6f1e8]/80" : "border-white/15 bg-[#0e141b]/55"
             }`}
             aria-label={t("Main", "მთავარი")}
           >
@@ -134,7 +134,7 @@ export default function Header() {
             </Link>
             {/* Phones: logo on the left, search in the middle, menu on the right. */}
             <div className="flex items-center sm:hidden">
-              <Link href={h("/search/")} aria-label={t("Search apartments", "ბინების ძებნა")} className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-seu-accent text-white transition-colors hover:bg-seu-accent-hi">
+              <Link href={h("/search/")} aria-label={t("Search apartments", "ბინების ძებნა")} className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-seu-go text-seu-go-ink transition-colors hover:bg-seu-go-hover">
                 <Icon name="search" size={18} strokeWidth={2} />
               </Link>
             </div>
@@ -167,13 +167,13 @@ export default function Header() {
             </button>
           </nav>
           {/* Shortcut to search only where the "Apartments" link is folded into the menu. */}
-          <Link href={h("/search/")} aria-label={t("Search apartments", "ბინების ძებნა")} className={`btn btn-icon ctl-lg hidden backdrop-blur-md sm:inline-flex xl:hidden ${light && !open ? "border-[#13211d]/15 bg-[#f6f1e8]/80" : "border-white/20 bg-[#0f1a17]/55"}`}>
+          <Link href={h("/search/")} aria-label={t("Search apartments", "ბინების ძებნა")} className={`btn btn-icon ctl-lg hidden backdrop-blur-md sm:inline-flex xl:hidden ${light && !open ? "border-[#111923]/15 bg-[#f6f1e8]/80" : "border-white/20 bg-[#0e141b]/55"}`}>
             <Icon name="search" size={18} strokeWidth={2} />
           </Link>
           {/* The same page in the other language: its own pill, between the menu and the contact button. */}
           <div
             className={`label hidden h-14 items-center gap-1 rounded-full border px-3 text-[12px] tracking-[0.1em] text-seu-fg backdrop-blur-md transition-colors duration-500 sm:flex ${
-              light && !open ? "border-[#13211d]/10 bg-[#f6f1e8]/80" : "border-white/15 bg-[#0f1a17]/55"
+              light && !open ? "border-[#111923]/10 bg-[#f6f1e8]/80" : "border-white/15 bg-[#0e141b]/55"
             }`}
             role="group"
             aria-label={t("Language", "ენა")}
@@ -210,7 +210,7 @@ export default function Header() {
           aria-hidden={callInView || undefined}
           tabIndex={callInView ? -1 : undefined}
           onClick={() => setCalling(true)}
-          className={`vars-light glass glass-clear fixed bottom-5 left-4 z-40 flex h-12 items-center gap-2 rounded-full pl-4 pr-5 text-[13px] font-semibold text-seu-fg transition-[opacity,transform] duration-300 sm:hidden ${
+          className={`vars-light glass fixed bottom-5 left-4 z-40 flex h-12 items-center gap-2 rounded-full pl-4 pr-5 text-[13px] font-semibold text-seu-fg transition-[opacity,transform] duration-300 sm:hidden ${
             callInView ? "pointer-events-none translate-y-4 opacity-0" : ""
           }`}
         >

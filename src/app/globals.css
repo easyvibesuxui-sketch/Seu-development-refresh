@@ -19,11 +19,12 @@
 }
 
 :root {
-  /* ---- Palette: one dark family, one light family, one accent ---- */
-  --seu-ink: #0c1613;
-  --seu-bg: #13211d;
-  --seu-bg-deep: #0f1a17;
-  --seu-surface: #1b2c27;
+  /* ---- Palette: deep navy, warm paper, two accents (copper for the brand and contact,
+     bright green for finding: search and show actions) ---- */
+  --seu-ink: #0b1017;
+  --seu-bg: #111923;
+  --seu-bg-deep: #0e141b;
+  --seu-surface: #19222e;
   --seu-paper: #f6f1e8;
   --seu-sand: #ebe2d3;
   --seu-cream: #f6f1e8;
@@ -33,6 +34,10 @@
   --seu-accent: #a8541f;
   --seu-accent-hover: #b45a22;
   --seu-accent-lo: #6e3613;
+  /* Action green: search and show buttons, with navy text (8.8:1). */
+  --seu-go: #2ecc71;
+  --seu-go-hover: #25b864;
+  --seu-go-ink: #0b1017;
   --seu-lime: #c3d62f;
   --seu-blue: #1b4f72;
   /* Unit status, all readable under white text (≥5:1). */
@@ -43,15 +48,15 @@
   /* ---- Tone-dependent roles (dark by default; .tone-light flips them) ---- */
   --fg: #f6f1e8;
   /* Text on a fill of --fg (a hovered outline button). */
-  --on-fg: #13211d;
-  --muted: #c0c9c4;
+  --on-fg: #111923;
+  --muted: #c0c4c9;
   --line: rgb(246 241 232 / 0.16);
   --line-strong: rgb(246 241 232 / 0.4);
   --accent-ink: #e39a62;
-  --surface: #1b2c27;
+  --surface: #19222e;
   --field: rgb(246 241 232 / 0.06);
   /* Glass: tinted enough that text keeps ≥4.5:1 over any photo behind it. */
-  --glass-bg: linear-gradient(140deg, rgb(22 38 33 / 0.86), rgb(10 18 16 / 0.8));
+  --glass-bg: linear-gradient(140deg, rgb(20 29 40 / 0.86), rgb(9 13 19 / 0.8));
   --glass-border: rgb(255 255 255 / 0.14);
   --glass-hi: rgb(255 255 255 / 0.14);
   --glass-shadow: 0 24px 60px rgb(0 0 0 / 0.3);
@@ -69,7 +74,7 @@
   --ctl-md: 48px;
   --ctl-lg: 56px;
   --ctl-px: 16px;
-  --popover: #1d2f2a;
+  --popover: #1b2431;
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
   --ease-in-out: cubic-bezier(0.7, 0, 0.2, 1);
   --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
@@ -77,11 +82,11 @@
 
 .tone-light,
 .vars-light {
-  --fg: #13211d;
+  --fg: #111923;
   --on-fg: #f6f1e8;
-  --muted: #535e59;
-  --line: rgb(19 33 29 / 0.14);
-  --line-strong: rgb(19 33 29 / 0.45);
+  --muted: #505761;
+  --line: rgb(17 25 35 / 0.14);
+  --line-strong: rgb(17 25 35 / 0.45);
   --accent-ink: #8e4416;
   --surface: #ebe2d3;
   --field: rgb(255 255 255 / 0.55);
@@ -89,7 +94,7 @@
   --glass-bg: linear-gradient(140deg, rgb(255 255 255 / 0.86), rgb(246 241 232 / 0.78));
   --glass-border: rgb(255 255 255 / 0.85);
   --glass-hi: rgb(255 255 255 / 0.95);
-  --glass-shadow: 0 24px 60px rgb(19 33 29 / 0.14);
+  --glass-shadow: 0 24px 60px rgb(17 25 35 / 0.14);
   /* Aliases resolve where they are declared, so re-point them in the light tone too. */
   --seu-fg: var(--fg);
   --seu-muted: var(--muted);
@@ -100,34 +105,34 @@
 /* Inside glass the backdrop can be a busy photo: muted text gets darker for margin. */
 .glass.vars-light,
 .vars-light .glass {
-  --muted: #3f4a45;
+  --muted: #3d434c;
 }
 
 /* Clear glass (see .glass-clear below): its roles sit outside the layers so they win over
    the tone blocks on the same element. */
 .glass.glass-clear {
-  --fg: #13211d;
+  --fg: #111923;
   --on-fg: #f6f1e8;
   --glass-bg: linear-gradient(155deg, rgb(255 255 255 / 0.46) 0%, rgb(255 255 255 / 0.2) 48%, rgb(250 246 238 / 0.34) 100%);
   --glass-border: rgb(255 255 255 / 0.35);
   --glass-hi: rgb(255 255 255 / 0.9);
   --glass-rim: rgb(255 255 255 / 0.95);
   --glass-sheen: rgb(255 255 255 / 0.5);
-  --muted: #27312d;
+  --muted: #252b33;
   --accent-ink: #6e3613;
   --field: rgb(255 255 255 / 0.5);
-  --line-strong: rgb(19 33 29 / 0.4);
+  --line-strong: rgb(17 25 35 / 0.4);
 }
 
 .glass.glass-clear.glass-dark {
   --fg: #fff;
-  --on-fg: #13211d;
-  --glass-bg: linear-gradient(155deg, rgb(28 46 40 / 0.5) 0%, rgb(10 18 16 / 0.4) 50%, rgb(20 34 30 / 0.55) 100%);
+  --on-fg: #111923;
+  --glass-bg: linear-gradient(155deg, rgb(26 35 48 / 0.5) 0%, rgb(9 13 19 / 0.4) 50%, rgb(18 26 36 / 0.55) 100%);
   --glass-border: rgb(255 255 255 / 0.16);
   --glass-hi: rgb(255 255 255 / 0.35);
   --glass-rim: rgb(255 255 255 / 0.55);
   --glass-sheen: rgb(255 255 255 / 0.12);
-  --muted: #e3e8e5;
+  --muted: #e3e5e8;
   --accent-ink: #f0b287;
   --field: rgb(255 255 255 / 0.1);
   --line-strong: rgb(255 255 255 / 0.45);
@@ -139,7 +144,7 @@
     --glass-bg: rgb(255 255 255 / 0.96);
   }
   .glass.glass-clear.glass-dark {
-    --glass-bg: rgb(12 22 19 / 0.96);
+    --glass-bg: rgb(11 16 23 / 0.96);
   }
 }
 
@@ -161,6 +166,9 @@
 
 @theme inline {
   --color-seu-ink: var(--seu-ink);
+  --color-seu-go: var(--seu-go);
+  --color-seu-go-hover: var(--seu-go-hover);
+  --color-seu-go-ink: var(--seu-go-ink);
   --color-seu-bg: var(--seu-bg);
   --color-seu-bg-deep: var(--seu-bg-deep);
   --color-seu-surface: var(--surface);
@@ -208,9 +216,9 @@ body::before {
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(70vw 60vh at 12% 8%, #20302b 0%, transparent 65%),
+    radial-gradient(70vw 60vh at 12% 8%, #1e2732 0%, transparent 65%),
     radial-gradient(60vw 70vh at 92% 70%, #2a241c 0%, transparent 60%),
-    linear-gradient(180deg, #16211e 0%, #131c19 100%);
+    linear-gradient(180deg, #141b23 0%, #12171d 100%);
 }
 
 /* UI labels: uppercase, tracked (Gilroy-like Urbanist). */
@@ -416,14 +424,14 @@ body::before {
 
 .btn-light {
   --btn-bg: var(--seu-paper);
-  --btn-fg: #13211d;
+  --btn-fg: #111923;
   --btn-border: var(--seu-paper);
   --btn-fill: var(--seu-accent);
   --btn-fill-fg: #fff;
 }
 
 .btn-glass {
-  --btn-bg: rgb(12 22 19 / 0.55);
+  --btn-bg: rgb(11 16 23 / 0.55);
   --btn-fg: #fff;
   --btn-border: rgb(255 255 255 / 0.35);
   -webkit-backdrop-filter: blur(16px) saturate(1.4);
@@ -485,8 +493,8 @@ body::before {
    never reads like the copper action button next to it. */
 .chip[aria-pressed="true"],
 .chip[aria-selected="true"] {
-  background: #13211d;
-  border-color: #13211d;
+  background: #111923;
+  border-color: #111923;
   color: #f6f1e8;
 }
 
@@ -495,14 +503,14 @@ body::before {
 .glass-dark .chip[aria-pressed="true"] {
   background: #f6f1e8;
   border-color: #f6f1e8;
-  color: #13211d;
+  color: #111923;
 }
 
 /* A light card or panel inside a dark section (e.g. the apartment stage) is paper again. */
 .tone-dark :is(.vars-light, .tone-light) .chip[aria-pressed="true"],
 .tone-dark :is(.vars-light, .tone-light) .chip[aria-selected="true"] {
-  background: #13211d;
-  border-color: #13211d;
+  background: #111923;
+  border-color: #111923;
   color: #f6f1e8;
 }
 
@@ -674,7 +682,7 @@ body::before {
 
 .segmented > button[aria-pressed="true"],
 .segmented > a[aria-current="true"] {
-  background: #13211d;
+  background: #111923;
   color: #f6f1e8;
 }
 
@@ -682,12 +690,12 @@ body::before {
 .tone-dark .segmented > a[aria-current="true"],
 .glass-dark .segmented > button[aria-pressed="true"] {
   background: #f6f1e8;
-  color: #13211d;
+  color: #111923;
 }
 
 .tone-dark :is(.vars-light, .tone-light) .segmented > button[aria-pressed="true"],
 .tone-dark :is(.vars-light, .tone-light) .segmented > a[aria-current="true"] {
-  background: #13211d;
+  background: #111923;
   color: #f6f1e8;
 }
 
@@ -771,7 +779,7 @@ body::before {
 
   /* Dark glass whatever the section tone: for labels laid over photos and films. */
   .glass-dark {
-    --glass-bg: linear-gradient(140deg, rgb(22 38 33 / 0.86), rgb(10 18 16 / 0.8));
+    --glass-bg: linear-gradient(140deg, rgb(20 29 40 / 0.86), rgb(9 13 19 / 0.8));
     --glass-border: rgb(255 255 255 / 0.14);
     --glass-hi: rgb(255 255 255 / 0.14);
     --glass-shadow: 0 24px 60px rgb(0 0 0 / 0.3);
@@ -787,8 +795,8 @@ body::before {
     box-shadow:
       inset 0 1px 0 var(--glass-hi),
       inset 0 -20px 40px -24px rgb(255 255 255 / 0.5),
-      0 32px 70px -24px rgb(19 33 29 / 0.38),
-      0 2px 8px rgb(19 33 29 / 0.08);
+      0 32px 70px -24px rgb(17 25 35 / 0.38),
+      0 2px 8px rgb(17 25 35 / 0.08);
     -webkit-backdrop-filter: blur(14px) saturate(1.9) brightness(1.06);
     backdrop-filter: blur(14px) saturate(1.9) brightness(1.06);
   }
@@ -883,7 +891,7 @@ body::before {
   .tag-solid {
     border-color: transparent;
     background: var(--seu-paper);
-    color: #13211d;
+    color: #111923;
   }
 }
 
@@ -923,7 +931,7 @@ body::before {
   padding: 12px 20px;
   border-radius: 999px;
   background: var(--seu-paper);
-  color: #13211d;
+  color: #111923;
   font-weight: 600;
   transition: top 0.3s;
 }
@@ -1052,7 +1060,7 @@ html.is-loading body {
   z-index: 200;
   display: grid;
   place-items: center;
-  background: #0f1714;
+  background: #0e1218;
   clip-path: inset(0 0 0 0);
 }
 
@@ -1089,7 +1097,7 @@ html.is-loading body {
   font-family: var(--font-display);
   font-size: 30px;
   font-weight: 400;
-  color: #13211d;
+  color: #111923;
   text-shadow: 0 0 6px rgb(255 255 255 / 0.9);
   pointer-events: none;
 }
@@ -1097,7 +1105,7 @@ html.is-loading body {
 .sun-degree {
   font-size: 11px;
   font-weight: 600;
-  color: #13211d;
+  color: #111923;
   opacity: 0.75;
   pointer-events: none;
 }
@@ -1108,7 +1116,7 @@ html.is-loading body {
   border-radius: 999px;
   font-size: 11px;
   font-weight: 700;
-  color: #13211d;
+  color: #111923;
   pointer-events: none;
   font-variant-numeric: tabular-nums;
 }
@@ -1213,7 +1221,7 @@ html.is-loading body {
   z-index: 150;
   display: grid;
   place-items: center;
-  background: radial-gradient(ellipse at 50% 45%, #18241f, #0b120f);
+  background: radial-gradient(ellipse at 50% 45%, #161d26, #0a0e13);
   clip-path: inset(0 0 0 0);
 }
 
@@ -1264,7 +1272,7 @@ body:has(.presentation) .cursor {
   gap: 32px;
   /* Clear of the fixed site header. */
   padding: 104px 16px 64px;
-  background: #3a3f3d;
+  background: #383c41;
 }
 
 .pres-toolbar {
@@ -1309,7 +1317,7 @@ body:has(.presentation) .cursor {
   max-width: 100%;
   overflow: hidden;
   background: #fff;
-  color: #15201d;
+  color: #131a22;
   box-shadow: 0 20px 60px #0006;
 }
 
@@ -1389,8 +1397,8 @@ body:has(.presentation) .cursor {
 .living::before {
   inset: -20%;
   background:
-    radial-gradient(28% 22% at 30% 40%, rgb(12 22 19 / 0.28), transparent 70%),
-    radial-gradient(22% 18% at 70% 60%, rgb(12 22 19 / 0.2), transparent 70%);
+    radial-gradient(28% 22% at 30% 40%, rgb(11 16 23 / 0.28), transparent 70%),
+    radial-gradient(22% 18% at 70% 60%, rgb(11 16 23 / 0.2), transparent 70%);
   animation: living-cloud 28s linear infinite;
 }
 
@@ -1591,7 +1599,7 @@ body:has(.presentation) .cursor {
 /* Shade over the map, carried by the copy itself: whatever the pane's height, the text
    sits on ≥0.85 ink and the shade fades out above it. */
 .gate-shade {
-  background: linear-gradient(to top, rgb(14 26 22 / 0.6), rgb(14 26 22 / 0) 45%);
+  background: linear-gradient(to top, rgb(13 19 27 / 0.6), rgb(13 19 27 / 0) 45%);
 }
 
 .gate-copy--shaded::before {
@@ -1599,21 +1607,21 @@ body:has(.presentation) .cursor {
   position: absolute;
   inset: -45% 0 0;
   z-index: -1;
-  background: linear-gradient(to top, rgb(14 26 22 / 0.95) 0%, rgb(14 26 22 / 0.86) 62%, rgb(14 26 22 / 0) 100%);
+  background: linear-gradient(to top, rgb(13 19 27 / 0.95) 0%, rgb(13 19 27 / 0.86) 62%, rgb(13 19 27 / 0) 100%);
 }
 
 /* Assistant room: copy bottom-left over a bright clip, header controls along the top. */
 .gate-shade--side {
   background:
-    linear-gradient(to bottom, rgb(14 26 22 / 0.55), rgb(14 26 22 / 0) 22%),
-    linear-gradient(to top, rgb(14 26 22 / 0.94) 0%, rgb(14 26 22 / 0.8) 38%, rgb(14 26 22 / 0) 75%);
+    linear-gradient(to bottom, rgb(13 19 27 / 0.55), rgb(13 19 27 / 0) 22%),
+    linear-gradient(to top, rgb(13 19 27 / 0.94) 0%, rgb(13 19 27 / 0.8) 38%, rgb(13 19 27 / 0) 75%);
 }
 
 @media (min-width: 768px) {
   .gate-shade--side {
     background:
-      linear-gradient(to bottom, rgb(14 26 22 / 0.55), rgb(14 26 22 / 0) 22%),
-      linear-gradient(to right, rgb(14 26 22 / 0.9) 0%, rgb(14 26 22 / 0.72) 38%, rgb(14 26 22 / 0) 62%);
+      linear-gradient(to bottom, rgb(13 19 27 / 0.55), rgb(13 19 27 / 0) 22%),
+      linear-gradient(to right, rgb(13 19 27 / 0.9) 0%, rgb(13 19 27 / 0.72) 38%, rgb(13 19 27 / 0) 62%);
   }
 }
 
@@ -1699,8 +1707,8 @@ body:has(.presentation) .cursor {
   border: 1px solid var(--line);
   border-radius: 999px;
   background: #fffcf7;
-  color: #13211d;
-  box-shadow: 0 10px 30px rgb(19 33 29 / 0.1), 0 1px 2px rgb(19 33 29 / 0.08);
+  color: #111923;
+  box-shadow: 0 10px 30px rgb(17 25 35 / 0.1), 0 1px 2px rgb(17 25 35 / 0.08);
   transition: background-color 0.2s;
 }
 
@@ -1730,12 +1738,12 @@ body:has(.presentation) .cursor {
 }
 
 .search-pill__seg:hover {
-  background: rgb(19 33 29 / 0.05);
+  background: rgb(17 25 35 / 0.05);
 }
 
 .search-pill__seg[aria-expanded="true"] {
   background: #fffcf7;
-  box-shadow: 0 6px 20px rgb(19 33 29 / 0.14);
+  box-shadow: 0 6px 20px rgb(17 25 35 / 0.14);
 }
 
 .search-pill__panel {
@@ -1745,7 +1753,7 @@ body:has(.presentation) .cursor {
   border: 1px solid var(--line);
   border-radius: 24px;
   background: #fffcf7;
-  box-shadow: 0 24px 60px rgb(19 33 29 / 0.18);
+  box-shadow: 0 24px 60px rgb(17 25 35 / 0.18);
   animation: pill-panel-in 0.15s var(--ease-out);
 }
 
@@ -1776,7 +1784,7 @@ body:has(.presentation) .cursor {
 
 .search-pill__option:hover,
 .search-pill__option[aria-pressed="true"] {
-  background: rgb(19 33 29 / 0.06);
+  background: rgb(17 25 35 / 0.06);
 }
 
 .search-pill__option[aria-pressed="true"] {
@@ -1796,7 +1804,7 @@ body:has(.presentation) .cursor {
   z-index: 50;
   padding: 6px 10px;
   border-radius: 8px;
-  background: #13211d;
+  background: #111923;
   color: #fff;
   font-size: 12px;
   font-weight: 600;
@@ -1867,7 +1875,7 @@ body:has(.presentation) .cursor {
   translate: -50% 4px;
   padding: 5px 12px;
   border-radius: 999px;
-  background: rgb(12 22 19 / 0.82);
+  background: rgb(11 16 23 / 0.82);
   color: #fff;
   font-size: 12px;
   white-space: nowrap;
@@ -1891,11 +1899,11 @@ body:has(.presentation) .cursor {
   padding: 4px 12px 4px 4px;
   border-radius: 999px;
   background: rgb(255 255 255 / 0.88);
-  color: #13211d;
+  color: #111923;
   font-size: 12px;
   font-weight: 600;
   white-space: nowrap;
-  box-shadow: 0 8px 24px rgb(19 33 29 / 0.18);
+  box-shadow: 0 8px 24px rgb(17 25 35 / 0.18);
   transition: transform 0.25s var(--ease-out);
 }
 
@@ -1959,7 +1967,7 @@ body:has(.presentation) .cursor {
 
 .tour-swatch:has(input:checked) > span[aria-hidden] {
   transform: scale(1.1);
-  box-shadow: 0 0 0 2px rgb(12 22 19 / 0.9), 0 0 0 4px #fff;
+  box-shadow: 0 0 0 2px rgb(11 16 23 / 0.9), 0 0 0 4px #fff;
 }
 
 @media (min-width: 640px) {
@@ -2074,7 +2082,7 @@ body:has(.presentation) .cursor {
   border-radius: 22px;
   backface-visibility: hidden;
   transform: rotateY(calc(var(--i) * 30deg)) translateZ(var(--r, 600px));
-  box-shadow: 0 30px 60px rgb(19 33 29 / 0.25);
+  box-shadow: 0 30px 60px rgb(17 25 35 / 0.25);
 }
 
 .barrel-panel img {
@@ -2087,7 +2095,7 @@ body:has(.presentation) .cursor {
 .barrel-shade {
   position: absolute;
   inset: 0;
-  background: #13211d;
+  background: #111923;
   opacity: 0;
 }
 
@@ -2204,14 +2212,22 @@ body:has(.presentation) .cursor {
   }
 }
 
-/* Copper button: the primary fill as a gradient. */
+/* Copper button: flat, like every other fill, so its edge sits where the layout puts it. */
 .btn-copper {
-  --btn-bg: linear-gradient(110deg, #e0975f 0%, var(--seu-accent) 52%, var(--seu-accent-lo) 100%);
+  --btn-bg: var(--seu-accent);
   --btn-fg: #fff;
-  --btn-border: transparent;
+  --btn-border: var(--seu-accent);
   --btn-fill: var(--seu-accent-lo);
   --btn-fill-fg: #fff;
-  box-shadow: 0 12px 30px rgb(168 84 31 / 0.28), inset 0 1px 0 rgb(255 255 255 / 0.25);
+}
+
+/* Green button: the finding actions (search, show results). Navy label on bright green. */
+.btn-go {
+  --btn-bg: var(--seu-go);
+  --btn-fg: var(--seu-go-ink);
+  --btn-border: var(--seu-go);
+  --btn-fill: var(--seu-go-hover);
+  --btn-fill-fg: var(--seu-go-ink);
 }
 
 
@@ -2269,7 +2285,7 @@ body:has(.presentation) .cursor {
 }
 /* Unchosen: an empty ring on the photo; chosen: a filled cream disc with a check. */
 .view-card__check {
-  background: rgb(12 22 19 / 0.25);
+  background: rgb(11 16 23 / 0.25);
   box-shadow: inset 0 0 0 2px #fff;
   color: transparent;
   transition: background-color 0.2s var(--ease-out), color 0.2s var(--ease-out);
@@ -2277,7 +2293,7 @@ body:has(.presentation) .cursor {
 .view-card.is-on .view-card__check {
   background: #fffcf7;
   box-shadow: 0 4px 14px rgb(0 0 0 / 0.2);
-  color: #13211d;
+  color: #111923;
 }
 @media (prefers-reduced-motion: reduce) {
   .view-card,
@@ -2314,7 +2330,7 @@ body:has(.presentation) .cursor {
   width: 36px;
   height: 22px;
   border-radius: 999px;
-  background: rgb(19 33 29 / 0.18);
+  background: rgb(17 25 35 / 0.18);
   transition: background-color 0.2s;
 }
 
@@ -2356,7 +2372,7 @@ body:has(.presentation) .cursor {
   padding: 0 14px 0 16px;
   border: 1px solid rgb(255 255 255 / 0.28);
   border-radius: 999px;
-  background: rgb(12 22 19 / 0.42);
+  background: rgb(11 16 23 / 0.42);
   -webkit-backdrop-filter: blur(14px) saturate(1.5);
   backdrop-filter: blur(14px) saturate(1.5);
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.16), 0 10px 30px rgb(0 0 0 / 0.25);
@@ -2369,7 +2385,7 @@ body:has(.presentation) .cursor {
 
 .filter-chip:hover,
 .filter-chip[aria-expanded="true"] {
-  background: rgb(12 22 19 / 0.62);
+  background: rgb(11 16 23 / 0.62);
   border-color: rgb(255 255 255 / 0.5);
 }
 
@@ -2394,4 +2410,26 @@ body:has(.presentation) .cursor {
 .filter-chip:disabled {
   opacity: 0.45;
   cursor: default;
+}
+
+/* The assistant (Mariam) keeps the forest palette it was made with; the site around it is
+   navy. Scoped to its full-screen root so nothing else picks these up. */
+main.tone-dark.fixed.inset-0.overflow-hidden.bg-seu-ink {
+  --seu-ink: #0c1613;
+  --seu-bg: #13211d;
+  --seu-bg-deep: #0f1a17;
+  --seu-surface: #1b2c27;
+  --surface: #1b2c27;
+  --on-fg: #13211d;
+  --muted: #c0c9c4;
+  --popover: #1d2f2a;
+  --glass-bg: linear-gradient(140deg, rgb(22 38 33 / 0.86), rgb(10 18 16 / 0.8));
+}
+
+main.tone-dark.fixed.inset-0.overflow-hidden.bg-seu-ink .glass.glass-clear.glass-dark {
+  --glass-bg: linear-gradient(155deg, rgb(28 46 40 / 0.5) 0%, rgb(10 18 16 / 0.4) 50%, rgb(20 34 30 / 0.55) 100%);
+}
+
+main.tone-dark.fixed.inset-0.overflow-hidden.bg-seu-ink .btn-glass {
+  --btn-bg: rgb(12 22 19 / 0.55);
 }

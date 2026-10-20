@@ -95,7 +95,7 @@ export default function ApartmentPresentation({ unit, lang = "en", rooms }: { un
             </ul>
           </div>
         </div>
-        <div className="mt-10 bg-[#1b2120] px-24 pb-12 pt-8 text-center text-white">
+        <div className="mt-10 bg-[#1a1d22] px-24 pb-12 pt-8 text-center text-white">
           <p className="pres-serif text-[22px]">{t.floorPlan}</p>
           <div className="relative mt-6 bg-white p-4">
             <div className="relative" style={{ aspectRatio: `${PLAN_RATIO}` }}>
@@ -104,7 +104,7 @@ export default function ApartmentPresentation({ unit, lang = "en", rooms }: { un
                 <polygon points={UNIT_SHAPES[unit.slot].map((p) => p.join(",")).join(" ")} fill="#c2652a" fillOpacity={0.6} stroke="#fff" strokeWidth={2} vectorEffect="non-scaling-stroke" />
               </svg>
               <span
-                className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#1b2120] px-2.5 py-1 text-[11px] font-semibold text-white"
+                className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#1a1d22] px-2.5 py-1 text-[11px] font-semibold text-white"
                 style={{ left: `${centre(UNIT_SHAPES[unit.slot])[0]}%`, top: `${centre(UNIT_SHAPES[unit.slot])[1]}%` }}
               >
                 {unit.number}

@@ -60,7 +60,7 @@
 
 .map :global(.maplibregl-ctrl-attrib) {
   background: transparent;
-  color: rgb(19 33 29 / 0.8);
+  color: rgb(17 25 35 / 0.8);
   font-size: 10px;
 }
 
@@ -206,11 +206,11 @@
   padding: 6px 6px 6px 12px;
   border-radius: 999px;
   background: rgb(255 255 255 / 0.88);
-  border: 1px solid rgb(19 33 29 / 0.12);
-  box-shadow: 0 8px 24px rgb(19 33 29 / 0.18);
+  border: 1px solid rgb(17 25 35 / 0.12);
+  box-shadow: 0 8px 24px rgb(17 25 35 / 0.18);
   -webkit-backdrop-filter: blur(12px) saturate(1.4);
   backdrop-filter: blur(12px) saturate(1.4);
-  color: #13211d;
+  color: #111923;
   white-space: nowrap;
   opacity: 0;
   transform: translate(-50%, 6px);
@@ -239,13 +239,13 @@
 }
 
 .pin[data-status="finished"] .chip {
-  background: #2c4a41;
+  background: #28384e;
   color: #fff;
 }
 
 .distance {
   padding-right: 6px;
-  color: #4a554f;
+  color: #474e58;
   font-size: 12px;
   font-weight: 600;
 }
@@ -378,7 +378,7 @@
 }
 
 .legend span[data-status="finished"]::before {
-  background: #2c4a41;
+  background: #28384e;
 }
 
 .controls {
@@ -398,7 +398,7 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  border: 1px solid rgb(19 33 29 / 0.55);
+  border: 1px solid rgb(17 25 35 / 0.55);
   cursor: pointer;
   transition:
     background 0.3s,
@@ -507,11 +507,11 @@
   height: 48px;
   margin-left: -24px;
   border-radius: 999px;
-  border: 1px solid rgb(19 33 29 / 0.25);
+  border: 1px solid rgb(17 25 35 / 0.25);
   background: rgb(255 255 255 / 0.6);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
-  color: #13211d;
+  color: #111923;
 }
 
 .scrollHint svg {

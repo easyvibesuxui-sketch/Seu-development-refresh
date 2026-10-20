@@ -349,7 +349,7 @@ export default function BlockPicker() {
             <path
               d={`M-50,-50H150V150H-50Z${focus ? FACADES[focus.id].map((q) => `M${[q.tl, q.tr, q.br, q.bl].map((pt) => pt.join(",")).join("L")}Z`).join("") : ""}`}
               fillRule="evenodd"
-              fill="#0c1613"
+              fill="#0b1017"
               fillOpacity={focus ? 0.5 : 0}
               style={{ transition: "fill-opacity .8s ease-out" }}
               pointerEvents="none"
@@ -381,7 +381,7 @@ export default function BlockPicker() {
                         points={band(p, b.floors, floor).map((pt) => pt.join(",")).join(" ")}
                         // Filtered: matching floors glow as light bands and the rest sink into a
                         // little shade; the floor under the pointer turns copper.
-                        fill={on ? "#e07a3a" : match ? "#fff6ea" : active ? "#0c1613" : "#fff"}
+                        fill={on ? "#e07a3a" : match ? "#fff6ea" : active ? "#0b1017" : "#fff"}
                         fillOpacity={on ? (match ? 0.65 : 0.5) : match ? 0.42 : active ? 0.22 : inBlock ? 0.1 : 0}
                         stroke="#fffaf3"
                         strokeOpacity={match ? 0.9 : 0}
@@ -473,7 +473,7 @@ export default function BlockPicker() {
                       <polygon
                         key={k}
                         points={band(p, focus.floors, floor).map((pt) => pt.join(",")).join(" ")}
-                        fill={on ? "#e07a3a" : match ? "#fff6ea" : active ? "#0c1613" : "#fff"}
+                        fill={on ? "#e07a3a" : match ? "#fff6ea" : active ? "#0b1017" : "#fff"}
                         fillOpacity={on ? (match ? 0.6 : 0.45) : match ? 0.36 : active ? 0.2 : 0}
                         stroke="#fffaf3"
                         strokeOpacity={match ? 0.85 : 0}
@@ -493,7 +493,7 @@ export default function BlockPicker() {
       {/* Shade under the title and a short fade into the page below; the render stays bright between. */}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[38%] bg-gradient-to-b from-seu-ink/85 via-seu-ink/45 to-transparent" />
       {/* A softer shade in the corner under the heading and its links. */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-[40%] bg-[radial-gradient(60%_80%_at_0%_10%,rgb(12_22_19/0.85),transparent_72%)] max-md:bg-[radial-gradient(130%_75%_at_0%_10%,rgb(12_22_19/0.85),transparent_78%)]" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[40%] bg-[radial-gradient(60%_80%_at_0%_10%,rgb(11_16_23/0.85),transparent_72%)] max-md:bg-[radial-gradient(130%_75%_at_0%_10%,rgb(11_16_23/0.85),transparent_78%)]" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-seu-bg to-transparent" />
 
       {/* Close-up: the floor under the pointer is described in a card docked at the side. */}
@@ -560,7 +560,7 @@ export default function BlockPicker() {
 
       {/* Desktop filter, docked at the bottom centre clear of the menu: the chips filter the render
           in place, the search button takes the same choice to the apartment list. */}
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-[260px] bg-[radial-gradient(42%_80%_at_50%_100%,rgb(12_22_19/0.82),rgb(12_22_19/0.4)_55%,transparent)] max-lg:hidden" />
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-[260px] bg-[radial-gradient(42%_80%_at_50%_100%,rgb(11_16_23/0.82),rgb(11_16_23/0.4)_55%,transparent)] max-lg:hidden" />
       <div className="absolute inset-x-0 bottom-10 z-20 flex flex-col items-center gap-4 px-gutter max-lg:hidden">
         {/* What the render now shows, in words (also read out). */}
         <p role="status" className="flex items-center justify-center gap-2 text-center text-[14px] text-white/90 [text-shadow:0_1px_10px_rgb(0_0_0/0.55)]">
@@ -614,7 +614,7 @@ export default function BlockPicker() {
                   <Icon name="reset" size={16} />
                 </button>
               </span>
-              <button type="button" onClick={search} className="btn btn-copper ml-1 px-6 text-[13px] [--ctl-h:44px]">
+              <button type="button" onClick={search} className="btn btn-go ml-1 px-6 text-[13px] [--ctl-h:44px]">
                 <Icon name="search" size={16} strokeWidth={2} />
                 {t("Search", "ძებნა")}
               </button>
@@ -625,7 +625,7 @@ export default function BlockPicker() {
 
       {/* Sun study: one round button in the corner, on its own soft shade so it never melts into
           the trees; its name shows on hover and focus. */}
-      <div aria-hidden className="pointer-events-none absolute bottom-0 right-0 z-10 h-[300px] w-[420px] max-w-full bg-[radial-gradient(closest-side_at_78%_78%,rgb(12_22_19/0.88),rgb(12_22_19/0.45)_55%,transparent)]" />
+      <div aria-hidden className="pointer-events-none absolute bottom-0 right-0 z-10 h-[300px] w-[420px] max-w-full bg-[radial-gradient(closest-side_at_78%_78%,rgb(11_16_23/0.88),rgb(11_16_23/0.45)_55%,transparent)]" />
       <SunButton ref={sunButton} label={t("Sun study", "მზის კვლევა")} onClick={() => setSun(true)} className="absolute bottom-8 right-5 z-10 md:bottom-10 md:right-gutter" />
       <Sheet open={filtering} onClose={() => setFiltering(false)} tone="light" title={t("Filters", "ფილტრები")} bodyClassName="mx-auto w-full max-w-[calc(1180px+2*var(--gutter))] px-gutter pb-8">
         <div className="grid grid-cols-[minmax(0,1fr)] gap-6 [&>div>div]:w-full [&>div>div]:px-0">
@@ -646,7 +646,7 @@ export default function BlockPicker() {
             <button type="button" onClick={() => setF(NONE)} disabled={!active} className="btn min-w-0 flex-1 px-4 disabled:opacity-40">
               <Icon name="reset" size={16} className="max-[359px]:hidden" /> {t("Clear", "გასუფთავება")}
             </button>
-            <button type="button" onClick={() => setFiltering(false)} className="btn btn-primary min-w-0 flex-1 px-4">
+            <button type="button" onClick={() => setFiltering(false)} className="btn btn-go min-w-0 flex-1 px-4">
               {t("Show", "ჩვენება")}
             </button>
           </div>

@@ -129,8 +129,8 @@ const LAYOUTS: Record<number, Layout> = {
 };
 
 const WALL = 20; // units, 100 to the metre
-const INK = "#13211d";
-const LINE = "rgb(19 33 29 / 0.42)";
+const INK = "#111923";
+const LINE = "rgb(17 25 35 / 0.42)";
 const DIM = "#a8541f";
 const PAPER = "#fffdf8";
 

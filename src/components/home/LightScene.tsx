@@ -59,7 +59,7 @@ export default function LightScene() {
 
   return (
     <section ref={rootRef} data-tone="dark" className="tone-dark relative z-10 h-[340vh] shadow-[0_-30px_80px_rgb(0_0_0/0.25)]" aria-label={t("Homes made of light", "სინათლით სავსე სახლები")}>
-      <div className="sticky top-0 h-[100svh] overflow-hidden bg-[#222a24]">
+      <div className="sticky top-0 h-[100svh] overflow-hidden bg-[#21252b]">
         {/* The film fills the stage; the wall with its window sits on top of it. */}
         <div className="absolute inset-0 overflow-hidden">
           <AmbientVideo name="light-interior" className="ls-media h-full w-full object-cover" />

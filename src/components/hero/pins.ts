@@ -15,7 +15,7 @@ function drop(gradientId: string, from: string, to: string) {
       </defs>
       <path d="${DROP_PATH}" fill="url(#${gradientId})"/>
       <path d="${DROP_PATH}" fill="none" stroke="#ffffff" stroke-opacity=".35"/>
-      <circle cx="28" cy="27" r="18" fill="#0e1a16" fill-opacity=".9"/>
+      <circle cx="28" cy="27" r="18" fill="#0d131b" fill-opacity=".9"/>
       <circle cx="28" cy="27" r="18" fill="none" stroke="#ffffff" stroke-opacity=".25"/>
     </svg>`;
 }
@@ -40,7 +40,7 @@ export function createProjectPin(project: MappedProject, onClick: () => void, la
   el.innerHTML = `
     <span class="${styles.ground}"><span class="${styles.pulse}"></span></span>
     <span class="${styles.body}">
-      ${drop(`drop-${project.id}`, ongoing ? "#d0773b" : "#2c4a41", ongoing ? "#6e3613" : "#0c1613")}
+      ${drop(`drop-${project.id}`, ongoing ? "#d0773b" : "#28384e", ongoing ? "#6e3613" : "#0b1017")}
       <img class="${styles.logo}" src="${withBase("/brand/logo-wire.svg")}" alt="" />
     </span>
     <span class="${styles.label}">

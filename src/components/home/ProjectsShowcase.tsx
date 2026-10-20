@@ -140,8 +140,8 @@ export default function ProjectsShowcase() {
               <div className="show-media absolute -inset-x-[14%] inset-y-0">
                 <AmbientVideo name={`deck-${p.id}`} className="h-full w-full object-cover" />
               </div>
-              <div className="absolute inset-0 bg-gradient-to-b from-[#0c1613]/70 via-transparent via-40% to-[#0c1613]/90" />
-              <div className="pointer-events-none absolute inset-0 bg-[#0c1613] opacity-[var(--dim,0)]" />
+              <div className="absolute inset-0 bg-gradient-to-b from-[#0b1017]/70 via-transparent via-40% to-[#0b1017]/90" />
+              <div className="pointer-events-none absolute inset-0 bg-[#0b1017] opacity-[var(--dim,0)]" />
 
               <div className="show-copy relative flex h-full flex-col justify-between p-[clamp(20px,3vw,48px)] pt-[clamp(20px,3vw,40px)]">
                 <p className="eyebrow glass glass-dark self-start rounded-full py-2 pl-4 pr-5 text-white [--muted:#fff]">
@@ -188,7 +188,7 @@ export default function ProjectsShowcase() {
         </div>
 
         {/* "Drag" disc that follows the pointer over the strip (mouse only). */}
-        <div ref={cursorRef} aria-hidden className="show-cursor pointer-events-none absolute left-0 top-0 z-10 -ml-12 -mt-12 hidden h-24 w-24 place-items-center rounded-full bg-[#fffcf7] text-[12px] font-semibold uppercase tracking-[0.12em] text-[#13211d] md:grid">
+        <div ref={cursorRef} aria-hidden className="show-cursor pointer-events-none absolute left-0 top-0 z-10 -ml-12 -mt-12 hidden h-24 w-24 place-items-center rounded-full bg-[#fffcf7] text-[12px] font-semibold uppercase tracking-[0.12em] text-[#111923] md:grid">
           {t("Drag", "გადაათრიე")}
         </div>
       </div>

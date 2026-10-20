@@ -65,7 +65,7 @@ export default function ChooseView() {
                     className={`view-card group relative aspect-[4/3] overflow-hidden rounded-[18px] text-left outline-offset-4 xl:aspect-[3/4] ${on ? "is-on" : ""}`}
                   >
                     <img loading="lazy" decoding="async" src={withBase(`/images/view-${v}.webp`)} alt="" className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]" />
-                    <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-[#0c1613]/75 via-[#0c1613]/10 to-transparent" />
+                    <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-[#0b1017]/75 via-[#0b1017]/10 to-transparent" />
                     <span className="absolute inset-x-0 bottom-0 flex items-center gap-2 p-3 text-white md:p-4">
                       <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-white/15 ring-1 ring-white/40 backdrop-blur">
                         <Icon name={v} size={16} />
@@ -97,7 +97,7 @@ export default function ChooseView() {
               </div>
             </fieldset>
 
-            <button type="submit" className="btn btn-copper btn-lg shrink-0 max-sm:w-full max-sm:whitespace-normal max-sm:py-3 max-sm:text-center max-sm:leading-snug">
+            <button type="submit" className="btn btn-go btn-lg shrink-0 max-sm:w-full max-sm:whitespace-normal max-sm:py-3 max-sm:text-center max-sm:leading-snug">
               <Icon name="search" size={18} strokeWidth={2} />
               {t("Show apartments with this view", "ამ ხედის მქონე ბინების ჩვენება")}
             </button>

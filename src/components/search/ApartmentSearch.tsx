@@ -135,7 +135,7 @@ export default function ApartmentSearch() {
             className="mt-8 hidden md:flex"
             label={t("Search apartments", "ბინების ძებნა")}
             end={
-              <button type="button" onClick={toResults} aria-label={t("Show apartments", "ბინების ჩვენება")} data-tip={t("Show apartments", "ბინების ჩვენება")} className="tip ml-1 grid h-14 w-14 shrink-0 place-items-center self-center rounded-full bg-seu-accent text-white transition-colors hover:bg-seu-accent-hover">
+              <button type="button" onClick={toResults} aria-label={t("Show apartments", "ბინების ჩვენება")} data-tip={t("Show apartments", "ბინების ჩვენება")} className="tip ml-1 grid h-14 w-14 shrink-0 place-items-center self-center rounded-full bg-seu-go text-seu-go-ink transition-colors hover:bg-seu-go-hover">
                 <Icon name="search" size={20} strokeWidth={2} />
               </button>
             }
@@ -167,7 +167,7 @@ export default function ApartmentSearch() {
                 {[projectOptions.find((o) => o.value === f.project)?.label, f.view ? viewIn(f.view, lang) : t("Any view", "ნებისმიერი ხედი"), sizeText(f.sizeFrom, f.sizeTo)].join(" · ")}
               </span>
             </span>
-            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-seu-accent text-white">
+            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-seu-go text-seu-go-ink">
               <Icon name="search" size={18} strokeWidth={2} />
             </span>
           </button>
@@ -223,7 +223,7 @@ export default function ApartmentSearch() {
             </>
           ) : (
             <div className="grid place-items-center py-24 text-center">
-              <svg className="empty-search" width="110" height="110" viewBox="0 0 110 110" fill="none" stroke="#a5aca8" strokeWidth="7" aria-hidden>
+              <svg className="empty-search" width="110" height="110" viewBox="0 0 110 110" fill="none" stroke="#a5a8ac" strokeWidth="7" aria-hidden>
                 <circle cx="46" cy="46" r="36" />
                 <path d="M73 73l30 30" strokeLinecap="round" />
                 <path d="M34 34l24 24M58 34L34 58" strokeWidth="5" strokeLinecap="round" />
@@ -287,7 +287,7 @@ export default function ApartmentSearch() {
               setSheet(false);
               toResults();
             }}
-            className="btn btn-primary"
+            className="btn btn-go"
           >
             {t(`Show ${results.length} apartments`, `${results.length} ბინის ჩვენება`)}
           </button>

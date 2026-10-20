@@ -170,7 +170,7 @@ export default function Interior360() {
             </div>
           )}
           <div className="sunbeams sunbeams--soft" />
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#0c1613]/80 via-[#0c1613]/5 via-35% to-[#0c1613]/90" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#0b1017]/80 via-[#0b1017]/5 via-35% to-[#0b1017]/90" />
 
           <ul className="pointer-events-none absolute left-1/2 top-[46%]" aria-hidden>
             {SPOTS.map((s, i) => (

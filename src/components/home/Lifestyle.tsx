@@ -55,7 +55,7 @@ export default function Lifestyle() {
           <AmbientVideo name="courtyard-sun" className="h-full w-full object-cover" />
         </div>
         <div className="sunbeams" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgb(12_22_19/0.7),rgb(12_22_19/0.25)_70%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgb(11_16_23/0.7),rgb(11_16_23/0.25)_70%)]" />
         <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-b from-transparent to-[#f6f1e8]" />
         <div className="relative px-gutter text-center">
           <p className="eyebrow glass glass-dark mx-auto w-max rounded-full py-2 pl-4 pr-5 text-white [--muted:#fff]">

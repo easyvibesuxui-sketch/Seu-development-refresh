@@ -166,7 +166,7 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
                             width: "clamp(34px, 5.4vw, 64px)",
                             height: "clamp(34px, 5.4vw, 64px)",
                             background: u.status === "available" ? "#f6f1e8" : statusFill[u.status],
-                            color: u.status === "available" ? "#13211d" : "#fff",
+                            color: u.status === "available" ? "#111923" : "#fff",
                             transform: `translate(-50%, -50%) scale(${on ? 1.12 : 1})`,
                           }}
                         >

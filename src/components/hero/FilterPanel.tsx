@@ -98,7 +98,7 @@ export default function FilterPanel({ className = "", tone = "light" }: { classN
               <Icon name="reset" size={18} />
             </button>
           </span>
-          <button type="submit" className="btn btn-copper h-full min-h-14 rounded-[18px] px-7 text-[13px]">
+          <button type="submit" className="btn btn-go h-full min-h-14 rounded-[16px] px-7 text-[13px]">
             <Icon name="search" size={16} strokeWidth={2} />
             {t("Search", "ძებნა")}
           </button>

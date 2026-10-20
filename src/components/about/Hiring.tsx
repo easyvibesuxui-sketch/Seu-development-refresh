@@ -157,7 +157,7 @@ export default function Hiring() {
 
         <ul className="grid gap-6 sm:grid-cols-2" data-stagger aria-label={t("Open roles", "ღია ვაკანსიები")}>
           {roles.map((r) => (
-            <li key={r.id} className="flex flex-col rounded-[24px] bg-white p-7 shadow-[0_30px_80px_rgb(19_33_29/0.08)] md:p-8">
+            <li key={r.id} className="flex flex-col rounded-[24px] bg-white p-7 shadow-[0_30px_80px_rgb(17_25_35/0.08)] md:p-8">
               <p className="eyebrow">{t("Open role", "ვაკანსია")}</p>
               <h3 className="title-m mt-4 text-[clamp(24px,2vw,30px)]">{r.title}</h3>
               <p className="mt-2 text-[15px] text-seu-muted">{r.lead}</p>

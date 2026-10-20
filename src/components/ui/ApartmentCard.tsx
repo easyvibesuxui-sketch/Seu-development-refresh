@@ -47,13 +47,13 @@ export default function ApartmentCard({ unit, className = "" }: { unit: Unit; cl
         />
         {/* Number and status as one chip in the corner, so the picture leads the card: 12px from
             both edges of the card, concentric with its 24px corner. */}
-        <p className="absolute left-0 top-0 inline-flex items-center gap-2.5 rounded-full bg-[#fffcf7]/95 py-1.5 pl-3.5 pr-3 text-[#13211d] shadow-[0_4px_14px_rgb(19_33_29/0.14)] ring-1 ring-[rgb(19_33_29/0.08)] backdrop-blur-md">
+        <p className="absolute left-0 top-0 inline-flex items-center gap-2.5 rounded-full bg-[#fffcf7]/95 py-1.5 pl-3.5 pr-3 text-[#111923] shadow-[0_4px_14px_rgb(17_25_35/0.14)] ring-1 ring-[rgb(17_25_35/0.08)] backdrop-blur-md">
           <span className="text-[14px] font-semibold tabular-nums">
             <span className="sr-only">{t("Apartment", "ბინა")} </span>
             {unit.number}
           </span>
-          <span aria-hidden className="h-3.5 w-px bg-[rgb(19_33_29/0.18)]" />
-          <span className="flex items-center gap-1.5 text-[12px] font-semibold uppercase tracking-[0.12em] text-[#13211d]">
+          <span aria-hidden className="h-3.5 w-px bg-[rgb(17_25_35/0.18)]" />
+          <span className="flex items-center gap-1.5 text-[12px] font-semibold uppercase tracking-[0.12em] text-[#111923]">
             {sold ? <Icon name="lock" size={12} /> : <span className="h-2 w-2 rounded-full" style={{ background: dot[unit.status] }} />}
             {unitStatusIn(unit.status, lang)}
           </span>

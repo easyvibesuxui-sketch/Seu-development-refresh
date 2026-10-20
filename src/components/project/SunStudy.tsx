@@ -170,7 +170,7 @@ export default function SunStudy({ onClose, variant = "full", place }: { onClose
           type: "line",
           source: "ring",
           filter: ["!=", ["get", "kind"], "band"],
-          paint: { "line-color": "#13211d", "line-opacity": ["case", ["==", ["get", "kind"], "major"], 0.7, 0.35], "line-width": 1.2 },
+          paint: { "line-color": "#111923", "line-opacity": ["case", ["==", ["get", "kind"], "major"], 0.7, 0.35], "line-width": 1.2 },
         });
         map.addLayer({
           id: "paths-season",
