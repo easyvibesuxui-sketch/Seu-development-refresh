@@ -34,10 +34,10 @@
   --seu-accent: #a8541f;
   --seu-accent-hover: #b45a22;
   --seu-accent-lo: #6e3613;
-  /* Action green: search and show buttons, with navy text (8.8:1). */
+  /* Action green: search and show buttons, white label (the owner's choice). */
   --seu-go: #2ecc71;
   --seu-go-hover: #25b864;
-  --seu-go-ink: #0b1017;
+  --seu-go-ink: #fff;
   --seu-lime: #c3d62f;
   --seu-blue: #1b4f72;
   /* Unit status, all readable under white text (≥5:1). */
@@ -2221,7 +2221,7 @@ body:has(.presentation) .cursor {
   --btn-fill-fg: #fff;
 }
 
-/* Green button: the finding actions (search, show results). Navy label on bright green. */
+/* Green button: the finding actions (search, show results). White label on bright green. */
 .btn-go {
   --btn-bg: var(--seu-go);
   --btn-fg: var(--seu-go-ink);
@@ -2410,26 +2410,4 @@ body:has(.presentation) .cursor {
 .filter-chip:disabled {
   opacity: 0.45;
   cursor: default;
-}
-
-/* The assistant (Mariam) keeps the forest palette it was made with; the site around it is
-   navy. Scoped to its full-screen root so nothing else picks these up. */
-main.tone-dark.fixed.inset-0.overflow-hidden.bg-seu-ink {
-  --seu-ink: #0c1613;
-  --seu-bg: #13211d;
-  --seu-bg-deep: #0f1a17;
-  --seu-surface: #1b2c27;
-  --surface: #1b2c27;
-  --on-fg: #13211d;
-  --muted: #c0c9c4;
-  --popover: #1d2f2a;
-  --glass-bg: linear-gradient(140deg, rgb(22 38 33 / 0.86), rgb(10 18 16 / 0.8));
-}
-
-main.tone-dark.fixed.inset-0.overflow-hidden.bg-seu-ink .glass.glass-clear.glass-dark {
-  --glass-bg: linear-gradient(155deg, rgb(28 46 40 / 0.5) 0%, rgb(10 18 16 / 0.4) 50%, rgb(20 34 30 / 0.55) 100%);
-}
-
-main.tone-dark.fixed.inset-0.overflow-hidden.bg-seu-ink .btn-glass {
-  --btn-bg: rgb(12 22 19 / 0.55);
 }
