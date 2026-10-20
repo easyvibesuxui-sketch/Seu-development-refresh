@@ -474,7 +474,7 @@ export default function AssistantExperience({ engine = templateEngine }: { engin
 
       {/* Top bar: back to the gate, logo, language. */}
       <header className="absolute inset-x-0 top-0 z-20 flex items-center justify-between gap-3 p-4 md:p-8">
-        <Link href={localize("/", lang)} className="btn btn-glass btn-sm">
+        <Link href={localize("/", lang)} className="btn btn-glass btn-sm [--ctl-h:54px]">
           <Icon name="arrow" size={16} className="rotate-180" /> {t(UI.back)}
         </Link>
         <span className="pointer-events-none hidden items-center gap-2.5 sm:flex" aria-hidden>
@@ -482,12 +482,12 @@ export default function AssistantExperience({ engine = templateEngine }: { engin
           <span className="label text-[12px] tracking-[0.3em]">SEU</span>
         </span>
         <div className="flex items-center gap-2">
-          <button type="button" aria-pressed={soundOn} aria-label={t(UI.sound)} title={t(UI.sound)} onClick={toggleSound} className="btn btn-glass btn-sm w-10 px-0">
+          <button type="button" aria-pressed={soundOn} aria-label={t(UI.sound)} title={t(UI.sound)} onClick={toggleSound} className="btn btn-glass btn-icon [--ctl-h:54px]">
             <Icon name={soundOn ? "volume" : "mute"} size={18} />
           </button>
-          <div className="segmented ctl-sm border-white/40 bg-seu-ink/50 backdrop-blur" role="group" aria-label={lang === "ka" ? "ენა" : "Language"}>
+          <div className="segmented border-white/40 bg-seu-ink/50 backdrop-blur [--ctl-h:54px]" role="group" aria-label={lang === "ka" ? "ენა" : "Language"}>
             {(["ka", "en"] as const).map((l) => (
-              <button key={l} type="button" lang={l} aria-pressed={lang === l} onClick={() => setLang(l)} className="text-white">
+              <button key={l} type="button" lang={l} aria-pressed={lang === l} onClick={() => setLang(l)} className={`min-w-[52px] text-[13px] ${lang === l ? "" : "text-white"}`}>
                 {l === "ka" ? "ქარ" : "EN"}
               </button>
             ))}
