@@ -6,6 +6,7 @@ import { withBase } from "@/data/projects";
 import { TOUR, tourStop, WALL_COLOURS, type TourLink, type TourPlace } from "@/data/tour";
 import { useLang } from "@/lib/useLang";
 import Icon from "@/components/ui/Icon";
+import Sheet from "@/components/ui/Sheet";
 
 const reducedQuery = "(prefers-reduced-motion: reduce)";
 const subscribeReduced = (cb: () => void) => {
@@ -22,6 +23,8 @@ const useReducedMotion = () =>
  * you there. The dollhouse (3D) and the top-down plan (2D) are tabs of the apartment stage
  * (TourModel below) whose room markers open the tour in that room. Wall colours repaint the
  * walls of every place through a mask, multiplied over the white paint so light and shade stay.
+ * The expand button opens the same tour in a large window over the page (`expanded`), which
+ * picks up the room and colour and hands them back when it closes.
  */
 export default function VirtualTour({
   label,
@@ -29,12 +32,16 @@ export default function VirtualTour({
   onPlace,
   colour,
   onColour,
+  expanded = false,
+  onClose,
 }: {
   label: string;
   start: TourPlace;
   onPlace: (p: TourPlace) => void;
   colour: string;
   onColour: (id: string) => void;
+  expanded?: boolean;
+  onClose?: () => void;
 }) {
   const lang = useLang();
   const t = (en: string, ka: string) => (lang === "ka" ? ka : en);
@@ -50,7 +57,7 @@ export default function VirtualTour({
   const [place, setPlace] = useState<TourPlace>(start);
   const [size, setSize] = useState({ w: 0, h: 0 });
   const [walking, setWalking] = useState<string | null>(null);
-  const [full, setFull] = useState(false);
+  const [open, setOpen] = useState(false);
   const [status, setStatus] = useState("");
 
   const stop = tourStop(place);
@@ -196,17 +203,22 @@ export default function VirtualTour({
     setWalking(null);
   };
 
-  const toggleFull = async () => {
-    const root = rootRef.current;
-    if (!root) return;
-    if (document.fullscreenElement) await document.exitFullscreen();
-    else await root.requestFullscreen?.();
+  // The large window reports where it is; closing it continues the tour in that room here.
+  const bigPlace = useRef<TourPlace>(place);
+  const openBig = () => {
+    bigPlace.current = place;
+    setOpen(true);
   };
-  useEffect(() => {
-    const on = () => setFull(document.fullscreenElement === rootRef.current);
-    document.addEventListener("fullscreenchange", on);
-    return () => document.removeEventListener("fullscreenchange", on);
-  }, []);
+  const closeBig = () => {
+    setOpen(false);
+    if (bigPlace.current === place) return;
+    pan.current.c = tourStop(bigPlace.current).start;
+    setPlace(bigPlace.current);
+  };
+  const onBigPlace = (p: TourPlace) => {
+    bigPlace.current = p;
+    onPlace(p);
+  };
 
   return (
     <div ref={rootRef} className="absolute inset-0 overflow-hidden bg-seu-ink" aria-label={label} role="region">
@@ -269,22 +281,28 @@ export default function VirtualTour({
         />
       </div>
 
-      {/* Where you are, and full screen. */}
-      <div className="absolute right-4 top-16 z-10 flex items-center gap-2 sm:top-4">
-        <p className="glass glass-dark hidden rounded-full px-4 py-2 text-[14px] text-white sm:block">{t(stop.name[0], stop.name[1])}</p>
-        <button
-          type="button"
-          onClick={toggleFull}
-          aria-pressed={full}
-          aria-label={full ? t("Exit full screen", "სრული ეკრანიდან გასვლა") : t("Full screen", "სრული ეკრანი")}
-          className="glass glass-dark grid h-10 w-10 place-items-center rounded-full text-white"
-        >
-          <Icon name={full ? "shrink" : "expand"} size={18} />
-        </button>
+      {/* Where you are, and the large window (open from the page, close inside it). */}
+      <div className={`absolute z-10 flex items-center gap-2 ${expanded ? "right-4 top-4 sm:right-6 sm:top-6" : "right-4 top-16 sm:top-4"}`}>
+        <p className={`glass glass-dark rounded-full px-4 py-2 text-[14px] text-white ${expanded ? "" : "hidden sm:block"}`}>{t(stop.name[0], stop.name[1])}</p>
+        {expanded ? (
+          <button type="button" onClick={onClose} aria-label={t("Close", "დახურვა")} className="grid h-11 w-11 place-items-center rounded-full bg-white text-seu-ink shadow-[0_6px_20px_rgb(0_0_0/0.25)] transition-transform hover:scale-105" data-autofocus>
+            <Icon name="close" size={18} />
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={openBig}
+            aria-haspopup="dialog"
+            aria-label={t("Open the tour large", "ტურის დიდ ფანჯარაში გახსნა")}
+            className="glass glass-dark grid h-11 w-11 place-items-center rounded-full text-white"
+          >
+            <Icon name="expand" size={18} />
+          </button>
+        )}
       </div>
 
       {/* Wall colours, bottom centre. */}
-      <fieldset className="glass glass-dark absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 items-center gap-1 rounded-full p-1 sm:gap-1.5 sm:pl-3">
+      <fieldset className={`glass glass-dark absolute left-1/2 ${expanded ? "bottom-5 sm:bottom-6" : "bottom-4"} z-10 flex -translate-x-1/2 items-center gap-1 rounded-full p-1 sm:gap-1.5 sm:pl-3`}>
           <legend className="sr-only">{t("Wall colour", "კედლის ფერი")}</legend>
           <Icon name="palette" size={16} className="mr-1 hidden text-white sm:block" />
           {WALL_COLOURS.map((c) => (
@@ -299,6 +317,12 @@ export default function VirtualTour({
       <p className="sr-only" aria-live="polite">
         {status}
       </p>
+
+      {!expanded && (
+        <Sheet open={open} onClose={closeBig} side="center" label={label} bodyClassName="relative">
+          <VirtualTour label={label} start={place} onPlace={onBigPlace} colour={colour} onColour={onColour} expanded onClose={closeBig} />
+        </Sheet>
+      )}
     </div>
   );
 }

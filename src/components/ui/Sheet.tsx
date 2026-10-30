@@ -11,7 +11,8 @@ const stack: string[] = [];
 
 /**
  * The site's overlay panel. `side="bottom"` rises from the bottom edge (drag the handle down
- * to close); `side="right"` slides in as a drawer. Either closes with ✕, Escape or the
+ * to close); `side="right"` slides in as a drawer; `side="center"` is a large window with a
+ * margin all round. Each closes with ✕, Escape or the
  * backdrop, keeps Tab inside itself and hands focus back to whatever opened it.
  * Sheets stack: a drawer opened from a sheet sits above it and closes back to it.
  */
@@ -29,7 +30,7 @@ export default function Sheet({
 }: {
   open: boolean;
   onClose: () => void;
-  side?: "bottom" | "right";
+  side?: "bottom" | "right" | "center";
   eyebrow?: ReactNode;
   /** Visible heading; without it, pass `label` and let the content carry its own close button. */
   title?: ReactNode;
@@ -112,9 +113,13 @@ export default function Sheet({
     if (far) onClose();
   };
 
-  const place = bottom
-    ? `inset-x-0 bottom-0 max-h-[92svh] rounded-t-[28px] border-t ${shown ? "translate-y-0" : "translate-y-full"}`
-    : `inset-y-0 right-0 w-full max-w-[560px] border-l sm:rounded-l-[28px] ${shown ? "translate-x-0" : "translate-x-full"}`;
+  // "center": a large window over the page with a margin all round (the tour, the map).
+  const place =
+    side === "center"
+      ? `inset-x-3 inset-y-3 rounded-[24px] border sm:inset-x-6 sm:inset-y-6 lg:inset-x-10 lg:inset-y-8 ${shown ? "scale-100 opacity-100" : "scale-[0.97] opacity-0"}`
+      : bottom
+        ? `inset-x-0 bottom-0 max-h-[92svh] rounded-t-[28px] border-t ${shown ? "translate-y-0" : "translate-y-full"}`
+        : `inset-y-0 right-0 w-full max-w-[560px] border-l sm:rounded-l-[28px] ${shown ? "translate-x-0" : "translate-x-full"}`;
 
   return createPortal(
     <div className="fixed inset-0 z-[400]" data-lenis-prevent>
@@ -132,7 +137,7 @@ export default function Sheet({
         aria-labelledby={title ? `${id}-title` : undefined}
         aria-label={title ? undefined : label}
         tabIndex={-1}
-        className={`tone-${tone} absolute flex flex-col overflow-hidden border-white/10 bg-seu-bg shadow-[0_-30px_80px_rgb(0_0_0/0.45)] outline-none transition-transform ${shown ? "duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)]" : "duration-200 ease-in"} ${place} ${className}`}
+        className={`tone-${tone} absolute flex flex-col overflow-hidden border-white/10 bg-seu-bg shadow-[0_-30px_80px_rgb(0_0_0/0.45)] outline-none ${side === "center" ? "transition-[transform,opacity]" : "transition-transform"} ${shown ? "duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)]" : "duration-200 ease-in"} ${place} ${className}`}
         style={tone === "light" ? { background: "var(--seu-paper)" } : undefined}
       >
         {bottom && (
