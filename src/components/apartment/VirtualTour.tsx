@@ -325,7 +325,7 @@ export default function VirtualTour({
       </div>
 
       {/* Wall colours and floor finishes, bottom centre: one switch, one row of swatches. */}
-      <div className={`glass glass-dark absolute left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-1 rounded-[24px] p-1 min-[480px]:flex-row min-[480px]:rounded-full ${expanded ? "bottom-5 sm:bottom-6" : "bottom-4"}`}>
+      <div className={`glass glass-dark absolute left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2.5 rounded-[28px] px-3 pb-2 pt-3 min-[480px]:flex-row min-[480px]:gap-3 min-[480px]:rounded-full min-[480px]:py-1.5 min-[480px]:pl-1.5 min-[480px]:pr-3 ${expanded ? "bottom-5 sm:bottom-6" : "bottom-4"}`}>
         <div className="segmented shrink-0 border-white/25 bg-transparent [--ctl-h:44px]" role="group" aria-label={t("Paint", "ფერი")}>
           {(["walls", "floor"] as const).map((k) => (
             <button key={k} type="button" aria-pressed={paint === k} onClick={() => setPaint(k)} className={paint === k ? "" : "text-white"}>
@@ -333,8 +333,10 @@ export default function VirtualTour({
             </button>
           ))}
         </div>
+        {/* A hairline keeps the switch and the swatches apart: across on phones, upright in a row. */}
+        <span aria-hidden className="h-px w-full bg-white/15 min-[480px]:h-7 min-[480px]:w-px" />
         {paint === "walls" ? (
-          <fieldset className="flex items-center">
+          <fieldset className="flex items-center gap-1">
             <legend className="sr-only">{t("Wall colour", "კედლის ფერი")}</legend>
             {WALL_COLOURS.map((c) => (
               <label key={c.id} title={t(c.name[0], c.name[1])} className="tour-swatch">
@@ -345,7 +347,7 @@ export default function VirtualTour({
             ))}
           </fieldset>
         ) : (
-          <fieldset className="flex items-center">
+          <fieldset className="flex items-center gap-1">
             <legend className="sr-only">{t("Floor finish", "იატაკის ფერი")}</legend>
             {FLOOR_FINISHES.map((f) => (
               <label key={f.id} title={t(f.name[0], f.name[1])} className="tour-swatch">
@@ -359,7 +361,7 @@ export default function VirtualTour({
       </div>
       {/* Rooms without parquet say so instead of silently ignoring the floor choice. */}
       {paint === "floor" && !stop.floor && (
-        <p className={`glass glass-dark absolute left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-full px-4 py-2 text-[13px] text-white ${expanded ? "bottom-[148px] min-[480px]:bottom-[88px]" : "bottom-[136px] min-[480px]:bottom-[76px]"}`}>
+        <p className={`glass glass-dark absolute left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-full px-4 py-2 text-[13px] text-white ${expanded ? "bottom-[162px] min-[480px]:bottom-[92px]" : "bottom-[154px] min-[480px]:bottom-[86px]"}`}>
           {t("This room has no parquet", "ამ ოთახში პარკეტი არ არის")}
         </p>
       )}
