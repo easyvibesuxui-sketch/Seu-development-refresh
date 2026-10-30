@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 import gsap from "gsap";
 import { withBase } from "@/data/projects";
-import { TOUR, tourStop, WALL_COLOURS, type TourLink, type TourPlace } from "@/data/tour";
+import { FLOOR_FINISHES, TOUR, tourStop, WALL_COLOURS, type TourLink, type TourPlace } from "@/data/tour";
 import { useLang } from "@/lib/useLang";
 import Icon from "@/components/ui/Icon";
 import Sheet from "@/components/ui/Sheet";
@@ -22,7 +22,8 @@ const useReducedMotion = () =>
  * arrow keys) and step to the next place with the rings on the floor — a short Kling clip walks
  * you there. The dollhouse (3D) and the top-down plan (2D) are tabs of the apartment stage
  * (TourModel below) whose room markers open the tour in that room. Wall colours repaint the
- * walls of every place through a mask, multiplied over the white paint so light and shade stay.
+ * walls of every place through a mask, multiplied over the white paint so light and shade stay;
+ * floor finishes do the same for the oak parquet (hall, living room, second bedroom).
  * The expand button opens the same tour in a large window over the page (`expanded`), which
  * picks up the room and colour and hands them back when it closes.
  */
@@ -32,6 +33,8 @@ export default function VirtualTour({
   onPlace,
   colour,
   onColour,
+  floor,
+  onFloor,
   expanded = false,
   onClose,
 }: {
@@ -40,6 +43,8 @@ export default function VirtualTour({
   onPlace: (p: TourPlace) => void;
   colour: string;
   onColour: (id: string) => void;
+  floor: string;
+  onFloor: (id: string) => void;
   expanded?: boolean;
   onClose?: () => void;
 }) {
@@ -62,6 +67,9 @@ export default function VirtualTour({
 
   const stop = tourStop(place);
   const hex = WALL_COLOURS.find((c) => c.id === colour)?.hex ?? null;
+  const finish = FLOOR_FINISHES.find((f) => f.id === floor) ?? FLOOR_FINISHES[0];
+  // Which palette the bar shows: walls or floor.
+  const [paint, setPaint] = useState<"walls" | "floor">("walls");
   const imgW = size.h * stop.aspect;
 
   // The stage size drives the pan range; it changes with the window and with full screen.
@@ -254,6 +262,21 @@ export default function VirtualTour({
                 }}
               />
             )}
+            {stop.floor && (
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-0 transition-opacity duration-500"
+                style={{
+                  backgroundColor: finish.hex ?? "transparent",
+                  opacity: finish.hex && !walking ? finish.opacity : 0,
+                  mixBlendMode: finish.blend,
+                  WebkitMaskImage: `url(${withBase(stop.floor)})`,
+                  maskImage: `url(${withBase(stop.floor)})`,
+                  WebkitMaskSize: "100% 100%",
+                  maskSize: "100% 100%",
+                }}
+              />
+            )}
             {!walking &&
               stop.links.map((l) => (
                 <button
@@ -301,18 +324,45 @@ export default function VirtualTour({
         )}
       </div>
 
-      {/* Wall colours, bottom centre. */}
-      <fieldset className={`glass glass-dark absolute left-1/2 ${expanded ? "bottom-5 sm:bottom-6" : "bottom-4"} z-10 flex -translate-x-1/2 items-center gap-1 rounded-full p-1 sm:gap-1.5 sm:pl-3`}>
-          <legend className="sr-only">{t("Wall colour", "კედლის ფერი")}</legend>
-          <Icon name="palette" size={16} className="mr-1 hidden text-white sm:block" />
-          {WALL_COLOURS.map((c) => (
-            <label key={c.id} title={t(c.name[0], c.name[1])} className="tour-swatch">
-              <input type="radio" name="wall-colour" value={c.id} checked={colour === c.id} onChange={() => onColour(c.id)} className="sr-only" />
-              <span aria-hidden style={{ background: c.hex ?? "#f3ece1" }} />
-              <span className="sr-only">{t(c.name[0], c.name[1])}</span>
-            </label>
+      {/* Wall colours and floor finishes, bottom centre: one switch, one row of swatches. */}
+      <div className={`glass glass-dark absolute left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-1 rounded-[24px] p-1 min-[480px]:flex-row min-[480px]:rounded-full ${expanded ? "bottom-5 sm:bottom-6" : "bottom-4"}`}>
+        <div className="segmented shrink-0 border-white/25 bg-transparent [--ctl-h:44px]" role="group" aria-label={t("Paint", "ფერი")}>
+          {(["walls", "floor"] as const).map((k) => (
+            <button key={k} type="button" aria-pressed={paint === k} onClick={() => setPaint(k)} className={paint === k ? "" : "text-white"}>
+              {k === "walls" ? t("Walls", "კედლები") : t("Floor", "იატაკი")}
+            </button>
           ))}
-      </fieldset>
+        </div>
+        {paint === "walls" ? (
+          <fieldset className="flex items-center">
+            <legend className="sr-only">{t("Wall colour", "კედლის ფერი")}</legend>
+            {WALL_COLOURS.map((c) => (
+              <label key={c.id} title={t(c.name[0], c.name[1])} className="tour-swatch">
+                <input type="radio" name={`wall-colour${expanded ? "-big" : ""}`} value={c.id} checked={colour === c.id} onChange={() => onColour(c.id)} className="sr-only" />
+                <span aria-hidden style={{ background: c.hex ?? "#f3ece1" }} />
+                <span className="sr-only">{t(c.name[0], c.name[1])}</span>
+              </label>
+            ))}
+          </fieldset>
+        ) : (
+          <fieldset className="flex items-center">
+            <legend className="sr-only">{t("Floor finish", "იატაკის ფერი")}</legend>
+            {FLOOR_FINISHES.map((f) => (
+              <label key={f.id} title={t(f.name[0], f.name[1])} className="tour-swatch">
+                <input type="radio" name={`floor-finish${expanded ? "-big" : ""}`} value={f.id} checked={floor === f.id} onChange={() => onFloor(f.id)} className="sr-only" />
+                <span aria-hidden style={{ background: `repeating-linear-gradient(100deg, rgb(255 255 255 / 0.12) 0 2px, transparent 2px 6px), ${f.swatch}` }} />
+                <span className="sr-only">{t(f.name[0], f.name[1])}</span>
+              </label>
+            ))}
+          </fieldset>
+        )}
+      </div>
+      {/* Rooms without parquet say so instead of silently ignoring the floor choice. */}
+      {paint === "floor" && !stop.floor && (
+        <p className={`glass glass-dark absolute left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-full px-4 py-2 text-[13px] text-white ${expanded ? "bottom-[148px] min-[480px]:bottom-[88px]" : "bottom-[136px] min-[480px]:bottom-[76px]"}`}>
+          {t("This room has no parquet", "ამ ოთახში პარკეტი არ არის")}
+        </p>
+      )}
 
       <p className="sr-only" aria-live="polite">
         {status}
@@ -320,7 +370,7 @@ export default function VirtualTour({
 
       {!expanded && (
         <Sheet open={open} onClose={closeBig} side="center" label={label} bodyClassName="relative">
-          <VirtualTour label={label} start={place} onPlace={onBigPlace} colour={colour} onColour={onColour} expanded onClose={closeBig} />
+          <VirtualTour label={label} start={place} onPlace={onBigPlace} colour={colour} onColour={onColour} floor={floor} onFloor={onFloor} expanded onClose={closeBig} />
         </Sheet>
       )}
     </div>

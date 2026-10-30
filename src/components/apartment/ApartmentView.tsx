@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import gsap from "gsap";
 import { withBase } from "@/data/projects";
-import { WALL_COLOURS, type TourPlace } from "@/data/tour";
+import { FLOOR_FINISHES, WALL_COLOURS, type TourPlace } from "@/data/tour";
 import { roomIn, unitStatusIn, units, viewIn, type RoomKind, type Unit, type ViewId } from "@/data/inventory";
 import { useHref, useLang } from "@/lib/useLang";
 import { Container, Section, SectionHeader } from "@/components/ui/Section";
@@ -49,6 +49,7 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
   // The tour's room and wall colour live here, so the 3D and 2D markers can open it in a room.
   const [tourAt, setTourAt] = useState<TourPlace>("hall");
   const [wall, setWall] = useState(WALL_COLOURS[0].id);
+  const [floorFinish, setFloorFinish] = useState(FLOOR_FINISHES[0].id);
   const [asking, setAsking] = useState(false);
   const [sheet, setSheet] = useState(false);
   const [sun, setSun] = useState(false);
@@ -245,6 +246,8 @@ export default function ApartmentView({ unit }: { unit: Unit }) {
                 onPlace={setTourAt}
                 colour={wall}
                 onColour={setWall}
+                floor={floorFinish}
+                onFloor={setFloorFinish}
               />
             ) : (
               <>

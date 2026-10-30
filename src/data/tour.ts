@@ -32,6 +32,8 @@ export type TourStop = {
   start: number;
   /** Alpha mask of the painted walls, for the wall colours. */
   walls?: string;
+  /** Alpha mask of the oak floor, for the floor finishes (rooms with parquet only). */
+  floor?: string;
   links: TourLink[];
   /** Marker on the dollhouse and on the top-down plan. */
   doll: [number, number];
@@ -48,6 +50,7 @@ export const TOUR: TourStop[] = [
     aspect: W21,
     start: 0.5,
     walls: "/tour/hall-walls.png",
+    floor: "/tour/hall-floor.png",
     links: [
       { to: "living", x: 0.8, y: 0.84, clip: "hall-living", from: 0.62, land: 0.5 },
       { to: "bed1", x: 0.415, y: 0.8, clip: "hall-bed1", from: 0.43, land: 0.5 },
@@ -64,6 +67,7 @@ export const TOUR: TourStop[] = [
     aspect: 5120 / 1315,
     start: 0.5,
     walls: "/tour/living-walls.png",
+    floor: "/tour/living-floor.png",
     links: [
       { to: "balcony", x: 0.9, y: 0.84, clip: "living-balcony", from: 0.77, land: 0.5 },
       { to: "hall", x: 0.08, y: 0.84 },
@@ -89,6 +93,7 @@ export const TOUR: TourStop[] = [
     aspect: W21,
     start: 0.5,
     walls: "/tour/bed2-walls.png",
+    floor: "/tour/bed2-floor.png",
     links: [{ to: "hall", x: 0.12, y: 0.84 }],
     doll: [0.73, 0.66],
     plan: [0.8, 0.6],
@@ -126,4 +131,25 @@ export const WALL_COLOURS: { id: string; name: [en: string, ka: string]; hex: st
   { id: "clay", name: ["Clay", "თიხა"], hex: "#e2b59a" },
   { id: "mist", name: ["Mist blue", "ნისლისფერი"], hex: "#c2d0d8" },
   { id: "graphite", name: ["Graphite", "გრაფიტი"], hex: "#8d918e" },
+];
+
+/**
+ * Floor finishes for the oak parquet; null keeps the floor as built. Each is one layer through
+ * the floor mask, so the grain and the light stay: darker woods multiply, the grey and white
+ * oaks shift the colour and lift it.
+ */
+export const FLOOR_FINISHES: {
+  id: string;
+  name: [en: string, ka: string];
+  hex: string | null;
+  blend: "multiply" | "color" | "soft-light" | "screen";
+  opacity: number;
+  swatch: string;
+}[] = [
+  { id: "built", name: ["As built", "როგორც არის"], hex: null, blend: "multiply", opacity: 0, swatch: "#d9b58c" },
+  { id: "white", name: ["White oak", "თეთრი მუხა"], hex: "#efe9df", blend: "screen", opacity: 0.55, swatch: "#e9dfcf" },
+  { id: "grey", name: ["Grey oak", "ნაცრისფერი მუხა"], hex: "#a29d94", blend: "color", opacity: 0.85, swatch: "#b3aca1" },
+  { id: "honey", name: ["Honey oak", "თაფლისფერი მუხა"], hex: "#e2ae72", blend: "multiply", opacity: 0.55, swatch: "#c8925a" },
+  { id: "smoked", name: ["Smoked oak", "შებოლილი მუხა"], hex: "#8a6a52", blend: "multiply", opacity: 0.85, swatch: "#8b6a50" },
+  { id: "walnut", name: ["Walnut", "კაკალი"], hex: "#6e4a34", blend: "multiply", opacity: 0.95, swatch: "#5f3f2c" },
 ];
