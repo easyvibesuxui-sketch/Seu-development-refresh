@@ -561,7 +561,7 @@ export default function BlockPicker() {
       {/* Desktop filter, docked at the bottom centre clear of the menu: the chips filter the render
           in place, the search button takes the same choice to the apartment list. */}
       <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-[260px] bg-[radial-gradient(42%_80%_at_50%_100%,rgb(11_16_23/0.82),rgb(11_16_23/0.4)_55%,transparent)] max-lg:hidden" />
-      <div className="absolute inset-x-0 bottom-10 z-20 flex flex-col items-center gap-4 px-gutter max-lg:hidden">
+      <div className="pointer-events-none absolute inset-x-0 bottom-10 z-20 flex flex-col items-center gap-4 px-gutter max-lg:hidden [&>*]:pointer-events-auto">
         {/* What the render now shows, in words (also read out). */}
         <p role="status" className="flex items-center justify-center gap-2 text-center text-[14px] text-white/90 [text-shadow:0_1px_10px_rgb(0_0_0/0.55)]">
           {active && <span aria-hidden className={`h-2 w-2 shrink-0 rounded-full ${total ? "bg-[#ffd7b5] shadow-[0_0_0_3px_rgb(255_215_181/0.3)]" : "bg-white/40"}`} />}

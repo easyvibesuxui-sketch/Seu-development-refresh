@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Sheet from "@/components/ui/Sheet";
+import Icon, { type IconName } from "@/components/ui/Icon";
 import type { GeoJSONSource, Map as MapLibreMap, Marker } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { mappedProjects, withBase } from "@/data/projects";
@@ -57,6 +58,8 @@ export default function SunStudy({ onClose, variant = "full", place }: { onClose
   const [doy, setDoy] = useState(() => Math.floor((local.valueOf() - Date.UTC(year, 0, 1)) / 86_400_000));
   const [minutes, setMinutes] = useState(() => local.getUTCHours() * 60 + local.getUTCMinutes());
   const [playing, setPlaying] = useState(false);
+  // Date, play and the figures live behind the settings button.
+  const [more, setMore] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
@@ -70,6 +73,9 @@ export default function SunStudy({ onClose, variant = "full", place }: { onClose
 
   const day = useMemo(() => dayOf(year, doy), [year, doy]);
   const times = useMemo(() => sunTimes(day, lat, lng, UTC_OFFSET), [day, lat, lng]);
+  // The time slider runs from just before sunrise into the night, so evening and night have a
+  // place on it; the four marks under it jump to dawn, noon, evening and night.
+  const span = useMemo(() => ({ lo: Math.max(0, times.rise - 45), hi: Math.min(1439, times.set + 150) }), [times]);
   const sun = useMemo(() => sunPosition(atMinutes(day, minutes, UTC_OFFSET), lat, lng), [day, minutes, lat, lng]);
 
   // Metres east/north of the site to [lng, lat].
@@ -140,9 +146,8 @@ export default function SunStudy({ onClose, variant = "full", place }: { onClose
         canvasContextAttributes: { antialias: true },
       });
       mapRef.current = map;
-      // On phones the time strip runs along the bottom, so the zoom buttons go to the top left.
-      const phone = window.matchMedia("(max-width: 767px)").matches;
-      map.addControl(new maplibre.NavigationControl({ visualizePitch: true }), phone ? "top-left" : "bottom-right");
+      // Zoom buttons bottom right, lifted above the time bar where the bar reaches that corner.
+      map.addControl(new maplibre.NavigationControl({ visualizePitch: true }), "bottom-right");
 
       map.on("load", () => {
         if (!map) return;
@@ -336,15 +341,15 @@ export default function SunStudy({ onClose, variant = "full", place }: { onClose
     if (!playing) return;
     const id = window.setInterval(() => {
       setMinutes((m) => {
-        if (m >= times.set) {
+        if (m >= span.hi) {
           setPlaying(false);
-          return times.set;
+          return span.hi;
         }
-        return Math.min(times.set, Math.max(times.rise, m) + 4);
+        return Math.min(span.hi, Math.max(span.lo, m) + 4);
       });
     }, 60);
     return () => window.clearInterval(id);
-  }, [playing, times]);
+  }, [playing, span]);
 
   const dateText = `${day.getUTCDate()} ${(lang === "ka" ? MONTHS_KA : MONTHS)[day.getUTCMonth()]} ${year}`;
   const daylight = times.set - times.rise;
@@ -354,15 +359,23 @@ export default function SunStudy({ onClose, variant = "full", place }: { onClose
     setMinutes(l.getUTCHours() * 60 + l.getUTCMinutes());
   };
 
-  // The controls appear in both layouts (phone strip and desktop card); only one is shown.
-  const timeRange = (cls: string) => (
+  const pct = (m: number) => ((m - span.lo) / (span.hi - span.lo)) * 100;
+  const marks: { icon: IconName; at: number; label: [string, string] }[] = [
+    { icon: "sunrise", at: times.rise + 10, label: ["Sunrise", "მზის ამოსვლა"] },
+    { icon: "sun", at: Math.round((times.rise + times.set) / 2), label: ["Noon", "შუადღე"] },
+    { icon: "cloudSun", at: times.set - 75, label: ["Evening", "საღამო"] },
+    { icon: "moon", at: span.hi, label: ["Night", "ღამე"] },
+  ];
+  const near = (m: number) => Math.abs(minutes - m) < 25;
+
+  const timeRange = (
     <input
       type="range"
-      className={`sun-range w-full ${cls}`}
-      min={times.rise}
-      max={times.set}
+      className="sun-track w-full"
+      min={span.lo}
+      max={span.hi}
       step={5}
-      value={Math.min(times.set, Math.max(times.rise, minutes))}
+      value={Math.min(span.hi, Math.max(span.lo, minutes))}
       aria-label={t("Time of day", "დღის დრო")}
       aria-valuetext={clock(minutes)}
       onChange={(e) => {
@@ -371,33 +384,16 @@ export default function SunStudy({ onClose, variant = "full", place }: { onClose
       }}
     />
   );
-  const dateRange = (cls: string) => (
-    <input
-      type="range"
-      className={`sun-range sun-range--date w-full ${cls}`}
-      min={0}
-      max={364}
-      value={doy}
-      aria-label={t("Date", "თარიღი")}
-      aria-valuetext={dateText}
-      onChange={(e) => setDoy(+e.target.value)}
-    />
-  );
-  const nowButton = (
-    <button type="button" onClick={toNow} className="btn btn-sm border-white/40 text-white">
-      {t("Now", "ახლა")}
-    </button>
-  );
   const playButton = (
     <button
       type="button"
       aria-pressed={playing}
       aria-label={playing ? t("Pause the day", "დღის შეჩერება") : t("Play the day", "დღის დაკვრა")}
       onClick={() => {
-        if (!playing && minutes >= times.set) setMinutes(times.rise);
+        if (!playing && minutes >= span.hi) setMinutes(span.lo);
         setPlaying(!playing);
       }}
-      className="btn btn-icon btn-sm h-10 w-10 border-white/40 text-white aria-pressed:bg-seu-accent"
+      className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-white/30 text-white transition-colors hover:bg-white/10 aria-pressed:border-white aria-pressed:bg-white aria-pressed:text-seu-ink"
     >
       <svg width="12" height="14" viewBox="0 0 12 14" fill="currentColor" aria-hidden>
         {playing ? <path d="M1 1h3v12H1zM8 1h3v12H8z" /> : <path d="M1 1l10 6-10 6z" />}
@@ -409,7 +405,7 @@ export default function SunStudy({ onClose, variant = "full", place }: { onClose
     <>
       {/* Inline position: MapLibre's stylesheet sets its container to position: relative. */}
       <div ref={containerRef} className="sun-map" style={{ position: "absolute", inset: 0 }} />
-      {sun.altitude <= 0.5 && <div className="pointer-events-none absolute inset-0 bg-[#0c1a2a]/45" aria-hidden />}
+      {sun.altitude <= 0.5 && <div className={`pointer-events-none absolute inset-0 transition-colors duration-500 ${sun.altitude < -6 ? "bg-[#0a1424]/65" : "bg-[#0c1a2a]/45"}`} aria-hidden />}
 
       <button ref={closeRef} type="button" onClick={onClose} data-autofocus aria-label={t("Close sun study", "მზის კვლევის დახურვა")} className="btn btn-icon btn-sm absolute right-4 top-4 z-10 h-10 w-10 border-white/40 bg-seu-ink/60 text-white backdrop-blur md:right-[44px] md:top-[44px] md:bg-transparent md:backdrop-blur-none">
         <svg width="14" height="14" viewBox="0 0 14 14" stroke="currentColor" strokeWidth="1.5" aria-hidden>
@@ -417,82 +413,100 @@ export default function SunStudy({ onClose, variant = "full", place }: { onClose
         </svg>
       </button>
 
-      {/* Phones: a two-line strip along the bottom (time, then date), so the map stays in view.
-          Wider screens: the full card in the top right corner. */}
-      <section
-        aria-label={t("Time and date", "დრო და თარიღი")}
-        className="glass glass-dark absolute inset-x-3 bottom-3 rounded-[22px] p-4 text-white md:inset-x-auto md:bottom-auto md:right-6 md:top-6 md:w-[380px] md:rounded-[24px] md:p-5"
-      >
-        <div className="grid grid-cols-[84px_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-3 md:hidden">
-          <span className="title-display text-[26px] leading-none tabular-nums">{clock(minutes)}</span>
-          {timeRange("")}
-          {playButton}
-          <span className="text-[11px] uppercase leading-tight tracking-[0.1em] text-white/75">{dateText}</span>
-          {dateRange("")}
-          {nowButton}
-        </div>
+      {/* Where and when, quietly in the top left. */}
+      <p className="glass glass-dark absolute left-4 top-4 z-10 max-w-[calc(100%-88px)] truncate rounded-full px-4 py-2.5 text-[13px] text-white md:left-[44px] md:top-[44px]">
+        {t("Sun study", "მზის კვლევა")} · {place ?? t("SEU Varketili", "SEU ვარკეთილი")} · <span className="tabular-nums">{dateText}</span>
+      </p>
 
-        <div className="max-md:hidden">
-          <p className="eyebrow flex h-10 items-center pr-12 text-white/85">
-            {t("Sun study", "მზის კვლევა")} · {place ?? t("SEU Varketili", "SEU ვარკეთილი")}
-          </p>
-
-          <div className="mt-4 flex items-end justify-between gap-4">
-            <p>
-              <span className="title-display block text-[44px] leading-none tabular-nums">{clock(minutes)}</span>
-              <span className="mt-1 block text-[12px] uppercase tracking-[0.16em] text-white/75">{dateText} · UTC+4</span>
-            </p>
-            <div className="flex gap-2">
-              {nowButton}
+      {/* One long slider along the bottom with the time of day under it, as on a weather app;
+          the settings button opens the date, play and the figures above it. */}
+      <section aria-label={t("Time and date", "დრო და თარიღი")} className="absolute inset-x-3 bottom-3 z-10 mx-auto max-w-[760px] md:bottom-8 md:inset-x-8">
+        {more && (
+          <div id="sun-more" className="glass glass-dark mb-3 rounded-[24px] p-5 text-white">
+            <div className="flex items-center gap-3">
+              <label className="min-w-0 flex-1">
+                <span className="flex justify-between text-[12px] text-white/75">
+                  <span>{t("Date", "თარიღი")}</span>
+                  <span className="tabular-nums text-white">{dateText}</span>
+                </span>
+                <input type="range" className="sun-track mt-2 w-full" min={0} max={364} value={doy} aria-label={t("Date", "თარიღი")} aria-valuetext={dateText} onChange={(e) => setDoy(+e.target.value)} />
+              </label>
+              <button type="button" onClick={toNow} className="btn btn-sm shrink-0 border-white/40 text-white">
+                {t("Now", "ახლა")}
+              </button>
               {playButton}
             </div>
+            <dl className="mt-4 grid grid-cols-2 gap-3 border-t border-white/15 pt-4 text-[12px] sm:grid-cols-4">
+              <div>
+                <dt className="text-white/70">{t("Sunrise · sunset", "ამოსვლა · ჩასვლა")}</dt>
+                <dd className="mt-1 text-[15px] tabular-nums">
+                  {clock(times.rise)} · {clock(times.set)}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-white/70">{t("Altitude", "სიმაღლე")}</dt>
+                <dd className="mt-1 text-[15px] tabular-nums">{Math.max(0, Math.round(sun.altitude))}°</dd>
+              </div>
+              <div>
+                <dt className="text-white/70">{t("Direction", "მიმართულება")}</dt>
+                <dd className="mt-1 text-[15px] tabular-nums">
+                  {Math.round(sun.azimuth)}° {(lang === "ka" ? COMPASS_KA : COMPASS)[Math.round(sun.azimuth / 45) % 8]}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-white/70">{t("Daylight", "დღის ხანგრძლივობა")}</dt>
+                <dd className="mt-1 text-[15px] tabular-nums">
+                  {Math.floor(daylight / 60)}{t("h", "სთ")} {daylight % 60}{t("m", "წთ")}
+                </dd>
+              </div>
+            </dl>
+            <p className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] text-white/75">
+              <span className="flex items-center gap-2">
+                <span className="h-[3px] w-5 rounded bg-[#f2c230]" /> {t("Today", "დღეს")}
+              </span>
+              <span className="flex items-center gap-2">
+                <span className="w-5 border-t-2 border-dashed border-white" /> {t("June / December", "ივნისი / დეკემბერი")}
+              </span>
+            </p>
           </div>
+        )}
 
-          <label className="mt-5 block">
-            <span className="flex justify-between text-[12px] text-white/75">
-              <span>
-                {t("Sunrise", "მზის ამოსვლა")} {clock(times.rise)}
-              </span>
-              <span>
-                {t("Sunset", "მზის ჩასვლა")} {clock(times.set)}
-              </span>
-            </span>
-            {timeRange("mt-2")}
-          </label>
-          <label className="mt-4 block">
-            <span className="flex justify-between text-[12px] text-white/75">
-              <span>{t("1 Jan", "1 იან")}</span>
-              <span>{t("31 Dec", "31 დეკ")}</span>
-            </span>
-            {dateRange("mt-2")}
-          </label>
-
-          <dl className="mt-5 grid grid-cols-3 gap-3 border-t border-white/15 pt-4 text-[12px]">
-            <div>
-              <dt className="text-white/70">{t("Altitude", "სიმაღლე")}</dt>
-              <dd className="mt-1 text-[16px] tabular-nums">{Math.max(0, Math.round(sun.altitude))}°</dd>
+        <div className="glass glass-dark flex items-start gap-3 rounded-[24px] px-4 pb-2 pt-4 text-white sm:gap-4 sm:px-6">
+          <span className="title-display w-[58px] shrink-0 pt-0.5 text-[22px] leading-none tabular-nums sm:w-[70px] sm:text-[26px]" aria-live="off">
+            {clock(minutes)}
+          </span>
+          <div className="min-w-0 flex-1">
+            {timeRange}
+            {/* The marks sit under their time on the track. */}
+            <div className="relative mt-1 h-11">
+              {marks.map((m) => (
+                <button
+                  key={m.icon}
+                  type="button"
+                  onClick={() => {
+                    setPlaying(false);
+                    setMinutes(Math.min(span.hi, Math.max(span.lo, m.at)));
+                  }}
+                  aria-label={`${t(m.label[0], m.label[1])} (${clock(m.at)})`}
+                  title={t(m.label[0], m.label[1])}
+                  className={`absolute top-0 grid h-11 w-11 -translate-x-1/2 place-items-center rounded-full transition-colors hover:bg-white/10 ${near(m.at) ? "text-white" : "text-white/60"}`}
+                  style={{ left: `clamp(22px, ${pct(m.at)}%, calc(100% - 22px))` }}
+                >
+                  <Icon name={m.icon} size={20} />
+                </button>
+              ))}
             </div>
-            <div>
-              <dt className="text-white/70">{t("Direction", "მიმართულება")}</dt>
-              <dd className="mt-1 text-[16px] tabular-nums">
-                {Math.round(sun.azimuth)}° {(lang === "ka" ? COMPASS_KA : COMPASS)[Math.round(sun.azimuth / 45) % 8]}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-white/70">{t("Daylight", "დღის ხანგრძლივობა")}</dt>
-              <dd className="mt-1 text-[16px] tabular-nums">
-                {Math.floor(daylight / 60)}{t("h", "სთ")} {daylight % 60}{t("m", "წთ")}
-              </dd>
-            </div>
-          </dl>
-          <p className="mt-4 flex items-center gap-4 text-[12px] text-white/75">
-            <span className="flex items-center gap-2">
-              <span className="h-[3px] w-5 rounded bg-[#f2c230]" /> {t("Today", "დღეს")}
-            </span>
-            <span className="flex items-center gap-2">
-              <span className="w-5 border-t-2 border-dashed border-white" /> {t("June / December", "ივნისი / დეკემბერი")}
-            </span>
-          </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setMore((o) => !o)}
+            aria-expanded={more}
+            aria-controls="sun-more"
+            aria-label={t("Date and settings", "თარიღი და პარამეტრები")}
+            className={`grid h-11 w-11 shrink-0 place-items-center rounded-full transition-colors ${more ? "bg-white text-seu-ink" : "bg-white/10 text-white hover:bg-white/20"}`}
+          >
+            <Icon name="settings" size={18} />
+          </button>
         </div>
       </section>
     </>

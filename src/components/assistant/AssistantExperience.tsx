@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { withBase } from "@/data/projects";
+import { projects, statusIn, withBase } from "@/data/projects";
 import { blockById, unitById, unitsOn, varketiliBlocks } from "@/data/inventory";
 import VOICE from "@/data/voice.json";
 import { ASSISTANT_NAME, FACADES, facadeFloors, facadeLabel, lineId, LINES, MAQUETTE, MODELS, REPLIES, SYNCED_GREETING, UI, VIEW, type Lang, type Line, type Model, type Reply } from "@/data/assistant";
@@ -377,8 +377,19 @@ export default function AssistantExperience({ engine = templateEngine }: { engin
                   <span className="absolute inset-0 animate-ping rounded-full bg-white/40" aria-hidden />
                   <span className="relative h-4 w-4 rounded-full border-2 border-white bg-seu-accent shadow-lg group-focus-visible:outline group-focus-visible:outline-2 group-focus-visible:outline-offset-4 group-focus-visible:outline-white" />
                 </span>
-                <span className="absolute left-1/2 top-full mt-1 -translate-x-1/2 whitespace-nowrap rounded-full bg-seu-ink/80 px-3 py-1.5 text-[12px] font-semibold tracking-wide backdrop-blur transition group-hover:bg-seu-accent">
-                  {t(m.name)}
+                {/* Name with the project's stage under it: finished or under way. */}
+                <span className="absolute left-1/2 top-full mt-1 flex -translate-x-1/2 flex-col items-center whitespace-nowrap rounded-[14px] bg-seu-ink/80 px-3 py-1.5 backdrop-blur transition group-hover:bg-seu-ink">
+                  <span className="text-[12px] font-semibold tracking-wide">{t(m.name)}</span>
+                  {(() => {
+                    const status = projects.find((p) => p.id === m.project)?.status;
+                    if (!status) return null;
+                    return (
+                      <span className="mt-0.5 flex items-center gap-1.5 text-[11px] text-white/85">
+                        <span aria-hidden className={`h-1.5 w-1.5 rounded-full ${status === "finished" ? "bg-seu-go" : "bg-[#f2a65a]"}`} />
+                        {statusIn(status, lang)}
+                      </span>
+                    );
+                  })()}
                 </span>
               </button>
             ))}

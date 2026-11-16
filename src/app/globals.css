@@ -1140,10 +1140,52 @@ html.is-loading body {
     0 0 40px 12px rgb(255 210 63 / 0.55);
 }
 
-.sun-range {
-  accent-color: #f2c230;
-  height: 24px;
+/* Sun study: a thin light track with a white knob, as on a weather app. */
+.sun-track {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 28px;
+  background: transparent;
   cursor: pointer;
+}
+
+.sun-track::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.75);
+}
+
+.sun-track::-moz-range-track {
+  height: 4px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.75);
+}
+
+.sun-track::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  margin-top: -9px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #111923 0 3px, #fff 3.5px);
+  box-shadow: 0 2px 10px rgb(0 0 0 / 0.35);
+}
+
+.sun-track::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, #111923 0 3px, #fff 3.5px);
+  box-shadow: 0 2px 10px rgb(0 0 0 / 0.35);
+}
+
+.sun-track:focus-visible {
+  outline: none;
+}
+
+.sun-track:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--seu-go);
 }
 
 /* ---------- Custom cursor (fine pointers only) ---------- */
@@ -2366,10 +2408,11 @@ body:has(.presentation) .call-fab {
 }
 
 
-/* Sun study on phones: the map credit sits above the time strip. */
-@media (max-width: 767px) {
+/* Sun study: below 1180px the time bar spans the width, so the zoom buttons and credit
+   sit above it. */
+@media (max-width: 1179px) {
   .sun-map .maplibregl-ctrl-bottom-right {
-    bottom: 148px;
+    bottom: 128px;
   }
 }
 
