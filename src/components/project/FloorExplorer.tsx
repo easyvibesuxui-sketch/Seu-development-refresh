@@ -11,6 +11,7 @@ import ApartmentCard from "@/components/ui/ApartmentCard";
 import Icon from "@/components/ui/Icon";
 import BackLink from "@/components/ui/BackLink";
 import { ArrowButton } from "./ProjectDetails";
+import Floor3D from "./Floor3D";
 import { PLAN, PLAN_RATIO, UNIT_SHAPES, centre } from "@/data/floorplan";
 
 /*
@@ -46,7 +47,7 @@ function FloorFromQuery({ max, onFloor }: { max: number; onFloor: (f: number) =>
 export default function FloorExplorer({ blockId }: { blockId: string }) {
   const block = blockById(blockId)!;
   const [floor, setFloor] = useState(Math.min(8, block.floors));
-  const [view, setView] = useState<"plan" | "grid">("plan");
+  const [view, setView] = useState<"plan" | "3d" | "grid">("plan");
   const [hover, setHover] = useState<string | null>(null);
   const [hoverBlock, setHoverBlock] = useState<string | null>(null);
   const [sun, setSun] = useState(false);
@@ -79,7 +80,7 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
       <div className="flex items-center justify-between">
         <BackLink href="/projects/varketili/" />
         <div className="flex gap-2" role="tablist" aria-label={t("Layout view", "განლაგების ხედი")}>
-          {(["plan", "grid"] as const).map((v) => (
+          {(["plan", "3d", "grid"] as const).map((v) => (
             <button
               key={v}
               type="button"
@@ -88,7 +89,7 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
               onClick={() => setView(v)}
               className="chip ctl-sm rounded-full px-5"
             >
-              {v === "plan" ? t("Floor plan", "გეგმა") : t("Grid view", "ცხრილი")}
+              {v === "plan" ? t("Floor plan", "გეგმა") : v === "3d" ? "3D" : t("Grid view", "ცხრილი")}
             </button>
           ))}
         </div>
@@ -223,6 +224,8 @@ export default function FloorExplorer({ blockId }: { blockId: string }) {
                   </svg>
                 )}
               </div>
+            ) : view === "3d" ? (
+              <Floor3D units={floorUnits} fill={statusFill} />
             ) : (
               <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
                 {floorUnits.map((u) => (
